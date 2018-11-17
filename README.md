@@ -45,7 +45,7 @@ lint-md README.md Document.md
 | space-between   | 中文与英文数字之间需要增加空格 | 响应位置增加空格 |
 
 
-目前仅仅检查了比较通用的类型，欢迎 pull request，在 `cmd/Lint/rules` 中增加自己的规则，开发约束：
+目前仅仅检查了比较通用的类型，**欢迎 pull request**，在 `cmd/Lint/rules` 中增加自己的规则，开发约束：
 
  - 规则主要针对于中文 markdown 的编写规范
  - 使用类 babel plugin 的方式来进行规则检查，一个插件对应一个规则

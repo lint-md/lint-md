@@ -5,8 +5,14 @@ const unified = require('unified');
 const markdown = require('remark-parse');
 const { Ast } = require('ast-plugin');
 
-const plugins = require('./rules');
+const plugins = require('../../rules');
 
+/**
+ * 使用 ast 和插件进行 lint
+ * @param f
+ * @param config
+ * @returns {Promise<any>}
+ */
 module.exports = (f, config) => {
 
   return new Promise((resolve, reject) => {

@@ -1,7 +1,11 @@
 const { h, render, Component, Color } = require('ink');
-const loadMdFiles = require('../../helper/file');
+const loadMdFiles = require('../helper/file');
 const lint = require('./lint');
 
+/**
+ * Lint 组件
+ * @type {module.Lint}
+ */
 module.exports = class Lint extends Component {
 
   constructor(props) {

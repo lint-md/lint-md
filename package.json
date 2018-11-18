@@ -12,7 +12,8 @@
   "keywords": [
     "lint",
     "markdown",
-    "lint-md"
+    "lint-md",
+    "ast-plugin"
   ],
   "dependencies": {
     "ast-plugin": "^0.0.2",

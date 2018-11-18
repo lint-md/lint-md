@@ -1,10 +1,6 @@
 const { Plugin } = require('ast-plugin');
-const _ = require('lodash');
-const { stringType } = require('../../../helper/string');
 
 const type = 'code-lang';
-// 匹配 [ZA, AZ, ZN, NZ]
-const matches = ['ZA', 'AZ', 'ZN', 'NZ'];
 
 /**
  * 中文和英文、数字之间需要有空格

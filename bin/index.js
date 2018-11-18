@@ -4,7 +4,7 @@ const { h, render } = require('ink');
 const program = require('commander');
 
 const pkg = require('../package.json');
-const Entry = require('./cmd');
+const Lint = require('./Lint');
 const configure = require('./helper/configure');
 
 let unmount;
@@ -24,7 +24,7 @@ program
   .arguments('<files...>')
   .action((files, cmd) => {
     const config = configure(cmd.config);
-    unmount = render(h(Entry, { action: 'lint', files, config, onExit }));
+    unmount = render(h(Lint, { files, config, onExit }));
   });
 
 program.parse(process.argv);

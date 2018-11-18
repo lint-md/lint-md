@@ -1,5 +1,5 @@
 const { Plugin } = require('ast-plugin');
-const { stringType } = require('../../../helper/string');
+const { stringType } = require('./helper/string');
 
 const type = 'space-between';
 // 匹配 [ZA, AZ, ZN, NZ]

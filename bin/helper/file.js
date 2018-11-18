@@ -10,6 +10,12 @@ const isDirectory = path => {
   return fs.statSync(path).isDirectory();
 };
 
+/**
+ * 读取所有文件
+ * @param src
+ * @param config
+ * @returns {Promise<any>}
+ */
 module.exports = (src, config) => {
   const { excludeFiles } = config;
 

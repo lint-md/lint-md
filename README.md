@@ -1,6 +1,6 @@
 # lint-md
 
-> 用于检查中文 markdown 编写格式规范的命令行工具，方便集成 ci。Cli tool to lint your markdown file for Chinese.
+> 用于检查中文 markdown 编写格式规范的命令行工具，基于 AST 开发，且方便集成 ci。Cli tool to lint your markdown file for Chinese.
 
 [![npm](https://img.shields.io/npm/v/lint-md.svg)](https://www.npmjs.com/package/lint-md)
 [![npm](https://img.shields.io/npm/dm/lint-md.svg)](https://www.npmjs.com/package/lint-md)
@@ -50,7 +50,8 @@ lint-md README.md Document.md
  - 规则主要针对于中文 markdown 的编写规范
  - 使用类 babel plugin 的方式来进行规则检查，一个插件对应一个规则
  - 规则名称对应和插件文件名保持一致
- - 先提 issue 讨论
+ - 先提 issue 进行讨论
+ - [AST 工具](https://astexplorer.net/)，使用其中的 markdown AST 辅助开发插件
 
 
 

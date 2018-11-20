@@ -43,6 +43,7 @@ lint-md README.md Document.md
 | ------ | ------ | ------ |
 | code-lang   | 代码语言不能为空 | 在代码块语法上增加语言 |
 | space-between   | 中文与英文数字之间需要增加空格 | 响应位置增加空格 |
+| no-empty-url   | 链接和图片地址不能为空 | 填写完整的 url，或者不使用链接和图片语法 |
 
 
 > 目前仅仅检查了比较通用的类型，**欢迎 pull request**，在 `rules` 中增加自己的规则，开发约束：

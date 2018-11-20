@@ -1,5 +1,6 @@
 const SpaceBetween = require('./space-between');
 const CodeLang = require('./code-lang');
+const NoEmptyUrl = require('./no-empty-url');
 
 /**
  * 所有的 lint 规则，欢迎 pr 添加
@@ -9,4 +10,5 @@ const CodeLang = require('./code-lang');
 module.exports = throwError => ([
   new SpaceBetween({ throwError }),
   new CodeLang({ throwError }),
+  new NoEmptyUrl({ throwError }),
 ]);

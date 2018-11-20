@@ -2,6 +2,7 @@
 
 > 用于检查中文 markdown 编写格式规范的命令行工具，基于 AST 开发，且方便集成 ci。Cli tool to lint your markdown file for Chinese.
 
+[![Build Status](https://travis-ci.org/hustcc/lint-md.svg?branch=master)](https://travis-ci.org/hustcc/lint-md)
 [![npm](https://img.shields.io/npm/v/lint-md.svg)](https://www.npmjs.com/package/lint-md)
 [![npm](https://img.shields.io/npm/dm/lint-md.svg)](https://www.npmjs.com/package/lint-md)
 

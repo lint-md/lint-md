@@ -1,10 +1,10 @@
 const { Plugin } = require('ast-plugin');
 
-const type = 'no-empty-url';
+const type = 'no-empty-list';
 
 /**
- * link image 中地址不能为空
- * no-empty-url
+ * list 内容不能为空
+ * no-empty-list
  */
 module.exports = class extends Plugin {
 
@@ -12,18 +12,18 @@ module.exports = class extends Plugin {
 
   visitor() {
     return {
-      link: ast => {
-        const { url, value } = ast.node;
+      listItem: ast => {
+        const { children } = ast.node;
 
         const line = ast.node.position.start.line;
         const column = ast.node.position.start.column;
 
-        if (!url) {
+        if (!children || children.length === 0) {
           this.cfg.throwError({
             line,
             column,
             level: 'error',
-            text: 'link url can not be empty',
+            text: 'list content can not be empty',
             type,
           });
         }

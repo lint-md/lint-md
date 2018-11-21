@@ -23,7 +23,7 @@ module.exports = class extends Plugin {
             line,
             column,
             level: 'error',
-            text: 'link url can not be empty',
+            text: 'Link url can not be empty',
             type,
           });
         }
@@ -39,7 +39,7 @@ module.exports = class extends Plugin {
             line,
             column,
             level: 'error',
-            text: 'image url can not be empty',
+            text: 'Image url can not be empty',
             type,
           });
         }

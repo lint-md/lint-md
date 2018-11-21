@@ -23,7 +23,7 @@ module.exports = class extends Plugin {
             line,
             column,
             level: 'error',
-            text: 'list content can not be empty',
+            text: 'List content can not be empty',
             type,
           });
         }

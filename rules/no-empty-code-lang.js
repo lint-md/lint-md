@@ -23,7 +23,7 @@ module.exports = class extends Plugin {
             line,
             column,
             level: 'error',
-            text: 'lang of code can not be empty',
+            text: 'Language of code can not be empty',
             type,
           });
         }

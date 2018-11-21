@@ -1,5 +1,5 @@
 const SpaceBetween = require('./space-between');
-const CodeLang = require('./code-lang');
+const NoEmptyCodeLang = require('./no-empty-code-lang');
 const NoEmptyUrl = require('./no-empty-url');
 const NoEmptyList = require('./no-empty-list');
 
@@ -10,7 +10,7 @@ const NoEmptyList = require('./no-empty-list');
  */
 module.exports = throwError => ([
   new SpaceBetween({ throwError }),
-  new CodeLang({ throwError }),
+  new NoEmptyCodeLang({ throwError }),
   new NoEmptyUrl({ throwError }),
   new NoEmptyList({ throwError }),
 ]);

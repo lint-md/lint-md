@@ -1,10 +1,10 @@
 const { Plugin } = require('ast-plugin');
 
-const type = 'code-lang';
+const type = 'no-empty-code-lang';
 
 /**
  * 中文和英文、数字之间需要有空格
- * code-lang
+ * no-empty-code-lang
  */
 module.exports = class extends Plugin {
 
@@ -23,7 +23,7 @@ module.exports = class extends Plugin {
             line,
             column,
             level: 'error',
-            text: 'lang can not be empty',
+            text: 'lang of code can not be empty',
             type,
           });
         }

@@ -11,6 +11,6 @@ module.exports = configFile => {
   // 合并默认配置
   return _.merge({
     excludeFiles: [],
-    ignores: [],
+    rules: {},
   }, config);
 };

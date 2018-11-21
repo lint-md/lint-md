@@ -1,12 +1,14 @@
 const { Plugin } = require('ast-plugin');
 
-const type = 'no-empty-url';
-
 /**
  * link image 中地址不能为空
  * no-empty-url
  */
 module.exports = class extends Plugin {
+
+  static get type() {
+    return 'no-empty-url';
+  };
 
   pre() {}
 
@@ -22,9 +24,7 @@ module.exports = class extends Plugin {
           this.cfg.throwError({
             line,
             column,
-            level: 'error',
             text: 'Link url can not be empty',
-            type,
           });
         }
       },
@@ -38,9 +38,7 @@ module.exports = class extends Plugin {
           this.cfg.throwError({
             line,
             column,
-            level: 'error',
             text: 'Image url can not be empty',
-            type,
           });
         }
       },

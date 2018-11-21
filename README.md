@@ -59,6 +59,29 @@ lint-md README.md Document.md
 
 
 
+## 配置
+
+默认所有的规则都是 `error` 类型，但是可以通过配置来指定规则类型。示例 `.lintmdrc` ：
+
+```json
+{
+  "excludeFiles": [],
+  "rules": {
+    "no-empty-code": 1
+  }
+}
+```
+
+通过 rules 来配置规则的等级。
+
+ - **0**：ignore
+ - **1**：warning
+ - **2**：error
+
+通过 excludeFiles 来忽略文件和目录，glob 语法。
+
+
+
 ## ci 集成
 
  -  Travis

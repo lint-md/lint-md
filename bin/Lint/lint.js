@@ -15,6 +15,8 @@ const plugins = require('../../rules');
  */
 module.exports = (f, config) => {
 
+  const { rules } = config;
+
   return new Promise((resolve, reject) => {
     const errors = [];
 
@@ -30,7 +32,8 @@ module.exports = (f, config) => {
       .parse(md);
 
     // 处理 plugin 规则
-    new Ast(ast).traverse(plugins(throwFunc));
+    // 通过配置的规则，来处理
+    new Ast(ast).traverse(plugins(throwFunc, rules));
 
     const e = _.uniqWith(errors, _.isEqual); // 去重
 

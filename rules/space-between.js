@@ -1,7 +1,6 @@
 const { Plugin } = require('ast-plugin');
 const { stringType } = require('./helper/string');
 
-const type = 'space-between';
 // 匹配 [ZA, AZ, ZN, NZ]
 const matches = ['ZA', 'AZ', 'ZN', 'NZ'];
 
@@ -10,6 +9,10 @@ const matches = ['ZA', 'AZ', 'ZN', 'NZ'];
  * space-between
  */
 module.exports = class extends Plugin {
+
+  static get type() {
+    return 'space-between';
+  };
 
   pre() {}
 
@@ -30,9 +33,7 @@ module.exports = class extends Plugin {
             this.cfg.throwError({
               line,
               column: column + i,
-              level: 'error',
               text: text,
-              type,
             });
           }
         }

@@ -1,12 +1,14 @@
 const { Plugin } = require('ast-plugin');
 
-const type = 'no-empty-list';
-
 /**
  * list 内容不能为空
  * no-empty-list
  */
 module.exports = class extends Plugin {
+
+  static get type() {
+    return 'no-empty-list';
+  };
 
   pre() {}
 
@@ -22,9 +24,7 @@ module.exports = class extends Plugin {
           this.cfg.throwError({
             line,
             column,
-            level: 'error',
             text: 'List content can not be empty',
-            type,
           });
         }
       },

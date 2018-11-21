@@ -1,18 +1,48 @@
-const SpaceBetween = require('./space-between');
-const NoEmptyCodeLang = require('./no-empty-code-lang');
-const NoEmptyUrl = require('./no-empty-url');
-const NoEmptyList = require('./no-empty-list');
-const NoEmptyCode = require('./no-empty-code');
+const _ = require('lodash');
+
+const ruleHelper = require('./helper/rule');
+
+const PluginClasses = [
+  require('./space-between'),
+  require('./no-empty-code-lang'),
+  require('./no-empty-url'),
+  require('./no-empty-list'),
+  require('./no-empty-code')
+];
+
+
 
 /**
  * 所有的 lint 规则，欢迎 pr 添加
  * @param throwError
+ * @param rules
  * @returns {*[]}
  */
-module.exports = throwError => ([
-  new SpaceBetween({ throwError }),
-  new NoEmptyCodeLang({ throwError }),
-  new NoEmptyUrl({ throwError }),
-  new NoEmptyList({ throwError }),
-  new NoEmptyCode({ throwError }),
-]);
+module.exports = (throwError, rules) => {
+  // 所有的插件的默认 rules
+  const initialRules = {};
+
+  _.forEach(PluginClasses, Plugin => {
+    initialRules[Plugin.type] = 2; // 默认都是 error
+  });
+
+  // 用 rules 覆盖初始配置
+  const rulesConfig = _.merge({}, initialRules, rules);
+
+  // 配置为 0 的就是关闭，不启用插件！
+  const Plugins = _.filter(PluginClasses, Plugin => rulesConfig[Plugin.type] !== 0);
+
+  // 初始化插件
+  return _.map(Plugins, Plugin => {
+    const level = ruleHelper.ruleToLevel(rulesConfig[Plugin.type]);
+
+    // 重新包装一下 throw 方法，加入 level
+    const throwErrorFunc = error => {
+      error.level = level;
+      error.type = Plugin.type;
+      throwError(error);
+    };
+
+    return new Plugin({ throwError: throwErrorFunc });
+  });
+};

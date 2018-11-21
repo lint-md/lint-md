@@ -1,12 +1,14 @@
 const { Plugin } = require('ast-plugin');
 
-const type = 'no-empty-code';
-
 /**
  * code 代码块内容不能为空
  * no-empty-code
  */
 module.exports = class extends Plugin {
+
+  static get type() {
+    return 'no-empty-code';
+  };
 
   pre() {}
 
@@ -20,9 +22,7 @@ module.exports = class extends Plugin {
       this.cfg.throwError({
         line,
         column,
-        level: 'error',
         text: 'Code block can not be empty',
-        type,
       });
     }
   }

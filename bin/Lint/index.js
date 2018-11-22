@@ -1,6 +1,7 @@
 const { h, render, Component, Color } = require('ink');
 const loadMdFiles = require('../helper/file');
 const lint = require('./lint');
+const string = require('../helper/string');
 
 /**
  * Lint 组件
@@ -54,11 +55,11 @@ module.exports = class Lint extends Component {
     const props = level === 'error' ? { red: true } : { yellow: true };
 
     return h('div', {}, [
-      '    ',
-      h('span', {}, h(Color, { grey: true }, `${line}:${column}`)),
-      '    ',
-      h('span', {}, h(Color, { grey: true }, `${type}`)),
-      '    ',
+      '  ',
+      h('span', {}, h(Color, { grey: true }, string.rightPad(`${line}:${column}`, 10))),
+      '  ',
+      h('span', {}, h(Color, { grey: true }, string.rightPad(`${type}`, 24))),
+      '  ',
       h(Color, props, text),
     ]);
   }

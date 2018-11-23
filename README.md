@@ -42,11 +42,13 @@ lint-md README.md Document.md
 
 | 规则 | 详细描述 | 解决办法 |
 | ------ | ------ | ------ |
-| space-between   | 中文与英文数字之间需要增加空格 | 响应位置增加空格 |
+| space-between | 中文与英文数字之间需要增加空格 | 响应位置增加空格 |
 | no-empty-code-lang   | 代码语言不能为空 | 在代码块语法上增加语言 |
-| no-empty-url   | 链接和图片地址不能为空 | 填写完整的 url，或者不使用链接和图片语法 |
-| no-empty-list   | List 内容不能为空 | List 语法中，填写内容 |
-| no-empty-code   | 代码块内容不能为空 | 去掉代码块，或者填充代码内容 |
+| no-empty-url | 链接和图片地址不能为空 | 填写完整的 url，或者不使用链接和图片语法 |
+| no-empty-list | List 内容不能为空 | List 语法中，填写内容 |
+| no-empty-code | 代码块内容不能为空 | 删除空的代码块，或者填充代码内容 |
+| no-empty-blockquote | blockquote 内容不能为空 | 删除空的 blockquote，或者填充内容 |
+| no-special-characters | 文本中不能有特殊字符 | 可能是复制出来的特殊字符，删除特殊字符即可 |
 
 
 > 目前仅仅检查了比较通用的类型，**欢迎 pull request**，在 `rules` 中增加自己的规则，开发约束：

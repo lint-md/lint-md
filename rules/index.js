@@ -7,7 +7,9 @@ const PluginClasses = [
   require('./no-empty-code-lang'),
   require('./no-empty-url'),
   require('./no-empty-list'),
-  require('./no-empty-code')
+  require('./no-empty-code'),
+  require('./no-empty-blockquote'),
+  require('./no-special-characters')
 ];
 
 

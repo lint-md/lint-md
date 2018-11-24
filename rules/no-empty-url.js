@@ -1,6 +1,25 @@
 const { Plugin } = require('ast-plugin');
 
 /**
+ * @param ast 传入的 ast
+ * @param text 抛错信息
+ */
+const visitorHelper = (ast, text) => {
+  const { url, value } = ast.node;
+
+  const line = ast.node.position.start.line;
+  const column = ast.node.position.start.column;
+
+  if (!url) {
+    this.cfg.throwError({
+      line,
+      column,
+      text
+    });
+  }
+};
+
+/**
  * link image 中地址不能为空
  * no-empty-url
  */
@@ -15,32 +34,10 @@ module.exports = class extends Plugin {
   visitor() {
     return {
       link: ast => {
-        const { url, value } = ast.node;
-
-        const line = ast.node.position.start.line;
-        const column = ast.node.position.start.column;
-
-        if (!url) {
-          this.cfg.throwError({
-            line,
-            column,
-            text: 'Link url can not be empty',
-          });
-        }
+        visitorHelper(ast, 'Link url can not be empty');
       },
       image: ast => {
-        const { url, value } = ast.node;
-
-        const line = ast.node.position.start.line;
-        const column = ast.node.position.start.column;
-
-        if (!url) {
-          this.cfg.throwError({
-            line,
-            column,
-            text: 'Image url can not be empty',
-          });
-        }
+        visitorHelper(ast, 'Image url can not be empty');
       },
     }
   }

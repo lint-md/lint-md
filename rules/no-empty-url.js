@@ -12,36 +12,25 @@ module.exports = class extends Plugin {
 
   pre() {}
 
+  emptyUrl(ast, text) {
+    const { url, value } = ast.node;
+
+    const line = ast.node.position.start.line;
+    const column = ast.node.position.start.column;
+
+    if (!url) {
+      this.cfg.throwError({
+        line,
+        column,
+        text
+      });
+    }
+  }
+
   visitor() {
     return {
-      link: ast => {
-        const { url, value } = ast.node;
-
-        const line = ast.node.position.start.line;
-        const column = ast.node.position.start.column;
-
-        if (!url) {
-          this.cfg.throwError({
-            line,
-            column,
-            text: 'Link url can not be empty',
-          });
-        }
-      },
-      image: ast => {
-        const { url, value } = ast.node;
-
-        const line = ast.node.position.start.line;
-        const column = ast.node.position.start.column;
-
-        if (!url) {
-          this.cfg.throwError({
-            line,
-            column,
-            text: 'Image url can not be empty',
-          });
-        }
-      },
+      link: ast => this.emptyUrl(ast, 'Link url can not be empty'),
+      image: ast => this.emptyUrl(ast, 'Image url can not be empty')
     }
   }
 

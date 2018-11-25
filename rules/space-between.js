@@ -1,10 +1,9 @@
 const { Plugin } = require('ast-plugin');
-const { stringType } = require('./helper/string');
+const { stringType, subErrorStr } = require('./helper/string');
 
 // 匹配 [ZA, AZ, ZN, NZ]
 const matches = ['ZA', 'AZ', 'ZN', 'NZ'];
-
-const showLength = 10;
+const showLength = 12;
 
 /**
  * 中文和英文、数字之间需要有空格
@@ -37,7 +36,7 @@ module.exports = class extends Plugin {
             this.cfg.throwError({
               line,
               column: idx + 1, // column 从 1 开始
-              text: text.substr(Math.max(idx - Math.floor(showLength / 2), 0), showLength),
+              text: subErrorStr(text, idx, showLength),
             });
           }
         }

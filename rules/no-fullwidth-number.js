@@ -1,7 +1,38 @@
 const { Plugin } = require('ast-plugin');
-const { isFullwidthNumber, stringAround } = require('./helper/string');
 
-const showLength = 10;
+/**
+ * 从字符串中找出所有的数字字符串和索引
+ * @param s
+ * @returns {Array}
+ */
+const findAllNumbers = s => {
+  const re = new RegExp('[0-9０-９]{1,}', 'g');
+  const r = [];
+
+  // 循环找出所有的数字
+  while(true) {
+    const matched = re.exec(s);
+
+    if (matched) {
+      r.push({
+        number: matched[0],
+        index: matched.index,
+      });
+    } else {
+      break;
+    }
+  }
+  return r;
+};
+
+/**
+ * 判断一个数字字符串是否存在全角数字
+ * @param s
+ * @returns {boolean}
+ */
+const isFullWidthNumber = s => {
+  return /[０-９]/.test(s);
+};
 
 /**
  * 无全角数字
@@ -19,23 +50,21 @@ module.exports = class extends Plugin {
     return {
       text: ast => {
         const text = ast.node.value;
-       
+
         const line = ast.node.position.start.line;
         const column = ast.node.position.start.column;
-        
-        for (let i = 0; i < text.length; i ++) {
-          if(isFullwidthNumber(text[i])) {
-            const idx = column + i;
 
+        findAllNumbers(text || '').forEach(num => {
+          const { number, index } = num;
+
+          if (isFullWidthNumber(number)) {
             this.cfg.throwError({
               line,
-              column: idx, 
-              text: stringAround(text, idx - column, showLength)
+              column: column + index + 1,
+              text: `Full-width number exist: '${number}'`,
             });
-            // 每行只检测第一个错误
-            break;
           }
-        }
+        });
       },
     }
   }

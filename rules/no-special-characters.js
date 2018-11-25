@@ -1,8 +1,8 @@
 const { Plugin } = require('ast-plugin');
+const { subErrorStr } = require('./helper/string');
 
 const SpecialCharacters = ['\b'];
-
-const showLength = 10;
+const showLength = 12;
 
 /**
  * 无特殊字符
@@ -28,7 +28,7 @@ module.exports = class extends Plugin {
           SpecialCharacters.forEach(sc => {
             const idx = value.indexOf(sc);
             if (idx !== -1) {
-              const text = value.substr(Math.max(idx - Math.floor(showLength / 2), 0), showLength);
+              const text = subErrorStr(value, idx, showLength);
 
               this.cfg.throwError({
                 line,

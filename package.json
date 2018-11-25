@@ -1,6 +1,6 @@
 {
   "name": "lint-md",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Cli tool to lint your markdown file for Chinese.",
   "bin": {
     "lint-md": "bin/index.js"

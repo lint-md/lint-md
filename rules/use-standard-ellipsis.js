@@ -24,7 +24,7 @@ const findAllSingleEllipsis = s => {
 // 找到所有的 . 组成的省略号
 const findAllDotEllipsis = s => {
   const r = [];
-  const re = /\.{3,}/g; // 使用正则匹配
+  const re = /\.{4,}/g; // 使用正则匹配
 
   while (true) {
     const matched = re.exec(s);

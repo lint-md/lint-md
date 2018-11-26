@@ -38,18 +38,19 @@ lint-md README.md Document.md
 
 ## 检查类型
 
-> 检查规则来源于 [chinese-copywriting-guidelines](https://github.com/sparanoid/chinese-copywriting-guidelines).
+> 检查规则来源于 [chinese-document-style-guide](https://github.com/ruanyf/document-style-guide).
 
 | 规则 | 详细描述 | 解决办法 |
 | ------ | ------ | ------ |
-| space-between | 中文与英文数字之间需要增加空格 | 响应位置增加空格 |
+| space-round-alphabet | 中文与英文之间需要增加空格 | 对应提示的位置增加空格 |
+| space-round-number | 中文与数字之间需要增加空格 | 对应提示的位置增加空格 |
 | no-empty-code-lang   | 代码语言不能为空 | 在代码块语法上增加语言 |
 | no-empty-url | 链接和图片地址不能为空 | 填写完整的 url，或者不使用链接和图片语法 |
 | no-empty-list | List 内容不能为空 | List 语法中，填写内容 |
 | no-empty-code | 代码块内容不能为空 | 删除空的代码块，或者填充代码内容 |
 | no-empty-blockquote | blockquote 内容不能为空 | 删除空的 blockquote，或者填充内容 |
 | no-special-characters | 文本中不能有特殊字符 | 可能是复制出来的特殊字符，删除特殊字符即可 |
-| use-standard-ellipsis | 使用标准规范的省略号 | 使用标准规范的省略号‘……’ |
+| use-standard-ellipsis | 使用标准规范的省略号 | 使用标准规范的省略号‘……’ / ‘...’ |
 | no-fullwidth-number | 不能用全角数字 | 注意输入法切换为半角输入 |
 
 
@@ -78,9 +79,9 @@ lint-md README.md Document.md
 
 通过 rules 来配置规则的等级。
 
- - **0**：ignore
- - **1**：warning
- - **2**：error
+ - **0**：ignore 忽略不检查该规则
+ - **1**：warning 警告，但不阻断 ci
+ - **2**：error 错误，且阻断 ci
 
 通过 excludeFiles 来忽略文件和目录，glob 语法。
 

@@ -3,7 +3,8 @@ const _ = require('lodash');
 const ruleHelper = require('./helper/rule');
 
 const PluginClasses = [
-  require('./space-between'),
+  require('./space-round-alphabet'),
+  require('./space-round-number'),
   require('./no-empty-code-lang'),
   require('./no-empty-url'),
   require('./no-empty-list'),

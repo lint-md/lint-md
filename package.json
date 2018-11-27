@@ -6,8 +6,19 @@
     "lint-md": "bin/index.js"
   },
   "scripts": {
-    "test": "node ./bin/index.js README.md",
+    "test": "node ./bin/index.js README.md && jest",
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
     "dev": "node ./bin/index.js tests README.md -c tests/.lintmdrc"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "rules/**/*.{js,jsx}",
+      "!**/node_modules/**",
+      "!**/vendor/**"
+    ],
+    "testRegex": "/__tests__/.*\\.spec\\.jsx?$"
   },
   "keywords": [
     "lint",
@@ -24,7 +35,10 @@
     "remark-parse": "^6.0.2",
     "unified": "^7.0.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "coveralls": "^3.0.2",
+    "jest": "^21.2.1"
+  },
   "author": "hustcc",
   "license": "MIT",
   "bugs": {

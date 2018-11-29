@@ -31,7 +31,14 @@ const subErrorStr = (s, index, length) => {
   return s.substr(Math.max(index - Math.floor(length / 2), 0), length);
 };
 
+const substr = (s, len = 12) => {
+  if (!s) return s;
+
+  return s.length > len ? `${s.substr(0, len)}...` : s;
+};
+
 module.exports = {
   stringType,
-  subErrorStr
+  subErrorStr,
+  substr,
 };

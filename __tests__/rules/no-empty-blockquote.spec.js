@@ -1,4 +1,3 @@
-
 const lint = require('../lint');
 
 describe('no-empty-blockquote', () => {

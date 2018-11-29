@@ -12,7 +12,8 @@ const PluginClasses = [
   require('./no-empty-blockquote'),
   require('./no-special-characters'),
   require('./use-standard-ellipsis'),
-  require('./no-fullwidth-number')
+  require('./no-fullwidth-number'),
+  require('./no-space-in-emphasis')
 ];
 
 

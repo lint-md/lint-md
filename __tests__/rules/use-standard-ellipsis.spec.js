@@ -7,23 +7,23 @@ describe('use-standard-ellipsis', () => {
   });
 
   test('fail', () => {
-    const md = `....hello world`;
+    const md = `hello world....`;
     expect(lint(md)).toEqual([{
-      column: 2,
+      column: 13,
       level: 'error',
       line: 1,
-      text: `Non-standard ellipsis exists: '....hello worl'`,
+      text: `Non-standard ellipsis exists: 'o world....'`,
       type: 'use-standard-ellipsis'
     }]);
   });
 
   test('fail', () => {
-    const md = `…hello world`;
+    const md = `hello world…`;
     expect(lint(md)).toEqual([{
-      column: 2,
+      column: 13,
       level: 'error',
       line: 1,
-      text: `Non-standard ellipsis exists: '…hello world'`,
+      text: `Non-standard ellipsis exists: 'o world…'`,
       type: 'use-standard-ellipsis'
     }]);
   });

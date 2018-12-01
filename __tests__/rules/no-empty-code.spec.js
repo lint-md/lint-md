@@ -19,4 +19,15 @@ describe('no-empty-code', () => {
       type: 'no-empty-code'
     }]);
   });
+
+  test('fail', () => {
+    const md = '``';
+    expect(lint(md)).toEqual([{
+      column: 1,
+      level: 'error',
+      line: 1,
+      text: 'Code block can not be empty',
+      type: 'no-empty-code'
+    }]);
+  });
 });

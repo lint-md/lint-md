@@ -10,7 +10,7 @@ module.exports = configFile => {
 
   // 合并默认配置
   return _.merge({
-    excludeFiles: [],
+    excludeFiles: ['**/node_modules/**', '**/.git/**'],
     rules: {},
   }, config);
 };

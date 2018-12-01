@@ -54,7 +54,7 @@ module.exports = class extends Plugin {
         const line = ast.node.position.start.line;
         const column = ast.node.position.start.column;
 
-        findAllNumbers(text || '').forEach(num => {
+        findAllNumbers(text).forEach(num => {
           const { number, index } = num;
 
           if (isFullWidthNumber(number)) {

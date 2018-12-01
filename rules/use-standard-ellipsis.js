@@ -55,7 +55,7 @@ module.exports = class extends Plugin {
   visitor() {
     return {
       text: ast => {
-        const text = ast.node.value || '';
+        const text = ast.node.value;
 
         const line = ast.node.position.start.line;
         const column = ast.node.position.start.column;

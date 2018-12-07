@@ -1,4 +1,5 @@
 const { Plugin } = require('ast-plugin');
+const { astChildrenPos } = require('./helper/ast');
 
 /**
  * code 代码块内容不能为空
@@ -15,19 +16,11 @@ module.exports = class extends Plugin {
   emptyCode(ast) {
     const { value } = ast.node;
 
-    const { start, end } = ast.node.position;
-
     if (!value || !value.trim()) {
+      const pos = astChildrenPos(ast.node);
       
       this.cfg.throwError({
-        start: {
-          line: start.line,
-          column: start.column,
-        },
-        end: {
-          line: end.line,
-          column: end.column,
-        },
+        ...pos,
         text: 'Code block can not be empty',
       });
     }

@@ -12,7 +12,7 @@ const astToText = ast => {
 };
 
 /**
- * 获取 ast 中的子元素占据的位置
+ * 获取 ast 中的子元素占据的位置，如果不存在子元素，则返回当前节点的开始和结束位置
  * @param {*} ast 
  */
 const astChildrenPos = ast => {

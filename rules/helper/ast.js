@@ -18,16 +18,15 @@ const astToText = ast => {
 const astChildrenPos = ast => {
   const children = ast.children;
   if (!children || children.length === 0) {
-    const line = ast.position.start.line;
-    const column = ast.position.start.column;
+    const pos = ast.position;
     return {
       start: {
-        line,
-        column
+        line: pos.start.line,
+        column: pos.start.column,
       },
       end: {
-        line,
-        column
+        line: pos.end.line,
+        column: pos.end.column,
       }
     }
   }

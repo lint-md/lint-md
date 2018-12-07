@@ -1,5 +1,7 @@
 const { Plugin } = require('ast-plugin');
 
+const { astChildrenPos } = require('./helper/ast');
+
 /**
  * blockquote 块内容不能为空
  * no-empty-blockquote
@@ -17,13 +19,11 @@ module.exports = class extends Plugin {
       blockquote: ast => {
         const { children } = ast.node;
 
-        const line = ast.node.position.start.line;
-        const column = ast.node.position.start.column;
-
         if (!children || children.length === 0) {
+          const pos = astChildrenPos(ast.node);
+
           this.cfg.throwError({
-            line,
-            column,
+            ...pos,
             text: 'Blockquote content can not be empty',
           });
         }

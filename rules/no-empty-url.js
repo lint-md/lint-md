@@ -1,5 +1,4 @@
 const { Plugin } = require('ast-plugin');
-const { astChildrenPos } = require('./helper/ast');
 
 /**
  * link image 中地址不能为空

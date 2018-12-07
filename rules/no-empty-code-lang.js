@@ -15,15 +15,21 @@ module.exports = class extends Plugin {
   visitor() {
     return {
       code: ast => {
-        const { lang, value } = ast.node;
+        const { lang } = ast.node;
 
         const line = ast.node.position.start.line;
         const column = ast.node.position.start.column;
 
         if (!lang) {
           this.cfg.throwError({
-            line,
-            column,
+            start: {
+              line,
+              column,
+            },
+            end: {
+              line,
+              column: column + 3
+            },
             text: 'Language of code can not be empty',
           });
         }

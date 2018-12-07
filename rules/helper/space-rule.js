@@ -14,8 +14,14 @@ module.exports = (ast, matches, cb) => {
     if (matches.indexOf(s) !== -1) {
       // 存在则抛出去
       cb({
-        line,
-        column: column + i + 1, // column 从 i 开始
+        start: {
+          line,
+          column: column + i
+        },
+        end: {
+          line,
+          column: column + i + 1
+        },
         text: `No space between Chinese and alphabet / number: ${subErrorStr(text, i, 12)}`, // substring 12 个字符
       });
     }

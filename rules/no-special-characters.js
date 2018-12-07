@@ -26,12 +26,19 @@ module.exports = class extends Plugin {
 
         SpecialCharacters.forEach(sc => {
           const idx = value.indexOf(sc);
+          
           if (idx !== -1) {
             const text = subErrorStr(value, idx, showLength);
 
             this.cfg.throwError({
-              line,
-              column: column + idx + 1,
+              start: {
+                line,
+                column: column + idx + 1,
+              },
+              end: {
+                line,
+                column: column + idx + 1,
+              },
               text: `Special characters exist: '${text}'`,
             });
           }

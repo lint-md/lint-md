@@ -16,11 +16,11 @@ module.exports = (ast, matches, cb) => {
       cb({
         start: {
           line,
-          column: column + i
+          column: column + i + 1
         },
         end: {
           line,
-          column: column + i + 1
+          column: column + i + 2
         },
         text: `No space between Chinese and alphabet / number: ${subErrorStr(text, i, 12)}`, // substring 12 个字符
       });

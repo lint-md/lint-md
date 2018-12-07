@@ -9,9 +9,15 @@ describe('use-standard-ellipsis', () => {
   test('fail', () => {
     const md = `hello world....`;
     expect(lint(md)).toEqual([{
-      column: 13,
       level: 'error',
-      line: 1,
+      start: {
+        line: 1,
+        column: 12,
+      },
+      end: {
+        line: 1,
+        column: 16,
+      },
       text: `Non-standard ellipsis exists: 'o world....'`,
       type: 'use-standard-ellipsis'
     }]);
@@ -20,9 +26,15 @@ describe('use-standard-ellipsis', () => {
   test('fail', () => {
     const md = `hello world…`;
     expect(lint(md)).toEqual([{
-      column: 13,
       level: 'error',
-      line: 1,
+      start: {
+        line: 1,
+        column: 12,
+      },
+      end: {
+        line: 1,
+        column: 13,
+      },
       text: `Non-standard ellipsis exists: 'o world…'`,
       type: 'use-standard-ellipsis'
     }]);

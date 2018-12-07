@@ -9,9 +9,15 @@ describe('no-empty-url', () => {
   test('fail', () => {
     const md = '![world]().';
     expect(lint(md)).toEqual([{
-      column: 1,
       level: 'error',
-      line: 1,
+      start: {
+        line: 1,
+        column: 10,
+      },
+      end: {
+        line: 1,
+        column: 11,
+      },
       text: 'Image url can not be empty',
       type: 'no-empty-url'
     }]);

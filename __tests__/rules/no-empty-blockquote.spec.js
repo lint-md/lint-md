@@ -13,9 +13,15 @@ describe('no-empty-blockquote', () => {
 
 > `;
     expect(lint(md)).toEqual([{
-      column: 1,
       level: 'error',
-      line: 3,
+      start: {
+        line: 3,
+        column: 1,
+      },
+      end: {
+        line: 3,
+        column: 3,
+      },
       text: 'Blockquote content can not be empty',
       type: 'no-empty-blockquote'
     }]);

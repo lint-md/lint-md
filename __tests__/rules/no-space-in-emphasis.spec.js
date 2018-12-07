@@ -9,9 +9,15 @@ describe('no-space-in-emphasis', () => {
   test('fail', () => {
     const md = `** hello, ~~world~~ **`;
     expect(lint(md)).toEqual([{
-      column: 1,
       level: 'error',
-      line: 1,
+      start: {
+        line: 1,
+        column: 3,
+      },
+      end: {
+        line: 1,
+        column: 21,
+      },
       text: `Emphasis content can not start / end with space: ' hello, world '`,
       type: 'no-space-in-emphasis'
     }]);

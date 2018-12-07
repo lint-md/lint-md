@@ -33,7 +33,7 @@ module.exports = class extends Plugin {
             this.cfg.throwError({
               start: {
                 line,
-                column: column + idx + 1,
+                column: column + idx,
               },
               end: {
                 line,

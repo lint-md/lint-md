@@ -54,9 +54,28 @@ const startSpaceLen = str => {
   return len;
 }
 
+/**
+ * 获取字符串结尾的空格数量
+ * @param {String} str 
+ */
+const endSpaceLen = str => {
+  let len = 0;
+  const array = str.split('');
+  for (let index = array.length - 1; index >= 0; index--) {
+    if (array[index] === ' ') {
+      len++;
+    } else {
+      break;
+    }
+  }
+  return len;
+}
+
+
 module.exports = {
   stringType,
   subErrorStr,
   substr,
-  startSpaceLen
+  startSpaceLen,
+  endSpaceLen
 };

@@ -12,6 +12,17 @@ const astToText = ast => {
 };
 
 /**
+ * 获得最后一个text类型节点
+ * @param {*} ast 
+ */
+const astLastText = ast => {
+  const children = _.get(ast, 'children', []);
+  if (children.length === 0 && _.get(ast, 'type') === 'text') return ast;
+  
+  return astLastText(_.last(children));
+}
+
+/**
  * 获取 ast 中的子元素占据的位置，如果不存在子元素，则返回当前节点的开始和结束位置
  * @param {*} ast 
  */
@@ -47,5 +58,6 @@ const astChildrenPos = ast => {
 
 module.exports = {
   astToText,
-  astChildrenPos
+  astChildrenPos,
+  astLastText
 };

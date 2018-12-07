@@ -15,13 +15,19 @@ module.exports = class extends Plugin {
   emptyCode(ast) {
     const { value } = ast.node;
 
-    const line = ast.node.position.start.line;
-    const column = ast.node.position.start.column;
+    const { start, end } = ast.node.position;
 
     if (!value || !value.trim()) {
+      
       this.cfg.throwError({
-        line,
-        column,
+        start: {
+          line: start.line,
+          column: start.column,
+        },
+        end: {
+          line: end.line,
+          column: end.column,
+        },
         text: 'Code block can not be empty',
       });
     }

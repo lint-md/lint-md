@@ -13,7 +13,7 @@ module.exports = class Lint extends Component {
     super(props);
 
     this.state = {
-      // 错误，格式为：{ path, file, errors: { line, column, level, text, type } }
+      // 错误，格式为：{ path, file, errors: { start: { line, column }, end: { line, column } level, text, type } }
       errorFiles: [],
     };
   }
@@ -51,12 +51,12 @@ module.exports = class Lint extends Component {
   };
 
   renderError(error) {
-    const { line, column, level, text, type } = error;
+    const { start, level, text, type } = error;
     const props = level === 'error' ? { red: true } : { yellow: true };
 
     return h('div', {}, [
       '  ',
-      h('span', {}, h(Color, { grey: true }, string.rightPad(`${line}:${column}`, 10))),
+      h('span', {}, h(Color, { grey: true }, string.rightPad(`${start.line}:${start.column}`, 10))),
       '  ',
       h('span', {}, h(Color, { grey: true }, string.rightPad(`${type}`, 24))),
       '  ',

@@ -51,12 +51,14 @@ module.exports = class Lint extends Component {
   };
 
   renderError(error) {
-    const { start, level, text, type } = error;
+    const { start, end, level, text, type } = error;
     const props = level === 'error' ? { red: true } : { yellow: true };
+
+    const pos = `${start.line}:${start.column}-${end.line}:${end.column}`;
 
     return h('div', {}, [
       '  ',
-      h('span', {}, h(Color, { grey: true }, string.rightPad(`${start.line}:${start.column}`, 10))),
+      h('span', {}, h(Color, { grey: true }, string.rightPad(pos, 16))),
       '  ',
       h('span', {}, h(Color, { grey: true }, string.rightPad(`${type}`, 24))),
       '  ',

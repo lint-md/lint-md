@@ -1,6 +1,6 @@
 # lint-md
 
-> 用于检查中文 markdown 编写格式规范的命令行工具，基于 AST 开发，且方便集成 ci。Cli tool to lint your markdown file for Chinese.
+> 用于检查中文 markdown 编写格式规范的命令行工具，基于 AST 开发，且方便集成 ci；同时提供 API 方法调用。Cli tool to lint your markdown file for Chinese.
 
 [![Build Status](https://travis-ci.org/hustcc/lint-md.svg?branch=master)](https://travis-ci.org/hustcc/lint-md)
 [![Coverage Status](https://coveralls.io/repos/github/hustcc/lint-md/badge.svg?branch=master)](https://coveralls.io/github/hustcc/lint-md)
@@ -118,6 +118,19 @@ script: lint-md README.md
   ]
 }
 ```
+
+
+
+## API 调用
+
+```js
+import { lint, version } from 'lint-md';
+
+const errors = lint(markdown, rules);
+```
+
+Then will get the `errors` of the markdown string.
+
 
 
 

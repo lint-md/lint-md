@@ -1,11 +1,7 @@
 const path = require('path');
 const fs = require('fs');
-const _ = require('lodash');
-const unified = require('unified');
-const markdown = require('remark-parse');
-const { Ast } = require('ast-plugin');
 
-const plugins = require('../../rules');
+const { lint, fix, version } = require('../../lib');
 
 /**
  * 使用 ast 和插件进行 lint
@@ -18,29 +14,15 @@ module.exports = (f, config) => {
   const { rules } = config;
 
   return new Promise((resolve, reject) => {
-    const errors = [];
-
-    const throwFunc = error => {
-      errors.push(error);
-    };
-
     const file = path.resolve(f);
-    const md = fs.readFileSync(file, { encoding: 'utf8' });
+    const markdown = fs.readFileSync(file, { encoding: 'utf8' });
 
-    const ast = unified()
-      .use(markdown)
-      .parse(md);
+    const errors = lint(markdown, rules);
 
-    // 处理 plugin 规则
-    // 通过配置的规则，来处理
-    new Ast(ast).traverse(plugins(throwFunc, rules));
-
-    const e = _.uniqWith(errors, _.isEqual); // 去重
-
-    const r = e.length > 0 ? [{
+    const r = errors.length > 0 ? [{
       path: path.dirname(file),
       file: path.basename(file),
-      errors: e, // 去重
+      errors, // 去重
     }] : [];
 
     resolve(r);

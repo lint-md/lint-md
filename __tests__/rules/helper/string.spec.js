@@ -1,4 +1,4 @@
-const { substr, startSpaceLen, endSpaceLen } = require('../../../rules/helper/string');
+import { substr, startSpaceLen, endSpaceLen } from '../../../src/rules/helper/string';
 
 describe('string', () => {
   test('substr', () => {

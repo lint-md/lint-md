@@ -1,4 +1,4 @@
-const lint = require('../lint');
+import lint from '../lint';
 
 describe('no-empty-list', () => {
   test('success', () => {

@@ -1,4 +1,4 @@
-const { ruleToLevel } = require('../../../rules/helper/rule');
+import { ruleToLevel } from '../../../src/rules/helper/rule';
 
 describe('rule', () => {
   test('ruleToLevel', () => {

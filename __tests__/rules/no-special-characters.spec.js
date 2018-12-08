@@ -1,4 +1,4 @@
-const lint = require('../lint');
+import lint from '../lint';
 
 describe('no-special-characters', () => {
   test('success', () => {

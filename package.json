@@ -1,20 +1,22 @@
 {
   "name": "lint-md",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Cli tool to lint your markdown file for Chinese.",
+  "main": "lib/index.js",
   "bin": {
     "lint-md": "bin/index.js"
   },
   "scripts": {
-    "test": "node ./bin/index.js README.md && jest",
+    "test": "jest",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "dev": "node ./bin/index.js tests README.md -c tests/.lintmdrc"
+    "dev": "npm run build && node ./bin/index.js tests README.md -c tests/.lintmdrc",
+    "build": "babel src -d lib"
   },
   "jest": {
     "testEnvironment": "node",
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "rules/**/*.{js,jsx}",
+      "src/**/*.{js,jsx}",
       "!**/node_modules/**",
       "!**/vendor/**"
     ],
@@ -36,8 +38,14 @@
     "unified": "^7.0.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.0",
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
+    "babel-plugin-version": "^0.2.3",
     "coveralls": "^3.0.2",
-    "jest": "^21.2.1"
+    "jest": "^23.6.0"
   },
   "author": "hustcc",
   "license": "MIT",

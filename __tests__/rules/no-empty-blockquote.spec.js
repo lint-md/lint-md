@@ -1,4 +1,4 @@
-const lint = require('../lint');
+import lint from '../lint';
 
 describe('no-empty-blockquote', () => {
   test('success', () => {
@@ -12,8 +12,8 @@ describe('no-empty-blockquote', () => {
     const md = `- wrong
 
 > `;
-    expect(lint(md)).toEqual([{
-      level: 'error',
+    expect(lint(md, { 'no-empty-blockquote': 1 })).toEqual([{
+      level: 'warning',
       start: {
         line: 3,
         column: 1,

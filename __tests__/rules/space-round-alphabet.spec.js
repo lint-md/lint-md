@@ -9,9 +9,15 @@ describe('space-round-alphabet', () => {
   test('fail', () => {
     const md = `你好world.`;
     expect(lint(md)).toEqual([{
-      column: 3,
       level: 'error',
-      line: 1,
+      start: {
+        line: 1,
+        column: 3,
+      },
+      end: {
+        line: 1,
+        column: 4,
+      },
       text: 'No space between Chinese and alphabet / number: 你好world.',
       type: 'space-round-alphabet'
     }]);

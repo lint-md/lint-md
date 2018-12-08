@@ -53,14 +53,19 @@ module.exports = class extends Plugin {
 
         const line = ast.node.position.start.line;
         const column = ast.node.position.start.column;
-
         findAllNumbers(text).forEach(num => {
           const { number, index } = num;
 
           if (isFullWidthNumber(number)) {
             this.cfg.throwError({
-              line,
-              column: column + index + 1,
+              start: {
+                line,
+                column: column + index + 1,
+              },
+              end: {
+                line,
+                column: column + index + 1 + number.length,
+              },
               text: `Full-width number exist: '${number}'`,
             });
           }

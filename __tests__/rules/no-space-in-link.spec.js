@@ -9,9 +9,15 @@ describe('no-space-in-links', () => {
   test('fail', () => {
     const md = `[ hello, ~~world~~ ](https://atool.vip)`;
     expect(lint(md)).toEqual([{
-      column: 1,
       level: 'error',
-      line: 1,
+      start: {
+        line: 1,
+        column: 2,
+      },
+      end: {
+        line: 1,
+        column: 20,
+      },
       text: `Link content can not start / end with space: ' hello, world '`,
       type: 'no-space-in-link'
     }]);

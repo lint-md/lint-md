@@ -13,9 +13,15 @@ describe('no-empty-code-lang', () => {
                'const b = 2;\n' +
                '```';
     expect(lint(md)).toEqual([{
-      column: 1,
       level: 'error',
-      line: 1,
+      start: {
+        line: 1,
+        column: 1,
+      },
+      end: {
+        line: 1,
+        column: 4,
+      },
       text: 'Language of code can not be empty',
       type: 'no-empty-code-lang'
     }]);

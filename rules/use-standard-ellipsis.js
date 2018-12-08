@@ -13,7 +13,10 @@ const findAllSingleEllipsis = s => {
 
     // 只要不是两个，都是不规范的
     if (matched && matched[0].length !== 2) {
-      r.push(matched.index);
+      r.push({
+        index: matched.index,
+        length: matched[0].length
+      });
     } else {
       break;
     }
@@ -30,7 +33,10 @@ const findAllDotEllipsis = s => {
     const matched = re.exec(s);
 
     if (matched) {
-      r.push(matched.index);
+      r.push({
+        index: matched.index,
+        length: matched[0].length
+      });
     } else {
       break;
     }
@@ -60,11 +66,17 @@ module.exports = class extends Plugin {
         const line = ast.node.position.start.line;
         const column = ast.node.position.start.column;
 
-        findAllDotEllipsis(text).concat(findAllSingleEllipsis(text)).forEach(idx => {
+        findAllDotEllipsis(text).concat(findAllSingleEllipsis(text)).forEach(item => {
           this.cfg.throwError({
-            line,
-            column: column + idx + 1,
-            text: `Non-standard ellipsis exists: '${subErrorStr(text, idx, showLength)}'`,
+            start: {
+              line,
+              column: column + item.index,
+            },
+            end: {
+              line,
+              column: column + item.index + item.length,
+            },
+            text: `Non-standard ellipsis exists: '${subErrorStr(text, item.index, showLength)}'`,
           });
         });
       },

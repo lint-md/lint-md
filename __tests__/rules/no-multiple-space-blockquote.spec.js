@@ -9,9 +9,15 @@ describe('no-multiple-space-blockquote', () => {
   test('fail', () => {
     const md = `>  hello world.`;
     expect(lint(md)).toEqual([{
-      column: 1,
       level: 'error',
-      line: 1,
+      start: {
+        line: 1,
+        column: 1,
+      },
+      end: {
+        line: 1,
+        column: 3,
+      },
       text: `Blockquote content can not start with space: ' hello world...'`,
       type: 'no-multiple-space-blockquote'
     }]);

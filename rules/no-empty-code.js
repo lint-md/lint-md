@@ -1,4 +1,6 @@
 const { Plugin } = require('ast-plugin');
+const _ = require('lodash');
+const { astChildrenPos } = require('./helper/ast');
 
 /**
  * code 代码块内容不能为空
@@ -15,15 +17,14 @@ module.exports = class extends Plugin {
   emptyCode(ast) {
     const { value } = ast.node;
 
-    const line = ast.node.position.start.line;
-    const column = ast.node.position.start.column;
-
     if (!value || !value.trim()) {
-      this.cfg.throwError({
-        line,
-        column,
-        text: 'Code block can not be empty',
-      });
+      const pos = astChildrenPos(ast.node);
+      
+      this.cfg.throwError(
+        _.assign(pos, {
+          text: 'Code block can not be empty',
+        })
+      );
     }
   }
 

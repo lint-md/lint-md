@@ -13,15 +13,20 @@ module.exports = class extends Plugin {
   pre() {}
 
   emptyUrl(ast, text) {
-    const { url, value } = ast.node;
+    const { url } = ast.node;
 
-    const line = ast.node.position.start.line;
-    const column = ast.node.position.start.column;
-
+    const { end } = ast.node.position;
+    
     if (!url) {
       this.cfg.throwError({
-        line,
-        column,
+        start: {
+          line: end.line,
+          column: end.column - 1
+        },
+        end: {
+          line: end.line,
+          column: end.column
+        },
         text
       });
     }

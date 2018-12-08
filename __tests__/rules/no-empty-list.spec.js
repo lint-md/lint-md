@@ -10,9 +10,15 @@ describe('no-empty-list', () => {
     const md = '1. hello\n' +
                '2.';
     expect(lint(md)).toEqual([{
-      column: 1,
       level: 'error',
-      line: 2,
+      start: {
+        line: 2,
+        column: 1,
+      },
+      end: {
+        line: 2,
+        column: 3,
+      },
       text: 'List content can not be empty',
       type: 'no-empty-list'
     }]);

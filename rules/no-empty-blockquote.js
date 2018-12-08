@@ -1,4 +1,6 @@
 const { Plugin } = require('ast-plugin');
+const _ = require('lodash');
+const { astChildrenPos } = require('./helper/ast');
 
 /**
  * blockquote 块内容不能为空
@@ -17,15 +19,14 @@ module.exports = class extends Plugin {
       blockquote: ast => {
         const { children } = ast.node;
 
-        const line = ast.node.position.start.line;
-        const column = ast.node.position.start.column;
-
         if (!children || children.length === 0) {
-          this.cfg.throwError({
-            line,
-            column,
-            text: 'Blockquote content can not be empty',
-          });
+          const pos = astChildrenPos(ast.node);
+
+          this.cfg.throwError(
+            _.assign(pos, {
+              text: 'Blockquote content can not be empty',
+            })
+          );
         }
       },
     }

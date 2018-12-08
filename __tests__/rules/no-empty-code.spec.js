@@ -15,18 +15,30 @@ describe('no-empty-code', () => {
     let md = '```js\n' +
                '```';
     expect(lint(md)).toEqual([{
-      column: 1,
       level: 'error',
-      line: 1,
+      start: {
+        line: 1,
+        column: 1,
+      },
+      end: {
+        line: 2,
+        column: 4,
+      },
       text: 'Code block can not be empty',
       type: 'no-empty-code'
     }]);
 
     md = '``';
     expect(lint(md)).toEqual([{
-      column: 1,
       level: 'error',
-      line: 1,
+      start: {
+        line: 1,
+        column: 1,
+      },
+      end: {
+        line: 1,
+        column: 3,
+      },
       text: 'Code block can not be empty',
       type: 'no-empty-code'
     }]);

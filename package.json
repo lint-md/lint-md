@@ -7,7 +7,7 @@
     "lint-md": "bin/index.js"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --no-cache",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "dev": "npm run build && node ./bin/index.js tests README.md -c tests/.lintmdrc",
     "build": "babel src -d lib"

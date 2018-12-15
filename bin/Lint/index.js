@@ -15,6 +15,8 @@ module.exports = class Lint extends Component {
     this.state = {
       // 错误，格式为：{ path, file, errors: { start: { line, column }, end: { line, column } level, text, type } }
       errorFiles: [],
+      // 当前检查文件数量
+      fileCount: 0,
     };
   }
 
@@ -30,11 +32,17 @@ module.exports = class Lint extends Component {
     for (const file of mdFiles) {
       const errorFile = await lint(file, config);
 
+      let { errorFiles, fileCount } = this.state;
+      fileCount += 1;
+
       if (errorFile && errorFile.length > 0) {
-        await this.setStateAsync({
-          errorFiles: this.state.errorFiles.concat(errorFile),
-        });
+        errorFiles = errorFiles.concat(errorFile);
       }
+
+      await this.setStateAsync({
+        errorFiles,
+        fileCount,
+      });
     }
 
     const { error, warning } = this.errorCount();
@@ -98,9 +106,13 @@ module.exports = class Lint extends Component {
   };
 
   renderOverview() {
+    const { fileCount } = this.state;
     const { error, warning } = this.errorCount();
 
     return h('span', {}, [
+      h('span', {}, h(Color, { green: true }, `Lint total ${fileCount} files`)),
+      h('span', {}, h(Color, { grey: true }, ',')),
+      ' ',
       h('span', {}, h(Color, { yellow: true }, `${warning} warnings`)),
       ' ',
       h('span', {}, h(Color, { red: true }, `${error} errors`)),

@@ -1,3 +1,5 @@
+import './initial';
+
 export { lint } from './lint';
 export { fix } from './fix';
 

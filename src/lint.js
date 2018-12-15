@@ -26,7 +26,7 @@ export const lint = (markdown, rules = {}) => {
 
   // 处理 plugin 规则
   // 通过配置的规则，来处理
-  new Ast(ast).traverse(plugins(throwFunc, rules));
+  new Ast(ast, undefined, markdown).traverse(plugins(throwFunc, rules));
 
   return _.uniqWith(errors, _.isEqual); // 去重
 };

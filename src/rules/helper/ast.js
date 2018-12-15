@@ -56,8 +56,22 @@ const astChildrenPos = ast => {
   }
 };
 
+const astPositionTrans = pos => {
+  return {
+    start: {
+      line: _.get(pos, 'start.line', 0),
+      column: _.get(pos, 'start.column', 0),
+    },
+    end: {
+      line: _.get(pos, 'end.line', 0),
+      column: _.get(pos, 'end.column', 0),
+    }
+  };
+};
+
 module.exports = {
   astToText,
   astChildrenPos,
-  astLastText
+  astLastText,
+  astPositionTrans
 };

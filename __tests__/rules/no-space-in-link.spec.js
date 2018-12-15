@@ -1,6 +1,6 @@
 import lint from '../lint';
 
-describe('no-space-in-links', () => {
+describe('no-space-in-link', () => {
   test('success', () => {
     const md = `[hello world](https://atool.vip)`;
     expect(lint(md)).toEqual([]);

@@ -19,7 +19,7 @@ module.exports = class extends Plugin {
         const { node } = ast;
         const { position } = node;
 
-        let spec = ast.getSpec().split('').filter(s => s !== '`').join('');
+        let spec = ast.segment().split('').filter(s => s !== '`').join('');
 
         if (spec.startsWith(' ') || spec.endsWith(' ')) {
           const pos = astPositionTrans(position);

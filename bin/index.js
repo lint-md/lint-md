@@ -21,10 +21,17 @@ program
   .usage('<lint-md> <files...> [options]')
   .description('lint your markdown files')
   .option('-c, --config [configure-file]', 'use the configure file, default .lintmdrc')
+  .option('-f, --fix', 'fix the errors automatically')
   .arguments('<files...>')
   .action((files, cmd) => {
     const config = configure(cmd.config);
-    unmount = render(h(Lint, { files, config, onExit }));
+    const fix = cmd.fix;
+
+    if (fix) {
+      // todo fix mode
+    } else {
+      unmount = render(h(Lint, { files, config, onExit }));
+    }
   });
 
 program.parse(process.argv);

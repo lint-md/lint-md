@@ -57,6 +57,7 @@ lint-md README.md Document.md
 | no-space-in-link | link 内容前后不能有空格 | 删除 link 内容中的前后空格即可 |
 | no-multiple-space-blockquote | blockquote 语法不能包含有多个空格 | 删除 blockquote 内容中多余的空格 |
 | no-trailing-punctuation | 标题不能以标点符号结尾 | 删除标题最后的标点符号 |
+| no-space-in-inlinecode | 行内代码内容，前后不能有空格 | 删除行内代码中的前后空格 |
 
 
 > 目前仅仅检查了比较通用的类型，**欢迎 pull request**，在 `rules` 中增加自己的规则，开发约束：

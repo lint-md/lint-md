@@ -1,4 +1,4 @@
-const { Plugin } = require('ast-plugin');
+import { Plugin } from 'ast-plugin';
 const { subErrorStr } = require('./helper/string');
 
 const showLength = 14;
@@ -77,6 +77,7 @@ module.exports = class extends Plugin {
               column: column + item.index + item.length,
             },
             text: `Non-standard ellipsis exists: '${subErrorStr(text, item.index, showLength)}'`,
+            ast,
           });
         });
       },

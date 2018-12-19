@@ -1,4 +1,4 @@
-const { Plugin } = require('ast-plugin');
+import { Plugin } from 'ast-plugin';
 
 /**
  * 从字符串中找出所有的数字字符串和索引
@@ -67,6 +67,7 @@ module.exports = class extends Plugin {
                 column: column + index + 1 + number.length,
               },
               text: `Full-width number exist: '${number}'`,
+              ast,
             });
           }
         });

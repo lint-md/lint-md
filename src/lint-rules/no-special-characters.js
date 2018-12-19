@@ -1,4 +1,4 @@
-const { Plugin } = require('ast-plugin');
+import { Plugin } from 'ast-plugin';
 const { subErrorStr } = require('./helper/string');
 
 const SpecialCharacters = ['\b'];
@@ -26,7 +26,7 @@ module.exports = class extends Plugin {
 
         SpecialCharacters.forEach(sc => {
           const idx = value.indexOf(sc);
-          
+
           if (idx !== -1) {
             const text = subErrorStr(value, idx, showLength);
 
@@ -40,6 +40,7 @@ module.exports = class extends Plugin {
                 column: column + idx + 1,
               },
               text: `Special characters exist: '${text}'`,
+              ast,
             });
           }
         });

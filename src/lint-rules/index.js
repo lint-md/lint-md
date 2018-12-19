@@ -1,6 +1,5 @@
-const _ = require('lodash');
-
-const ruleHelper = require('./helper/rule');
+import _ from 'lodash';
+import { ruleToLevel } from './helper/rule';
 
 const PluginClasses = [
   require('./space-round-alphabet'),
@@ -28,7 +27,7 @@ const PluginClasses = [
  * @param rules
  * @returns {*[]}
  */
-module.exports = (throwError, rules) => {
+export default (throwError, rules) => {
   // 所有的插件的默认 rules
   const initialRules = {};
 
@@ -44,7 +43,7 @@ module.exports = (throwError, rules) => {
 
   // 初始化插件
   return _.map(Plugins, Plugin => {
-    const level = ruleHelper.ruleToLevel(rulesConfig[Plugin.type]);
+    const level = ruleToLevel(rulesConfig[Plugin.type]);
 
     // 重新包装一下 throw 方法，加入 level
     const throwErrorFunc = error => {

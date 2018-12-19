@@ -1,4 +1,4 @@
-const { Plugin } = require('ast-plugin');
+import { Plugin } from 'ast-plugin';
 const { astPositionTrans } = require('./helper/ast');
 
 /**
@@ -27,6 +27,7 @@ module.exports = class extends Plugin {
           this.cfg.throwError({
             ...pos,
             text: `Inline code content can not start / end with space: '${spec}'`,
+            ast,
           });
         }
       },

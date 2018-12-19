@@ -1,4 +1,4 @@
-import { ruleToLevel } from '../../../src/rules/helper/rule';
+import { ruleToLevel } from '../../../src/lint-rules/helper/rule';
 
 describe('rule', () => {
   test('ruleToLevel', () => {

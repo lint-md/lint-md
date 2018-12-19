@@ -1,4 +1,4 @@
-const { Plugin } = require('ast-plugin');
+import { Plugin } from 'ast-plugin';
 const _ = require('lodash');
 const { astToText, astLastText } = require('./helper/ast');
 const { endSpaceLen } = require('./helper/string');
@@ -26,7 +26,7 @@ module.exports = class extends Plugin {
           const last = astLastText(ast.node);
           const end = last.position.end;
           const endSpace = endSpaceLen(last.value);
-          
+
           this.cfg.throwError({
             start: {
               line: end.line,
@@ -37,6 +37,7 @@ module.exports = class extends Plugin {
               column: end.column - endSpace
             },
             text: `Header content can not end with symbol: '${text}'`,
+            ast,
           });
         }
       },

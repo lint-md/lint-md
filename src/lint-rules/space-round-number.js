@@ -1,5 +1,5 @@
-const { Plugin } = require('ast-plugin');
-const processSpaceRuleAst = require('./helper/space-rule');
+import { Plugin } from 'ast-plugin';
+import processSpaceRuleAst from './helper/space-rule';
 
 // 匹配 [ZN, NZ]
 const matches = ['ZN', 'NZ'];

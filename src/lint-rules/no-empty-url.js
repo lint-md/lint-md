@@ -1,4 +1,4 @@
-const { Plugin } = require('ast-plugin');
+import { Plugin } from 'ast-plugin';
 
 /**
  * link image 中地址不能为空
@@ -16,7 +16,7 @@ module.exports = class extends Plugin {
     const { url } = ast.node;
 
     const { end } = ast.node.position;
-    
+
     if (!url) {
       this.cfg.throwError({
         start: {
@@ -27,7 +27,8 @@ module.exports = class extends Plugin {
           line: end.line,
           column: end.column
         },
-        text
+        text,
+        ast,
       });
     }
   }

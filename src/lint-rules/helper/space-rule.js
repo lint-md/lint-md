@@ -1,6 +1,6 @@
 const { stringType, subErrorStr } = require('./string');
 
-module.exports = (ast, matches, cb) => {
+export default (ast, matches, cb) => {
   const text = ast.node.value;
 
   const line = ast.node.position.start.line;
@@ -23,6 +23,7 @@ module.exports = (ast, matches, cb) => {
           column: column + i + 2
         },
         text: `No space between Chinese and alphabet / number: ${subErrorStr(text, i, 12)}`, // substring 12 个字符
+        ast,
       });
     }
   }

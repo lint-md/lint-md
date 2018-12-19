@@ -1,4 +1,4 @@
-const { Plugin } = require('ast-plugin');
+import { Plugin } from 'ast-plugin';
 const _ = require('lodash');
 const { astToText } = require('./helper/ast');
 const { substr, startSpaceLen } = require('./helper/string');
@@ -21,7 +21,7 @@ module.exports = class extends Plugin {
         const text = astToText(ast.node);
         const line = ast.node.position.start.line;
         const column = ast.node.position.start.column;
-        
+
         if (_.startsWith(text, ' ')) {
           this.cfg.throwError({
             start: {
@@ -33,6 +33,7 @@ module.exports = class extends Plugin {
               column: column + 1 + startSpaceLen(text),
             },
             text: `Blockquote content can not start with space: '${substr(text)}'`,
+            ast,
           });
         }
       },

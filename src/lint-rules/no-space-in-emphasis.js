@@ -1,31 +1,32 @@
-const { Plugin } = require('ast-plugin');
+import { Plugin } from 'ast-plugin';
 const _ = require('lodash');
 const { astToText, astChildrenPos } = require('./helper/ast');
 
 /**
- * Link 内容前后不能有空格
- * no-space-in-link
+ * emphasis 内容前后不能有空格
+ * no-space-in-emphasis
  */
 module.exports = class extends Plugin {
 
   static get type() {
-    return 'no-space-in-link';
+    return 'no-space-in-emphasis';
   };
 
   pre() {}
 
   visitor() {
     return {
-      link: ast => {
+      strong: ast => {
         const text = astToText(ast.node);
-        
+
         if (_.startsWith(text, ' ') || _.endsWith(text, ' ')) {
           const pos = astChildrenPos(ast.node);
-          this.cfg.throwError(
-            _.assign(pos, {
-              text: `Link content can not start / end with space: '${text}'`,
-            })
-          );
+
+          this.cfg.throwError({
+            ...pos,
+            text: `Emphasis content can not start / end with space: '${text}'`,
+            ast,
+          });
         }
       },
     }

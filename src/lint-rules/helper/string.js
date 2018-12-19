@@ -15,7 +15,7 @@ const isNumber = s => {
  * @param s
  * @returns {string}
  */
-const stringType = s => {
+export const stringType = s => {
   return isNumber(s) ? 'N' :
     isAlphabet(s) ? 'A' :
       isChinese(s) ? 'Z' : '-';
@@ -27,11 +27,11 @@ const stringType = s => {
  * @param {Number} index     原点位置
  * @param {Number} length    获取字符串长度
  */
-const subErrorStr = (s, index, length) => {
+export const subErrorStr = (s, index, length) => {
   return s.substr(Math.max(index - Math.floor(length / 2), 0), length);
 };
 
-const substr = (s, len = 12) => {
+export const substr = (s, len = 12) => {
   if (!s) return s;
 
   return s.length > len ? `${s.substr(0, len)}...` : s;
@@ -39,9 +39,9 @@ const substr = (s, len = 12) => {
 
 /**
  * 获取字符串开头的空格数量
- * @param {String} str 
+ * @param {String} str
  */
-const startSpaceLen = str => {
+export const startSpaceLen = str => {
   let len = 0;
   const array = str.split('');
   for (let index = 0; index < array.length; index++) {
@@ -52,13 +52,13 @@ const startSpaceLen = str => {
     }
   }
   return len;
-}
+};
 
 /**
  * 获取字符串结尾的空格数量
- * @param {String} str 
+ * @param {String} str
  */
-const endSpaceLen = str => {
+export const endSpaceLen = str => {
   let len = 0;
   const array = str.split('');
   for (let index = array.length - 1; index >= 0; index--) {
@@ -69,13 +69,4 @@ const endSpaceLen = str => {
     }
   }
   return len;
-}
-
-
-module.exports = {
-  stringType,
-  subErrorStr,
-  substr,
-  startSpaceLen,
-  endSpaceLen
 };

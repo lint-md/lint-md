@@ -1,4 +1,4 @@
-const { Plugin } = require('ast-plugin');
+import { Plugin } from 'ast-plugin';
 
 /**
  * 中文和英文、数字之间需要有空格
@@ -31,6 +31,7 @@ module.exports = class extends Plugin {
               column: column + 3
             },
             text: 'Language of code can not be empty',
+            ast,
           });
         }
       },

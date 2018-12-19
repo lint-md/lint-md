@@ -5,6 +5,7 @@ const program = require('commander');
 
 const pkg = require('../package.json');
 const Lint = require('./Lint');
+const Fix = require('./Fix');
 const configure = require('./helper/configure');
 
 let unmount;
@@ -28,7 +29,7 @@ program
     const fix = cmd.fix;
 
     if (fix) {
-      // todo fix mode
+      unmount = render(h(Fix, { files, config, onExit }));
     } else {
       unmount = render(h(Lint, { files, config, onExit }));
     }

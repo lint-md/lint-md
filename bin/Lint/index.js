@@ -2,6 +2,7 @@ const { h, render, Component, Color } = require('ink');
 const loadMdFiles = require('../helper/file');
 const lint = require('./lint');
 const string = require('../helper/string');
+const { getDescription } = require('../../lib');
 
 /**
  * Lint 组件
@@ -70,7 +71,7 @@ module.exports = class Lint extends Component {
       '  ',
       h('span', {}, h(Color, { grey: true }, string.rightPad(`${type}`, 24))),
       '  ',
-      h(Color, props, text),
+      h(Color, props, `${getDescription(type).message} ${text}`),
     ]);
   }
 

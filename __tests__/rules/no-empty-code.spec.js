@@ -24,7 +24,7 @@ describe('no-empty-code', () => {
         line: 2,
         column: 4,
       },
-      text: 'Code block can not be empty',
+      text: '',
       type: 'no-empty-code'
     }]);
 
@@ -39,7 +39,7 @@ describe('no-empty-code', () => {
         line: 1,
         column: 3,
       },
-      text: 'Code block can not be empty',
+      text: '',
       type: 'no-empty-code'
     }]);
   });

@@ -19,7 +19,7 @@ describe('no-empty-list', () => {
         line: 2,
         column: 3,
       },
-      text: 'List content can not be empty',
+      text: '',
       type: 'no-empty-list'
     }]);
   });

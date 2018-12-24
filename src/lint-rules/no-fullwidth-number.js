@@ -66,7 +66,7 @@ module.exports = class extends Plugin {
                 line,
                 column: column + index + 1 + number.length,
               },
-              text: `Full-width number exist: '${number}'`,
+              text: `'${number}'`,
               ast,
             });
           }

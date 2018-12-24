@@ -35,8 +35,8 @@ module.exports = class extends Plugin {
 
   visitor() {
     return {
-      link: ast => this.emptyUrl(ast, 'Link url can not be empty'),
-      image: ast => this.emptyUrl(ast, 'Image url can not be empty')
+      link: ast => this.emptyUrl(ast, ''),
+      image: ast => this.emptyUrl(ast, '')
     }
   }
 

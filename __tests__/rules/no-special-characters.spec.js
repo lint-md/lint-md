@@ -18,7 +18,7 @@ describe('no-special-characters', () => {
         line: 1,
         column: 15,
       },
-      text: `Special characters exist: 'orld, befor'`,
+      text: `'orld, befor'`,
       type: 'no-special-characters'
     }]);
   });

@@ -18,7 +18,7 @@ describe('no-multiple-space-blockquote', () => {
         line: 1,
         column: 3,
       },
-      text: `Blockquote content can not start with space: ' hello world...'`,
+      text: `' hello world...'`,
       type: 'no-multiple-space-blockquote'
     }]);
   });

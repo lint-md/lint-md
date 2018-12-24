@@ -22,7 +22,7 @@ describe('no-empty-blockquote', () => {
         line: 3,
         column: 3,
       },
-      text: 'Blockquote content can not be empty',
+      text: '',
       type: 'no-empty-blockquote'
     }]);
   });

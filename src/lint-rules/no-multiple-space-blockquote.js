@@ -32,7 +32,7 @@ module.exports = class extends Plugin {
               line,
               column: column + 1 + startSpaceLen(text),
             },
-            text: `Blockquote content can not start with space: '${substr(text)}'`,
+            text: `'${substr(text)}'`,
             ast,
           });
         }

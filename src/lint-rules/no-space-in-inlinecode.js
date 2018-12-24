@@ -26,7 +26,7 @@ module.exports = class extends Plugin {
 
           this.cfg.throwError({
             ...pos,
-            text: `Inline code content can not start / end with space: '${spec}'`,
+            text: `'${spec}'`,
             ast,
           });
         }

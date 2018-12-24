@@ -18,7 +18,7 @@ describe('use-standard-ellipsis', () => {
         line: 1,
         column: 16,
       },
-      text: `Non-standard ellipsis exists: 'o world....'`,
+      text: `'o world....'`,
       type: 'use-standard-ellipsis'
     }]);
   });
@@ -35,7 +35,7 @@ describe('use-standard-ellipsis', () => {
         line: 1,
         column: 13,
       },
-      text: `Non-standard ellipsis exists: 'o world…'`,
+      text: `'o world…'`,
       type: 'use-standard-ellipsis'
     }]);
   });

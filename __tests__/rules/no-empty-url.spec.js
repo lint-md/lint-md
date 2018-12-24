@@ -18,7 +18,7 @@ describe('no-empty-url', () => {
         line: 1,
         column: 11,
       },
-      text: 'Image url can not be empty',
+      text: '',
       type: 'no-empty-url'
     }]);
   });

@@ -30,7 +30,7 @@ module.exports = class extends Plugin {
               line,
               column: column + 3
             },
-            text: 'Language of code can not be empty',
+            text: '',
             ast,
           });
         }

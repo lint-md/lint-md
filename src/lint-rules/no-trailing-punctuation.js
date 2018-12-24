@@ -36,7 +36,7 @@ module.exports = class extends Plugin {
               line: end.line,
               column: end.column - endSpace
             },
-            text: `Header content can not end with symbol: '${text}'`,
+            text: `'${text}'`,
             ast,
           });
         }

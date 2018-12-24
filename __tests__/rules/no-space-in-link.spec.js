@@ -18,7 +18,7 @@ describe('no-space-in-link', () => {
         line: 1,
         column: 20,
       },
-      text: `Link content can not start / end with space: ' hello, world '`,
+      text: `' hello, world '`,
       type: 'no-space-in-link'
     }]);
   });

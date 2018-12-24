@@ -21,7 +21,7 @@ module.exports = class extends Plugin {
 
       this.cfg.throwError({
         ...pos,
-        text: 'Code block can not be empty',
+        text: '',
         ast,
       });
     }

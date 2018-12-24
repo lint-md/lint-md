@@ -18,7 +18,7 @@ describe('no-space-in-inlinecode', () => {
         line: 1,
         column: 18,
       },
-      text: `Inline code content can not start / end with space: ' hello, world! '`,
+      text: `' hello, world! '`,
       type: 'no-space-in-inlinecode'
     }]);
   });

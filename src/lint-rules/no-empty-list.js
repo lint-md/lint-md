@@ -23,7 +23,7 @@ module.exports = class extends Plugin {
 
           this.cfg.throwError({
             ...pos,
-            text: 'List content can not be empty',
+            text: '',
             ast,
           });
         }

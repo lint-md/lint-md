@@ -18,7 +18,7 @@ describe('no-fullwidth-number', () => {
         line: 1,
         column: 15,
       },
-      text: `Full-width number exist: '１０００'`,
+      text: `'１０００'`,
       type: 'no-fullwidth-number'
     }]);
   });

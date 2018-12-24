@@ -22,7 +22,7 @@ export default (ast, matches, cb) => {
           line,
           column: column + i + 2
         },
-        text: `No space between Chinese and alphabet / number: ${subErrorStr(text, i, 12)}`, // substring 12 个字符
+        text: `'${subErrorStr(text, i, 12)}'`, // substring 12 个字符
         ast,
       });
     }

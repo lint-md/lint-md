@@ -125,9 +125,13 @@ script: lint-md README.md
 ## API 调用
 
 ```js
-import { lint, version } from 'lint-md';
+import { lint, getDescription, version } from 'lint-md';
 
+// get the markdown 's style errors
 const errors = lint(markdown, rules);
+
+// get the error type description
+const describe = getDescription(type[, lang = 'en_US']);
 ```
 
 Then will get the `errors` of the markdown string.

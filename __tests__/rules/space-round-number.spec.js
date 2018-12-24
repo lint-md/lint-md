@@ -18,7 +18,7 @@ describe('space-round-number', () => {
         line: 1,
         column: 9,
       },
-      text: 'No space between Chinese and alphabet / number: 晚上天气 16度。',
+      text: `'晚上天气 16度。'`,
       type: 'space-round-number'
     }]);
   });

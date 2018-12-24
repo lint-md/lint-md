@@ -76,7 +76,7 @@ module.exports = class extends Plugin {
               line,
               column: column + item.index + item.length,
             },
-            text: `Non-standard ellipsis exists: '${subErrorStr(text, item.index, showLength)}'`,
+            text: `'${subErrorStr(text, item.index, showLength)}'`,
             ast,
           });
         });

@@ -22,7 +22,7 @@ describe('no-empty-code-lang', () => {
         line: 1,
         column: 4,
       },
-      text: 'Language of code can not be empty',
+      text: '',
       type: 'no-empty-code-lang'
     }]);
   });

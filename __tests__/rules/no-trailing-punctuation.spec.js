@@ -18,7 +18,7 @@ describe('no-trailing-punctuation', () => {
         line: 1,
         column: 16,
       },
-      text: `Header content can not end with symbol: 'header 3!'`,
+      text: `'header 3!'`,
       type: 'no-trailing-punctuation'
     }]);
   });

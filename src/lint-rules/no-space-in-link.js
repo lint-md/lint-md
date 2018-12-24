@@ -23,7 +23,7 @@ module.exports = class extends Plugin {
           const pos = astChildrenPos(ast.node);
           this.cfg.throwError({
             ...pos,
-            text: `Link content can not start / end with space: '${text}'`,
+            text: `'${text}'`,
             ast,
           });
         }

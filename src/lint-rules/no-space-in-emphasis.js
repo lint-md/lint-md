@@ -24,7 +24,7 @@ module.exports = class extends Plugin {
 
           this.cfg.throwError({
             ...pos,
-            text: `Emphasis content can not start / end with space: '${text}'`,
+            text: `'${text}'`,
             ast,
           });
         }

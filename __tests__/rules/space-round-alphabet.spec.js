@@ -18,7 +18,7 @@ describe('space-round-alphabet', () => {
         line: 1,
         column: 4,
       },
-      text: 'No space between Chinese and alphabet / number: 你好world.',
+      text: `'你好world.'`,
       type: 'space-round-alphabet'
     }]);
   });

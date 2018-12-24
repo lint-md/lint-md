@@ -39,7 +39,7 @@ module.exports = class extends Plugin {
                 line,
                 column: column + idx + 1,
               },
-              text: `Special characters exist: '${text}'`,
+              text: `'${text}'`,
               ast,
             });
           }

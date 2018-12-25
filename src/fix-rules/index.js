@@ -3,6 +3,7 @@ import _ from 'lodash';
 // 引入所有的规则
 const Rules = {
   'no-empty-blockquote': require('./no-empty-blockquote').default,
+  'no-empty-code': require('./no-empty-code').default
 };
 
 /**

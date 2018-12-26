@@ -4,7 +4,7 @@ import rules from './fix-rules';
 export const fix = (markdown, rulesConfig = {}) => {
   let newMarkdown = markdown;
 
-  let errorCnt = Infinity;
+  let errorCnt = Infinity; // 最大值
 
   // 循环 lint，每次只修复第一个错误，知道修复完；todo 可以优化为每次修改一行
   // 为什么要循环 lint，因为每次修复错误，都会导致其他的错误位置产生偏移

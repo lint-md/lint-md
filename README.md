@@ -1,4 +1,4 @@
-# lint-md
+![logo](./logo.png)
 
 > 用于检查中文 markdown 编写格式规范的命令行工具，基于 AST 开发，且方便集成 ci；同时提供 API 方法调用。Cli tool to lint your markdown file for Chinese.
 

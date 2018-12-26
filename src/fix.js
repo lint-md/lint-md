@@ -12,8 +12,6 @@ export const fix = (markdown, rulesConfig = {}) => {
     const errors = lint(newMarkdown, rulesConfig, true);
     const newErrorCnt = errors.length;
 
-    // console.log(errors[0]);
-
     // 没有错误，终止处理
     if (newErrorCnt === 0) {
       break;

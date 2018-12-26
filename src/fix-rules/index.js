@@ -19,5 +19,7 @@ export default (markdown, error) => {
   if (func) {
     return func(markdown, error);
   }
+
+  // 找不到，直接返回原始
   return markdown;
 }

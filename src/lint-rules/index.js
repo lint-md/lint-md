@@ -8,6 +8,7 @@ const PluginClasses = [
   require('./no-empty-url'),
   require('./no-empty-list'),
   require('./no-empty-code'),
+  require('./no-empty-inlinecode'),
   require('./no-empty-blockquote'),
   require('./no-special-characters'),
   require('./use-standard-ellipsis'),

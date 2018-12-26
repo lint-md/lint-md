@@ -3,12 +3,12 @@ const { astChildrenPos } = require('./helper/ast');
 
 /**
  * code 代码块内容不能为空
- * no-empty-code
+ * no-empty-inlinecode
  */
 module.exports = class extends Plugin {
 
   static get type() {
-    return 'no-empty-code';
+    return 'no-empty-inlinecode';
   };
 
   pre() {}
@@ -29,9 +29,9 @@ module.exports = class extends Plugin {
 
   visitor() {
     return {
-      code: ast => {
+      inlineCode: ast => {
         this.emptyCode(ast);
-      },
+      }
     }
   }
 

@@ -2,15 +2,12 @@ import lint from '../lint';
 
 describe('no-empty-code', () => {
   test('success', () => {
-    const md = '```js\n' +
-               'const a = 0;\n' +
-               '```';
+    const md = '`const a = 0;`';
     expect(lint(md)).toEqual([]);
   });
 
   test('fail', () => {
-    const md = '```js\n' +
-               '```';
+    const md = '``';
     expect(lint(md)).toEqual([{
       level: 'error',
       start: {
@@ -18,11 +15,11 @@ describe('no-empty-code', () => {
         column: 1,
       },
       end: {
-        line: 2,
-        column: 4,
+        line: 1,
+        column: 3,
       },
       text: '',
-      type: 'no-empty-code'
+      type: 'no-empty-inlinecode'
     }]);
   });
 });

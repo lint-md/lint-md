@@ -49,6 +49,7 @@ lint-md README.md Document.md
 | no-empty-url | 链接和图片地址不能为空 | 填写完整的 url，或者不使用链接和图片语法 |
 | no-empty-list | List 内容不能为空 | List 语法中，填写内容 |
 | no-empty-code | 代码块内容不能为空 | 删除空的代码块，或者填充代码内容 |
+| no-empty-inlinecode | 行内代码块内容不能为空 | 删除空的代码块，或者填充代码内容 |
 | no-empty-blockquote | blockquote 内容不能为空 | 删除空的 blockquote，或者填充内容 |
 | no-special-characters | 文本中不能有特殊字符 | 可能是复制出来的特殊字符，删除特殊字符即可 |
 | use-standard-ellipsis | 使用标准规范的省略号 | 使用标准规范的省略号‘……’ / ‘...’ |

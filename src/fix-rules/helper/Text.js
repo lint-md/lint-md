@@ -14,17 +14,31 @@ export default class Text {
    * @return {Text}
    */
   removeLine(line) {
-    this.texts.splice(line - 1, 1);
-    return this;
+    return this.spliceLines(line, 1)
+  }
+
+  /**
+   * 从某一行开始删除 n 行，默认为 1 行
+   * @param line
+   * @param deleteCount
+   * @return {Text}
+   */
+  removeLines(line, deleteCount) {
+    return this.spliceLines(line, deleteCount)
   }
 
   /**
    * 插入一行行内文本
    * @param line
-   * @param text
+   * @param texts
    */
-  insertLine(line, text) {
-    this.texts.splice(line - 1, 0, text.split(''));
+  insertLines(line, ...texts) {
+    return this.spliceLines(line, 0, ...texts);
+  }
+
+  spliceLines(startLine, deleteCount, ...texts) {
+    const textsArray = texts.map(t => t.split(''));
+    this.texts.splice(startLine - 1, deleteCount, ...textsArray);
     return this;
   }
 
@@ -38,7 +52,7 @@ export default class Text {
     const lineText = this.texts[line - 1];
     this.texts[line - 1] = lineText.slice(0, column - 1);
     // 插入一行
-    this.insertLine(line + 1, lineText.slice(column - 1).join(''));
+    this.insertLines(line + 1, lineText.slice(column - 1).join(''));
 
     return this;
   }
@@ -120,7 +134,7 @@ export default class Text {
         this.texts[line - 1 + idx].splice(0, 0, ...text);
       } else {
         // 其余的插入进去
-        this.insertLine(line + idx, text.join(''));
+        this.insertLines(line + idx, text.join(''));
       }
     });
 

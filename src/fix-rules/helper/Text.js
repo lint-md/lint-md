@@ -141,6 +141,10 @@ export default class Text {
     return this;
   }
 
+  getLine(line) {
+    return this.texts[line - 1].join('');
+  }
+
   /**
    * 最终的结果
    * @return {string}

@@ -32,4 +32,8 @@ describe('Text', () => {
   test('removeBlock', () => {
     expect(text.removeBlock({ line: 2, column: 5 }, { line: 5, column: 6 }).result()).toBe(origin);
   });
+
+  test('getBlock', () => {
+    expect(text.getBlock({ line: 2, column: 5 }, { line: 3, column: 6 })).toBe('4567890\n31234');
+  });
 });

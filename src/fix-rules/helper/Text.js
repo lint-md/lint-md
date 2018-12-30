@@ -116,6 +116,24 @@ export default class Text {
     return this.texts[line - 1].join('');
   }
 
+  getBlock(start, end) {
+    const lines = [];
+
+    for (let i = start.line; i <= end.line; i ++) {
+      let line = this.getLine(i);
+      if (i === end.line) {
+        line = line.substring(0, end.column - 1);
+      }
+      if (i === start.line) {
+        line = line.substring(start.column - 1);
+      }
+
+      lines.push(line);
+    }
+
+    return lines.join('\n');
+  }
+
   /**
    * 最终的结果
    * @return {string}

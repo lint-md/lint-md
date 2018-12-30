@@ -12,6 +12,7 @@ const Rules = {
   'no-multiple-space-blockquote': require('./no-multiple-space-blockquote').default,
   'no-space-in-emphasis': require('./no-space-in-emphasis').default,
   'no-space-in-inlinecode': require('./no-space-in-inlinecode').default,
+  'no-space-in-link': require('./no-space-in-link').default,
 };
 
 /**

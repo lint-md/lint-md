@@ -10,6 +10,7 @@ const Rules = {
   'no-empty-url': require('./no-empty-url').default,
   'no-fullwidth-number': require('./no-fullwidth-number').default,
   'no-multiple-space-blockquote': require('./no-multiple-space-blockquote').default,
+  'no-space-in-emphasis': require('./no-space-in-emphasis').default,
 };
 
 /**

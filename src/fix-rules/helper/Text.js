@@ -14,7 +14,7 @@ export default class Text {
    * @return {Text}
    */
   removeLine(line) {
-    return this.spliceLines(line, 1)
+    return this.removeLines(line, 1)
   }
 
   /**
@@ -24,7 +24,7 @@ export default class Text {
    * @return {Text}
    */
   removeLines(line, deleteCount) {
-    return this.spliceLines(line, deleteCount)
+    return this.spliceLines(line - 1, deleteCount)
   }
 
   /**
@@ -38,7 +38,7 @@ export default class Text {
 
   spliceLines(startLine, deleteCount, ...texts) {
     const textsArray = texts.map(t => t.split(''));
-    this.texts.splice(startLine - 1, deleteCount, ...textsArray);
+    this.texts.splice(startLine, deleteCount, ...textsArray);
     return this;
   }
 
@@ -52,13 +52,13 @@ export default class Text {
     const lineText = this.texts[line - 1];
     this.texts[line - 1] = lineText.slice(0, column - 1);
     // 插入一行
-    this.insertLines(line + 1, lineText.slice(column - 1).join(''));
+    this.insertLines(line, lineText.slice(column - 1).join(''));
 
     return this;
   }
 
   /**
-   * 合并 line 和 line + 1 行
+   * 把 line + 1 行合并到 line
    * @param line
    */
   mergeLine(line) {
@@ -67,7 +67,7 @@ export default class Text {
     // 合并到 line - 1 行
     targetLine.splice(targetLine.length, 0, ...sourceLine);
 
-    // 删除 line 行
+    // 删除下一行
     this.removeLine(line + 1);
 
     return this;
@@ -119,24 +119,16 @@ export default class Text {
    * @param block
    */
   insertBlock(line, column, block) {
-    const texts = this.toTextArray(block);
+    const texts = block.split('\n');
     const len = texts.length;
 
     this.cutLine(line, column);
 
-    // 循环处理
-    texts.forEach((text, idx) => {
-      if (idx === 0) {
-        // 第一行追加
-        this.texts[line - 1 + idx].splice(column - 1, 0, ...text);
-      } else if (idx === len - 1) {
-        // 最后一行，追加到前面
-        this.texts[line - 1 + idx].splice(0, 0, ...text);
-      } else {
-        // 其余的插入进去
-        this.insertLines(line + idx, text.join(''));
-      }
-    });
+    // 全部插入
+    this.insertLines(line, ...texts);
+    // 从下面 merge 开始，避免索引变化
+    this.mergeLine(line + len);
+    this.mergeLine(line);
 
     return this;
   }

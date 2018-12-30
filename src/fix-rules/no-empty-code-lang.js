@@ -14,8 +14,10 @@ export default (markdown, error) => {
   // 获得当前行
   const lineText = text.getLine(line);
 
+  const replaceText = `${_.trimEnd(lineText)}plain`;
+
   // 将当前行替换成带语言的文本
   return new Text(markdown)
-    .spliceLines(line, 1, `${_.trimEnd(lineText)}plain`)
-    .result();
+    .removeLine(line) // 删除
+    .insertLines(line - 1, replaceText).result(); // 插入
 };

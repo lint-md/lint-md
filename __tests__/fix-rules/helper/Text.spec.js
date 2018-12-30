@@ -29,7 +29,7 @@ describe('Text', () => {
 31234567890`);
   });
 
-  test('removeBolck', () => {
+  test('removeBlock', () => {
     expect(text.removeBlock({ line: 2, column: 5 }, { line: 5, column: 6 }).result()).toBe(origin);
   });
 });

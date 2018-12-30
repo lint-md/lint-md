@@ -7,6 +7,7 @@ const Rules = {
   'no-empty-code-lang': require('./no-empty-code-lang').default,
   'no-empty-inlinecode': require('./no-empty-inlinecode').default,
   'no-empty-list': require('./no-empty-list').default,
+  'no-empty-url': require('./no-empty-url').default,
 };
 
 /**

@@ -11,6 +11,7 @@ const Rules = {
   'no-fullwidth-number': require('./no-fullwidth-number').default,
   'no-multiple-space-blockquote': require('./no-multiple-space-blockquote').default,
   'no-space-in-emphasis': require('./no-space-in-emphasis').default,
+  'no-space-in-inlinecode': require('./no-space-in-inlinecode').default,
 };
 
 /**

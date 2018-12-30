@@ -13,6 +13,7 @@ const Rules = {
   'no-space-in-emphasis': require('./no-space-in-emphasis').default,
   'no-space-in-inlinecode': require('./no-space-in-inlinecode').default,
   'no-space-in-link': require('./no-space-in-link').default,
+  'no-special-characters': require('./no-special-characters').default,
 };
 
 /**

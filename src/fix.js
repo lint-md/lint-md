@@ -24,7 +24,10 @@ export const fix = (markdown, rulesConfig = {}) => {
       break;
     } else {
       // 如果存在错误，则处理第一个
-      newMarkdown = rules(newMarkdown, errors[_.random(newErrorCnt - 1)]);
+      const e = errors[0];
+      // 随机处理
+      // const e = errors[_.random(newErrorCnt - 1)];
+      newMarkdown = rules(newMarkdown, e);
     }
 
     errorCnt = newErrorCnt;

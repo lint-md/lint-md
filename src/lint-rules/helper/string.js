@@ -12,13 +12,17 @@ const isNumber = s => {
 
 /**
  * 将字符映射成标记字符
- * @param s
+ * @param c
  * @returns {string}
  */
+export const charType = c => {
+  return isNumber(c) ? 'N' :
+    isAlphabet(c) ? 'A' :
+      isChinese(c) ? 'Z' : '-';
+};
+
 export const stringType = s => {
-  return isNumber(s) ? 'N' :
-    isAlphabet(s) ? 'A' :
-      isChinese(s) ? 'Z' : '-';
+  return s.split('').map(s => charType(s)).join('');
 };
 
 /**

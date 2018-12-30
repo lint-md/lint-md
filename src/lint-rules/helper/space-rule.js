@@ -6,7 +6,7 @@ export default (ast, matches, cb) => {
   const line = ast.node.position.start.line;
   const column = ast.node.position.start.column;
 
-  const typeText = text.split('').map(s => stringType(s)).join('');
+  const typeText = stringType(text);
 
   for (let i = 0; i < typeText.length; i ++) {
     const s = typeText.substr(i, 2);

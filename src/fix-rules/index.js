@@ -16,6 +16,7 @@ const Rules = {
   'no-space-in-link': require('./no-space-in-link').default,
   'no-special-characters': require('./no-special-characters').default,
   'no-trailing-punctuation': require('./no-trailing-punctuation').default,
+  'space-round-alphabet': require('./space-round-alphabet').default,
 };
 
 /**

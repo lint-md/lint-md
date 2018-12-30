@@ -25,14 +25,22 @@ lint your markdown files
 Options:
   -v, --version                  output the version number
   -c, --config [configure-file]  use the configure file, default .lintmdrc
+  -f, --fix                      fix the errors automatically
   -h, --help                     output usage information
 ```
 
 
-Example:
+ - 校验 lint
 
 ```bash
 lint-md README.md Document.md
+```
+
+
+ - 修复 fix
+ 
+```bash
+lint-md README.md Document.md --fix
 ```
 
 
@@ -127,17 +135,22 @@ script: lint-md README.md
 ## API 调用
 
 ```js
-import { lint, getDescription, version } from 'lint-md';
+import { lint, fix, getDescription } from 'lint-md';
 
 // get the markdown 's style errors
 const errors = lint(markdown, rules);
 
 // get the error type description
 const describe = getDescription(type[, lang = 'en_US']);
+
+// fix the markdown
+const fixed = fix(markdown);
 ```
 
-Then will get the `errors` of the markdown string.
-
+ - **lint**：通过 API 方式来校验 markdown 文本；
+ - **fix**：通过 API 方式来修复文本；
+ - **getDescription**：获取错误类型的文本描述，包含多语言；
+ - **version**：获得模块的版本号；
 
 
 

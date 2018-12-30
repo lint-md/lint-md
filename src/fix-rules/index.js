@@ -18,6 +18,7 @@ const Rules = {
   'no-trailing-punctuation': require('./no-trailing-punctuation').default,
   'space-round-alphabet': require('./space-round-alphabet').default,
   'space-round-number': require('./space-round-number').default,
+  'use-standard-ellipsis': require('./use-standard-ellipsis').default,
 };
 
 /**

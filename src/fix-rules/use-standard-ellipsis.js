@@ -1,4 +1,4 @@
-import Text from './helper/Text';
+import Text from '../helper/Text';
 
 // 中文和数字直接，增加空格
 export default (markdown, error) => {

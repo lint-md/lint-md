@@ -17,8 +17,8 @@ const PluginClasses = [
   require('./no-space-in-emphasis'),
   require('./no-space-in-link'),
   require('./no-multiple-space-blockquote'),
-  require('./no-trailing-punctuation'),
   require('./no-space-in-inlinecode'),
+  require('./no-trailing-punctuation'),
 ];
 
 

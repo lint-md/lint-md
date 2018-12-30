@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import Text from './helper/Text';
-import { getLastChildLeaf } from './helper/ast';
+import Text from '../helper/Text';
+import { getLastChildLeaf } from '../helper/ast';
 
 const Symbols = '.,;:!?。，；：！？…~*`';
 

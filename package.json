@@ -29,7 +29,7 @@
     "ast-plugin"
   ],
   "dependencies": {
-    "ast-plugin": "^0.0.5",
+    "ast-plugin": "^0.0.7",
     "commander": "^2.19.0",
     "glob": "^7.1.3",
     "ink": "^0.5.1",

@@ -1,6 +1,6 @@
 import { Plugin } from 'ast-plugin';
 import _ from 'lodash';
-const { astPositionTrans } = require('./helper/ast');
+const { astPositionTrans } = require('../helper/ast');
 
 /**
  * inlineCode 内容前后不能有空格

@@ -1,4 +1,4 @@
-import Text from './helper/Text'
+import Text from '../helper/Text'
 import _ from 'lodash';
 
 export default (markdown, error) => {

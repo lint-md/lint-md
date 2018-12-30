@@ -1,6 +1,6 @@
 import { Plugin } from 'ast-plugin';
 const _ = require('lodash');
-const { astToText, astChildrenPos } = require('./helper/ast');
+const { astToText, getChildrenPosition } = require('../helper/ast');
 
 /**
  * Link 内容前后不能有空格
@@ -20,7 +20,7 @@ module.exports = class extends Plugin {
         const text = astToText(ast.node);
 
         if (_.startsWith(text, ' ') || _.endsWith(text, ' ')) {
-          const pos = astChildrenPos(ast.node);
+          const pos = getChildrenPosition(ast.node);
           this.cfg.throwError({
             ...pos,
             text: `'${text}'`,

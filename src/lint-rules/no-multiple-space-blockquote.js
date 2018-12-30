@@ -1,6 +1,6 @@
 import { Plugin } from 'ast-plugin';
 const _ = require('lodash');
-const { astToText } = require('./helper/ast');
+const { astToText } = require('../helper/ast');
 const { substr, startSpaceLen } = require('./helper/string');
 
 /**

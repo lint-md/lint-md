@@ -1,5 +1,5 @@
 import { Plugin } from 'ast-plugin';
-const { astChildrenPos } = require('./helper/ast');
+const { getChildrenPosition } = require('../helper/ast');
 
 /**
  * delete 代码块内容不能为空
@@ -17,7 +17,7 @@ module.exports = class extends Plugin {
     return {
       delete: ast => {
         if (ast.node.children.length === 0) {
-          const pos = astChildrenPos(ast.node);
+          const pos = getChildrenPosition(ast.node);
 
           this.cfg.throwError({
             ...pos,

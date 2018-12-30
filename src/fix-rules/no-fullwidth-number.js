@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import Text from './helper/Text';
+import Text from '../helper/Text';
 
 const FullwidthNumberMap = {
   '１': 1,

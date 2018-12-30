@@ -2,10 +2,14 @@ import _ from 'lodash';
 import { lint } from './lint';
 import rules from './fix-rules';
 
+const doFix = (markdown, errors) => {
 
+};
 
 export const fix = (markdown, rulesConfig = {}) => {
   let newMarkdown = markdown;
+
+  let retryMax = 20;
 
   let errorCnt = Infinity; // 最大值
 
@@ -18,17 +22,19 @@ export const fix = (markdown, rulesConfig = {}) => {
     // 没有错误，终止处理
     if (newErrorCnt === 0) {
       break;
-    } else if (newErrorCnt > errorCnt) {
+    } else if (newErrorCnt >= errorCnt) {
       // 或者错误数量变多了，或者变多的次数超过一定的数额
-      console.warn('errors did not decrease!');
-      break;
-    } else {
-      // 如果存在错误，则处理第一个
-      const e = errors[0];
-      // 随机处理
-      // const e = errors[_.random(newErrorCnt - 1)];
-      newMarkdown = rules(newMarkdown, e);
+      retryMax --;
+      if (retryMax <= 0) {
+        break;
+      }
     }
+
+    // 如果存在错误，则处理第一个
+    // const e = errors[0];
+    // 随机处理
+    const e = errors[_.random(newErrorCnt - 1)];
+    newMarkdown = rules(newMarkdown, e);
 
     errorCnt = newErrorCnt;
   }

@@ -1,7 +1,6 @@
 import { Plugin } from 'ast-plugin';
 const _ = require('lodash');
-const { astToText, astLastText } = require('./helper/ast');
-const { endSpaceLen } = require('./helper/string');
+const { getLastChildLeaf } = require('../helper/ast');
 
 const Symbols = '.,;:!?。，；：！？…~*`';
 
@@ -20,7 +19,7 @@ module.exports = class extends Plugin {
   visitor() {
     return {
       heading: ast => {
-        const last = astLastText(ast.node);
+        const last = getLastChildLeaf(ast.node);
         const text = last.value;
 
         if (_.includes(Symbols, _.last(_.trimEnd(text)))) {

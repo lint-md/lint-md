@@ -1,7 +1,7 @@
-import Text from './helper/Text';
+import Text from '../helper/Text';
 import { insertSpace } from './helper/string';
 
-// 中文和数字直接，增加空格
+// 中文和英文直接，增加空格
 export default (markdown, error) => {
   const { ast } = error;
   const { position } = ast.node;

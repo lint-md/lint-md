@@ -1,10 +1,10 @@
 import _ from 'lodash';
-import Text from './helper/Text';
-import { getChildrenPosition } from './helper/ast';
+import Text from '../helper/Text';
+import { getChildrenPosition } from '../helper/ast';
 
 export default (markdown, error) => {
   const { ast } = error;
-  const textPosition = getChildrenPosition(ast);
+  const textPosition = getChildrenPosition(ast.node);
   const { start, end } = textPosition;
 
   const text = new Text(markdown);

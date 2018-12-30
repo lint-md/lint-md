@@ -1,4 +1,4 @@
-import Text from '../../../src/fix-rules/helper/Text';
+import Text from '../../../src/helper/Text';
 
 describe('Text', () => {
   const origin = `1123456789
@@ -35,5 +35,9 @@ describe('Text', () => {
 
   test('getBlock', () => {
     expect(text.getBlock({ line: 2, column: 5 }, { line: 3, column: 6 })).toBe('4567890\n31234');
+  });
+
+  test('removeBlock one line', () => {
+    expect(text.removeBlock({ line: 1, column: 5 }, { line: 1, column: 8 }).result()).toBe('1123789\n21234567890\n31234567890');
   });
 });

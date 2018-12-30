@@ -1,4 +1,5 @@
 import fix from '../fix';
+import lint from '../lint';
 
 describe('no-trailing-punctuation', () => {
   test('success', () => {
@@ -8,6 +9,7 @@ describe('no-trailing-punctuation', () => {
 
   test('fail', () => {
     const md = `### header 3~~!~~**.**\`。\``;
+    // expect(lint(md)).toEqual([]);
     expect(fix(md)).toBe('### header 3');
   });
 });

@@ -1,4 +1,5 @@
 import { Plugin } from 'ast-plugin';
+import _ from 'lodash';
 const { astPositionTrans } = require('./helper/ast');
 
 /**
@@ -19,9 +20,9 @@ module.exports = class extends Plugin {
         const { node } = ast;
         const { position } = node;
 
-        let spec = ast.segment().split('').filter(s => s !== '`').join('');
+        const spec = _.trim(ast.segment(), '`');
 
-        if (spec.startsWith(' ') || spec.endsWith(' ')) {
+        if (_.head(spec) === ' ' || _.last(spec) === ' ') {
           const pos = astPositionTrans(position);
 
           this.cfg.throwError({

@@ -17,6 +17,12 @@ export default {
   'no-empty-code': {
     message: 'Code block can not be empty.'
   },
+  'no-empty-inlinecode': {
+    message: 'Inline code block can not be empty.'
+  },
+  'no-empty-delete': {
+    message: 'Delete block can not be empty.'
+  },
   'no-empty-blockquote': {
     message: 'Blockquote content can not be empty.'
   },

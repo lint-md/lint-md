@@ -17,7 +17,7 @@ export const astToText = ast => {
  */
 export const astLastText = ast => {
   const children = _.get(ast, 'children', []);
-  if (children.length === 0 && _.get(ast, 'type') === 'text') return ast;
+  if (children.length === 0) return ast;
 
   return astLastText(_.last(children));
 };

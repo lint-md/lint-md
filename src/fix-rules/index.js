@@ -5,6 +5,7 @@ const Rules = {
   'no-empty-blockquote': require('./no-empty-blockquote').default,
   'no-empty-code': require('./no-empty-code').default,
   'no-empty-code-lang': require('./no-empty-code-lang').default,
+  'no-empty-delete': require('./no-empty-delete').default,
   'no-empty-inlinecode': require('./no-empty-inlinecode').default,
   'no-empty-list': require('./no-empty-list').default,
   'no-empty-url': require('./no-empty-url').default,
@@ -14,6 +15,7 @@ const Rules = {
   'no-space-in-inlinecode': require('./no-space-in-inlinecode').default,
   'no-space-in-link': require('./no-space-in-link').default,
   'no-special-characters': require('./no-special-characters').default,
+  'no-trailing-punctuation': require('./no-trailing-punctuation').default,
 };
 
 /**

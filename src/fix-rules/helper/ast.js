@@ -11,3 +11,11 @@ export const getChildrenPosition = ast => {
     end,
   };
 };
+
+export const getLastChildLeaf = node => {
+  const leaf =_.last(_.get(node, 'children', []));
+
+  // 如果存在，则递归，否则返回自己
+  if (leaf !== undefined) return getLastChildLeaf(leaf);
+  return node;
+};

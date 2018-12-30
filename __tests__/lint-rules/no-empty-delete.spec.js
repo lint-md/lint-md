@@ -1,25 +1,25 @@
 import lint from '../lint';
 
-describe('no-trailing-punctuation', () => {
+describe('no-empty-delete', () => {
   test('success', () => {
-    const md = `## header 2`;
+    const md = '~~hello~~';
     expect(lint(md)).toEqual([]);
   });
 
   test('fail', () => {
-    const md = `### header 3**!**`;
+    const md = '# hello ~~~~world';
     expect(lint(md)).toEqual([{
       level: 'error',
       start: {
         line: 1,
-        column: 15,
+        column: 9,
       },
       end: {
         line: 1,
-        column: 16,
+        column: 13,
       },
-      text: `'!'`,
-      type: 'no-trailing-punctuation'
+      text: '',
+      type: 'no-empty-delete'
     }]);
   });
 });

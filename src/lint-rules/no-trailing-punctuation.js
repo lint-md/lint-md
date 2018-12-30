@@ -3,7 +3,7 @@ const _ = require('lodash');
 const { astToText, astLastText } = require('./helper/ast');
 const { endSpaceLen } = require('./helper/string');
 
-const Symbols = '.,;:!?。，；：！？…';
+const Symbols = '.,;:!?。，；：！？…~*`';
 
 /**
  * Header 内容不能以标点符号结尾
@@ -20,21 +20,20 @@ module.exports = class extends Plugin {
   visitor() {
     return {
       heading: ast => {
-        const text = astToText(ast.node);
+        const last = astLastText(ast.node);
+        const text = last.value;
 
         if (_.includes(Symbols, _.last(_.trimEnd(text)))) {
-          const last = astLastText(ast.node);
-          const end = last.position.end;
-          const endSpace = endSpaceLen(last.value);
+          const { start, end } = last.position;
 
           this.cfg.throwError({
             start: {
-              line: end.line,
-              column: end.column - 1 - endSpace
+              line: start.line,
+              column: start.column,
             },
             end: {
               line: end.line,
-              column: end.column - endSpace
+              column: end.column,
             },
             text: `'${text}'`,
             ast,

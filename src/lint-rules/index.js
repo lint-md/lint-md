@@ -5,6 +5,7 @@ const PluginClasses = [
   require('./space-round-alphabet'),
   require('./space-round-number'),
   require('./no-empty-code-lang'),
+  require('./no-empty-delete'),
   require('./no-empty-url'),
   require('./no-empty-list'),
   require('./no-empty-code'),
@@ -17,7 +18,7 @@ const PluginClasses = [
   require('./no-space-in-link'),
   require('./no-multiple-space-blockquote'),
   require('./no-trailing-punctuation'),
-  require('./no-space-in-inlinecode')
+  require('./no-space-in-inlinecode'),
 ];
 
 

@@ -1,5 +1,8 @@
+import _ from 'lodash';
 import { lint } from './lint';
 import rules from './fix-rules';
+
+
 
 export const fix = (markdown, rulesConfig = {}) => {
   let newMarkdown = markdown;
@@ -21,7 +24,7 @@ export const fix = (markdown, rulesConfig = {}) => {
       break;
     } else {
       // 如果存在错误，则处理第一个
-      newMarkdown = rules(newMarkdown, errors[0]);
+      newMarkdown = rules(newMarkdown, errors[_.random(newErrorCnt - 1)]);
     }
 
     errorCnt = newErrorCnt;

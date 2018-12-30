@@ -6,6 +6,6 @@ export default (markdown, error) => {
   const { position } = ast.node;
   const { start, end } = position;
 
-  // 删除这一行即可
-  return new Text(markdown).removeLine(start.line).result();
+  // 删除这一个代码块即可
+  return new Text(markdown).removeBlock(start, end).result();
 };

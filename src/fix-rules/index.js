@@ -5,6 +5,7 @@ const Rules = {
   'no-empty-blockquote': require('./no-empty-blockquote').default,
   'no-empty-code': require('./no-empty-code').default,
   'no-empty-code-lang': require('./no-empty-code-lang').default,
+  'no-empty-inlinecode': require('./no-empty-inlinecode').default,
 };
 
 /**

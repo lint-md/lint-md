@@ -9,6 +9,7 @@ const Rules = {
   'no-empty-list': require('./no-empty-list').default,
   'no-empty-url': require('./no-empty-url').default,
   'no-fullwidth-number': require('./no-fullwidth-number').default,
+  'no-multiple-space-blockquote': require('./no-multiple-space-blockquote').default,
 };
 
 /**

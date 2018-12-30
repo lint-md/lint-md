@@ -17,7 +17,7 @@ export const fix = (markdown, rulesConfig = {}) => {
       break;
     } else if (newErrorCnt > errorCnt) {
       // 或者错误数量变多了，或者变多的次数超过一定的数额
-      // console.warn('errors did not decrease!');
+      console.warn('errors did not decrease!');
       break;
     } else {
       // 如果存在错误，则处理第一个

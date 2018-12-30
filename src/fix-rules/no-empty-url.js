@@ -2,7 +2,7 @@ import _ from 'lodash';
 import Text from './helper/Text';
 
 export default (markdown, error) => {
-  const { ast  } = error;
+  const { ast } = error;
   const { position, type } = ast.node;
   const { start, end } = position;
 

@@ -15,7 +15,7 @@ const FullwidthNumberMap = {
 };
 
 export default (markdown, error) => {
-  const { ast  } = error;
+  const { ast } = error;
   const { position } = ast.node;
   const { start, end } = position;
 

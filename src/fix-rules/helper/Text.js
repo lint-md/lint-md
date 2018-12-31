@@ -1,11 +1,7 @@
 export default class Text {
   constructor(text) {
     // 存储文本的二维数组
-    this.texts = this.toTextArray(text);
-  }
-
-  toTextArray(text) {
-    return text.split('\n').map(line => line.split(''));
+    this.texts = text.split('\n').map(line => line.split(''));
   }
 
   /**
@@ -82,31 +78,14 @@ export default class Text {
     const { line: startLine, column: startColumn } = start;
     const { line: endLine, column: endColumn } = end;
 
-    if (startLine === endLine) {
-      // 删除这几个字符
-      this.texts[startLine - 1].splice(startColumn - 1, endColumn - startColumn);
+    // 切断
+    this.cutLine(endLine, endColumn);
+    this.cutLine(startLine, startColumn);
 
-      return this;
-    }
+    // 删除中间行
+    this.removeLines(startLine + 1, endLine - startLine + 1);
 
-    let len = endLine - startLine;
-
-    for (let i = 0; i <= len; i ++) {
-      const curr = i + startLine;
-
-      if (i === 0) {
-        this.texts[curr - 1] = this.texts[curr - 1].slice(0, startColumn - 1);
-      } else if (i === len) {
-        this.texts[curr - 1] = this.texts[curr - 1].slice(endColumn - 1);
-      } else {
-        this.removeLine(curr);
-        // 删除了一行，偏移调整一下
-        -- i;
-        -- len;
-      }
-    }
-
-    // 合并
+    // 连接
     this.mergeLine(startLine);
 
     return this;

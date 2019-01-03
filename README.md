@@ -38,7 +38,7 @@ lint-md README.md Document.md
 
 
  - 修复 fix
- 
+
 ```bash
 lint-md README.md Document.md --fix
 ```
@@ -125,7 +125,7 @@ script: lint-md README.md
 ```json
 "lint-staged": {
   "src/**/*.{md,markdown}": [
-    "lind-md"
+    "lint-md"
   ]
 }
 ```

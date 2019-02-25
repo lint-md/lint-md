@@ -50,11 +50,11 @@ module.exports = class Lint {
   printErrorFile(errorFile) {
     const { path, file, errors } = errorFile;
 
-    log(`${path}/${file}`);
+    if (errors.length) log(`${path}/${file}`);
 
     _.forEach(errors, this.printError);
 
-    log();
+    if (errors.length) log();
   }
 
   /**

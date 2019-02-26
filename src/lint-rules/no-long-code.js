@@ -22,7 +22,7 @@ module.exports = class extends Plugin {
       code: (ast) => {
         const { lang, value, position } = ast.node;
         if (config.excludes.indexOf(lang) >= 0) return;
-        value.split('\n').every((line, i) => {
+        value.split('\n').forEach((line, i) => {
           const isTooLong = line.length > config.length;
           if (isTooLong) {
             const { start } = position;

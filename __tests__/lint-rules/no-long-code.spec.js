@@ -66,6 +66,51 @@ describe('no-long-code', () => {
     ]);
   });
 
+  test('fail on every long line', () => {
+    const code = 'console.log("hello world");';
+    const md = [
+      '```js',
+      code,
+      'short',
+      code,
+      'short',
+      '```',
+    ].join('\n');
+
+    expect(lint(md, {
+      'no-long-code': [2, {
+        length: 10,
+      }],
+    })).toEqual([
+      {
+        level: 'error',
+        start: {
+          line: 2,
+          column: 1,
+        },
+        end: {
+          line: 2,
+          column: code.length + 1,
+        },
+        text: `line with ${code.length} characters exceeds code max length 10`,
+        type: 'no-long-code',
+      },
+      {
+        level: 'error',
+        start: {
+          line: 4,
+          column: 1,
+        },
+        end: {
+          line: 4,
+          column: code.length + 1,
+        },
+        text: `line with ${code.length} characters exceeds code max length 10`,
+        type: 'no-long-code',
+      },
+    ]);
+  });
+
   test('success with exclude lang configured', () => {
     const longCode = 'console.log("very long long long long long long long long long long long long long sentence");';
     const md = [

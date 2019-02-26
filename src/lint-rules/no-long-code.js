@@ -2,7 +2,7 @@ import { Plugin } from 'ast-plugin';
 
 const defaultConfig = {
   length: 100,
-  excludes: [],
+  exclude: [],
 };
 
 /**
@@ -21,7 +21,7 @@ module.exports = class extends Plugin {
     return {
       code: (ast) => {
         const { lang, value, position } = ast.node;
-        if (config.excludes.indexOf(lang) >= 0) return;
+        if (config.exclude.indexOf(lang) >= 0) return;
         value.split('\n').forEach((line, i) => {
           const isTooLong = line.length > config.length;
           if (isTooLong) {

@@ -112,7 +112,7 @@ describe('no-long-code', () => {
   });
 
   test('success with exclude lang configured', () => {
-    const longCode = 'console.log("very long long long long long long long long long long long long long sentence");';
+    const longCode = 'console.log("very long long long long long long long long long long long long long long long long long sentence");';
     const md = [
       '```js',
       longCode,

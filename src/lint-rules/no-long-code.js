@@ -1,5 +1,10 @@
 import { Plugin } from 'ast-plugin';
 
+const defaultConfig = {
+  length: 100,
+  excludes: [],
+};
+
 /**
  * 代码长度有限制
  * no-long-code
@@ -12,15 +17,13 @@ module.exports = class extends Plugin {
   pre() { }
 
   visitor() {
-    const { config = { } } = this.cfg;
-    const excludes = [].concat(config.exclude).filter(exclude => typeof exclude === 'string');
-    const length = typeof config.length === 'number' ? config.length : 100;
+    const config = Object.assign({}, defaultConfig, this.cfg.config);
     return {
       code: (ast) => {
         const { lang, value, position } = ast.node;
-        if (excludes.indexOf(lang) >= 0) return;
+        if (config.excludes.indexOf(lang) >= 0) return;
         value.split('\n').every((line, i) => {
-          const isTooLong = line.length > length;
+          const isTooLong = line.length > config.length;
           if (isTooLong) {
             const { start } = position;
             this.cfg.throwError({
@@ -32,7 +35,7 @@ module.exports = class extends Plugin {
                 line: start.line + i + 1,
                 column: line.length + 1,
               },
-              text: `line with ${line.length} characters exceeds code max length ${length}`,
+              text: `line with ${line.length} characters exceeds code max length ${config.length}`,
               ast,
             });
           }

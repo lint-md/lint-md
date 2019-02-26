@@ -74,8 +74,8 @@ lint-md README.md Document.md --fix
 
 `no-long-code` 接受两个可配置参数：
 
-+ `length`: 每行代码接受的最大长度，默认值为 `100`
-+ `exclude`: 可以配置部分代码类型不做长度检查，默认值为 `[]`
++ `length`: 每行代码接受的最大长度，数字，默认值为 `100`
++ `exclude`: 可以配置部分代码类型不做长度检查，字符串数组，默认值为 `[]`
 
 ### Pull Request
 

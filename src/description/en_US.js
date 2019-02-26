@@ -49,5 +49,8 @@ export default {
   },
   'no-space-in-inlinecode': {
     message: 'Inline code content can not start / end with space.'
-  }
+  },
+  'no-long-code': {
+    message: 'Code Block cannot have too long line.',
+  },
 }

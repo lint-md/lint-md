@@ -19,6 +19,7 @@ const PluginClasses = [
   require('./no-multiple-space-blockquote'),
   require('./no-space-in-inlinecode'),
   require('./no-trailing-punctuation'),
+  require('./no-long-code'),
 ];
 
 
@@ -31,21 +32,29 @@ const PluginClasses = [
  */
 export default (throwError, rules) => {
   // 所有的插件的默认 rules
-  const initialRules = {};
+  const rulesConfig = {};
 
   _.forEach(PluginClasses, Plugin => {
-    initialRules[Plugin.type] = 2; // 默认都是 error
+    rulesConfig[Plugin.type] = {
+      level: 2, // 默认都是 error
+    };
   });
 
   // 用 rules 覆盖初始配置
-  const rulesConfig = _.merge({}, initialRules, rules);
+  Object.keys(rules).forEach((rule) => {
+    const [level, config] = [].concat(rules[rule]);
+    rulesConfig[rule] = {
+      level,
+      config,
+    };
+  });
 
   // 配置为 0 的就是关闭，不启用插件！
-  const Plugins = _.filter(PluginClasses, Plugin => rulesConfig[Plugin.type] !== 0);
+  const Plugins = _.filter(PluginClasses, Plugin => rulesConfig[Plugin.type].level !== 0);
 
   // 初始化插件
   return _.map(Plugins, Plugin => {
-    const level = ruleToLevel(rulesConfig[Plugin.type]);
+    const level = ruleToLevel(rulesConfig[Plugin.type].level);
 
     // 重新包装一下 throw 方法，加入 level
     const throwErrorFunc = error => {
@@ -54,6 +63,6 @@ export default (throwError, rules) => {
       throwError(error);
     };
 
-    return new Plugin({ throwError: throwErrorFunc });
+    return new Plugin({ throwError: throwErrorFunc, config: rulesConfig[Plugin.type].config });
   });
 };

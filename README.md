@@ -49,26 +49,26 @@ lint-md README.md Document.md --fix
 
 > 检查规则来源于 [chinese-document-style-guide](https://github.com/ruanyf/document-style-guide).
 
-| 规则 | 详细描述 | 解决办法 | 配置选项 |
-| ------ | ------ | ------ | ----- |
-| space-round-alphabet | 中文与英文之间需要增加空格 | 对应提示的位置增加空格 | |
-| space-round-number | 中文与数字之间需要增加空格 | 对应提示的位置增加空格 | |
-| no-empty-code-lang | 代码语言不能为空 | 在代码块语法上增加语言 | |
-| no-empty-delete | delete 块内容不能为空 | 删除空的 delete 文本块 | |
-| no-empty-url | 链接和图片地址不能为空 | 填写完整的 url，或者不使用链接和图片语法 | |
-| no-empty-list | List 内容不能为空 | List 语法中，填写内容 | |
-| no-empty-code | 代码块内容不能为空 | 删除空的代码块，或者填充代码内容 | |
-| no-empty-inlinecode | 行内代码块内容不能为空 | 删除空的代码块，或者填充代码内容 | |
-| no-empty-blockquote | blockquote 内容不能为空 | 删除空的 blockquote，或者填充内容 | |
-| no-special-characters | 文本中不能有特殊字符 | 可能是复制出来的特殊字符，删除特殊字符即可 | |
-| use-standard-ellipsis | 使用标准规范的省略号 | 使用标准规范的省略号‘……’ / ‘...’ | |
-| no-fullwidth-number | 不能用全角数字 | 注意输入法切换为半角输入 | |
-| no-space-in-emphasis | emphasis 内容前后不能有空格 | 删除 emphasis 内容中的前后空格即可 | |
-| no-space-in-link | link 内容前后不能有空格 | 删除 link 内容中的前后空格即可 | |
-| no-multiple-space-blockquote | blockquote 语法不能包含有多个空格 | 删除 blockquote 内容中多余的空格 | |
-| no-trailing-punctuation | 标题不能以标点符号结尾 | 删除标题最后的标点符号 | |
-| no-space-in-inlinecode | 行内代码内容，前后不能有空格 | 删除行内代码中的前后空格 | |
-| no-long-code | 代码块不能有过长的代码 | 对展示代码做格式上的修改 | `length`, `exclude` （见下文说明） |
+| 规则 | 详细描述 | 解决办法 | 配置选项 | 自动修复 |
+| ------ | ------ | ------ | ----- | ----- |
+| space-round-alphabet | 中文与英文之间需要增加空格 | 对应提示的位置增加空格 | | √ |
+| space-round-number | 中文与数字之间需要增加空格 | 对应提示的位置增加空格 | | √ |
+| no-empty-code-lang | 代码语言不能为空 | 在代码块语法上增加语言 | | √ |
+| no-empty-delete | delete 块内容不能为空 | 删除空的 delete 文本块 | | √ |
+| no-empty-url | 链接和图片地址不能为空 | 填写完整的 url，或者不使用链接和图片语法 | | √ |
+| no-empty-list | List 内容不能为空 | List 语法中，填写内容 | | √ |
+| no-empty-code | 代码块内容不能为空 | 删除空的代码块，或者填充代码内容 | | √ |
+| no-empty-inlinecode | 行内代码块内容不能为空 | 删除空的代码块，或者填充代码内容 | | √ |
+| no-empty-blockquote | blockquote 内容不能为空 | 删除空的 blockquote，或者填充内容 | | √ |
+| no-special-characters | 文本中不能有特殊字符 | 可能是复制出来的特殊字符，删除特殊字符即可 | | √ |
+| use-standard-ellipsis | 使用标准规范的省略号 | 使用标准规范的省略号‘……’ / ‘...’ | | √ |
+| no-fullwidth-number | 不能用全角数字 | 注意输入法切换为半角输入 | | √ |
+| no-space-in-emphasis | emphasis 内容前后不能有空格 | 删除 emphasis 内容中的前后空格即可 | | √ |
+| no-space-in-link | link 内容前后不能有空格 | 删除 link 内容中的前后空格即可 | | √ |
+| no-multiple-space-blockquote | blockquote 语法不能包含有多个空格 | 删除 blockquote 内容中多余的空格 | | √ |
+| no-trailing-punctuation | 标题不能以标点符号结尾 | 删除标题最后的标点符号 | | √ |
+| no-space-in-inlinecode | 行内代码内容，前后不能有空格 | 删除行内代码中的前后空格 | | √ |
+| no-long-code | 代码块不能有过长的代码 | 对展示代码做格式上的修改 | `length`, `exclude` （见下文说明） | x |
 
 ### 配置选项
 

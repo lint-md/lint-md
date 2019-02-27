@@ -147,6 +147,40 @@ script: lint-md README.md
 
 
 
+## 基于 Docker
+
+本地使用 Docker 镜像：
+
+```bash
+docker run --rm -it yuque/lint-md lint-md README.md Document.md # 也可直接带其它参数
+```
+
+另外，在基于 Docker 的 CI/CD 平台上，可使用 `yuque/lint-md` 镜像。例如 GitLab CI/CD：
+
+```yml
+lint:
+  image: yuque/lint-md
+  script:
+    - lint-md README.md # 或其它文件
+```
+
+Circle CI：
+
+```yml
+version: 2
+jobs:
+  lint:
+    docker:
+      - image: yuque/lint-md
+    steps:
+      - checkout
+      - run: lint-md README.md # 或其它文件
+```
+
+利用 Docker 作为 CI 的基础环境通常更有优势，不必每次构建都执行 `npm install`；资源节省，速度也会更快些。
+
+
+
 ## API 调用
 
 ```js

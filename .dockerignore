@@ -1,0 +1,12 @@
+node_modules
+lib
+
+Dockerfile
+logo.png
+
+**/.DS_STORE
+**/.git*
+
+coverage
+__tests__
+tests

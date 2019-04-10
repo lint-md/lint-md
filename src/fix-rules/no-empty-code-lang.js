@@ -5,7 +5,7 @@ export default (markdown, error) => {
   const { ast } = error;
 
   const { position } = ast.node;
-  const { start, end } = position;
+  const { start } = position;
 
   const { line } = start;
 

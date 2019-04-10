@@ -4,7 +4,7 @@ export default (markdown, error) => {
   const { ast } = error;
 
   const { position } = ast.node;
-  const { start, end } = position;
+  const { start } = position;
 
   // 删除这一行即可
   return new Text(markdown).removeLine(start.line).result();

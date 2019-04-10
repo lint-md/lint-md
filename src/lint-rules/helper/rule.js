@@ -1,5 +1,6 @@
+const RULE_LEVEL_INFO = ['info', 'warning', 'error'];
+
 // 映射关系
 export const ruleToLevel = rule => {
-  return rule === 0 ? 'info' :
-    rule === 1 ? 'warning' : 'error';
+  return RULE_LEVEL_INFO[rule];
 };

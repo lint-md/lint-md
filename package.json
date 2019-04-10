@@ -1,6 +1,6 @@
 {
   "name": "lint-md",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cli tool to lint your markdown file for Chinese.",
   "main": "lib/index.js",
   "bin": {
@@ -30,9 +30,9 @@
   ],
   "dependencies": {
     "ast-plugin": "^0.0.7",
+    "chalk": "^2.4.2",
     "commander": "^2.19.0",
     "glob": "^7.1.3",
-    "ink": "^0.5.1",
     "lodash": "^4.17.11",
     "remark-parse": "^6.0.2",
     "unified": "^7.0.1"

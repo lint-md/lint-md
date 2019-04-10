@@ -19,12 +19,10 @@ module.exports = (f, config) => {
 
     const errors = lint(markdown, rules);
 
-    const r = errors.length > 0 ? [{
+    resolve({
       path: path.dirname(file),
       file: path.basename(file),
       errors, // 去重
-    }] : [];
-
-    resolve(r);
+    });
   })
 };

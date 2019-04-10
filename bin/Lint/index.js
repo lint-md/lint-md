@@ -1,97 +1,100 @@
-const { h, render, Component, Color } = require('ink');
+const _ = require('lodash');
+const chalk = require('chalk');
 const loadMdFiles = require('../helper/file');
 const lint = require('./lint');
 const string = require('../helper/string');
 const { getDescription } = require('../../lib');
 
+const log = console.log;
+
 /**
  * Lint 组件
  * @type {module.Lint}
  */
-module.exports = class Lint extends Component {
+module.exports = class Lint {
 
-  constructor(props) {
-    super(props);
+  constructor(files, config) {
+    this.files = files;
+    this.config = config;
 
-    this.state = {
-      // 错误，格式为：{ path, file, errors: { start: { line, column }, end: { line, column } level, text, type } }
-      errorFiles: [],
-      // 当前检查文件数量
-      fileCount: 0,
-    };
-  }
-
-  componentDidMount() {
+    // 开始处理
     this.start();
   }
 
   async start() {
-    const { files, config, onExit } = this.props;
+    const mdFiles = await loadMdFiles(this.files, this.config);
 
-    const mdFiles = await loadMdFiles(files, config);
+    // 错误，格式为：{ path, file, errors: { start: { line, column }, end: { line, column } level, text, type } }
+    const errorFiles = [];
 
     for (const file of mdFiles) {
-      const errorFile = await lint(file, config);
+      const errorFile = await lint(file, this.config);
 
-      let { errorFiles, fileCount } = this.state;
-      fileCount += 1;
+      errorFiles.push(errorFile);
 
-      if (errorFile && errorFile.length > 0) {
-        errorFiles = errorFiles.concat(errorFile);
-      }
-
-      await this.setStateAsync({
-        errorFiles,
-        fileCount,
-      });
+      this.printErrorFile(errorFile);
     }
 
-    const { error, warning } = this.errorCount();
+    this.printOverview(errorFiles);
+
+    const { error, warning } = this.errorCount(errorFiles);
     // 是否出错
-    onExit(error === 0 ? 0 : 1);
+    process.exit(error === 0 ? 0 : 1);
   }
 
-  setStateAsync(state) {
-    return new Promise((resolve, reject) => {
-      this.setState(state, () => {
-        resolve();
-      });
-    });
-  };
+  /**
+   * 打印一个文件的错误信息
+   * @param errorFile
+   * @return {Promise<any>}
+   */
+  printErrorFile(errorFile) {
+    const { path, file, errors } = errorFile;
 
-  renderError(error) {
+    if (errors.length) log(`${path}/${file}`);
+
+    _.forEach(errors, this.printError);
+
+    if (errors.length) log();
+  }
+
+  /**
+   * 打印一个错误
+   * @param error
+   */
+  printError(error) {
     const { start, end, level, text, type } = error;
-    const props = level === 'error' ? { red: true } : { yellow: true };
-
     const pos = `${start.line}:${start.column}-${end.line}:${end.column}`;
 
-    return h('div', {}, [
+
+    log(chalk.grey(
       '  ',
-      h('span', {}, h(Color, { grey: true }, string.rightPad(pos, 16))),
-      '  ',
-      h('span', {}, h(Color, { grey: true }, string.rightPad(`${type}`, 24))),
-      '  ',
-      h(Color, props, `${getDescription(type).message} ${text}`),
-    ]);
+      string.rightPad(pos, 16),
+      '    ',
+      string.rightPad(`${type}`, 24),
+      '    ',
+      chalk[level === 'error' ? 'red' : 'yellow'](`${getDescription(type).message} ${text}`),
+    ));
   }
 
-  renderFile(errorFile) {
-    const { path, file, errors } = errorFile;
-    return h('div', {}, [
-      h('div', {}, `${path}/${file}`), // 文件
-      ...errors.map(error => this.renderError(error)), // 错误
-    ]);
+  /**
+   * 打印概览
+   */
+  printOverview(errorFiles) {
+    const fileCount = errorFiles.length;
+    const { error, warning } = this.errorCount(errorFiles);
+
+    log(
+      chalk.green(`Lint total ${fileCount} files,`),
+      chalk.yellow(`${warning} warnings`),
+      chalk.red(`${error} errors`),
+    );
   }
 
-  renderErrorFiles() {
-    const { errorFiles } = this.state;
-
-    return h('span', {}, errorFiles.map(errorFile => this.renderFile(errorFile)));
-  }
-
-  errorCount() {
-    const { errorFiles } = this.state;
-
+  /**
+   * 计数
+   * @return {{error: *, warning: *}}
+   */
+  errorCount(errorFiles) {
     const warningCnt = errorFiles.reduce((r, current) => {
       return r + current.errors.filter(error => error.level === 'warning').length;
     }, 0);
@@ -105,27 +108,4 @@ module.exports = class Lint extends Component {
       warning: warningCnt,
     };
   };
-
-  renderOverview() {
-    const { fileCount } = this.state;
-    const { error, warning } = this.errorCount();
-
-    return h('span', {}, [
-      h('span', {}, h(Color, { green: true }, `Lint total ${fileCount} files`)),
-      h('span', {}, h(Color, { grey: true }, ',')),
-      ' ',
-      h('span', {}, h(Color, { yellow: true }, `${warning} warnings`)),
-      ' ',
-      h('span', {}, h(Color, { red: true }, `${error} errors`)),
-    ]);
-  }
-
-  render() {
-    // 渲染错误
-    return h(
-      'div',
-      {},
-      [ this.renderErrorFiles(), this.renderOverview() ]
-    );
-  }
 };

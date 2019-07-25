@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 
-const { fix, version } = require('../../lib');
+const { fix, version } = require('lint-md');
 
 /**
  * 使用 ast 和规则进行 fix

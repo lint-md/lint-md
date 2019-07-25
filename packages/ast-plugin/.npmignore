@@ -1,0 +1,11 @@
+.gitignore
+.travis.yml
+.babelrc
+.idea
+
+__tests__
+
+node_modules
+coverage
+
+src

@@ -3,7 +3,7 @@ const chalk = require('chalk');
 const loadMdFiles = require('../helper/file');
 const lint = require('./lint');
 const string = require('../helper/string');
-const { getDescription } = require('../../lib');
+const { getDescription } = require('lint-md');
 
 const log = console.log;
 

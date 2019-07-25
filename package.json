@@ -1,60 +1,17 @@
 {
-  "name": "lint-md",
-  "version": "0.1.1",
-  "description": "Cli tool to lint your markdown file for Chinese.",
-  "main": "lib/index.js",
-  "bin": {
-    "lint-md": "bin/index.js"
-  },
-  "scripts": {
-    "test": "jest --no-cache",
-    "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "dev": "npm run build && node ./bin/index.js tests README.md -c tests/.lintmdrc",
-    "build": "babel src -d lib"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx}",
-      "!**/node_modules/**",
-      "!**/vendor/**"
-    ],
-    "testRegex": "/__tests__/.*\\.spec\\.jsx?$"
-  },
+  "name": "all-packages",
+  "version": "1.0.0",
+  "description": "All packages for lint-md.",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "keywords": [
     "lint",
     "markdown",
-    "lint-md",
-    "ast-plugin"
+    "lint-md"
   ],
-  "dependencies": {
-    "ast-plugin": "^0.0.7",
-    "chalk": "^2.4.2",
-    "commander": "^2.19.0",
-    "glob": "^7.1.3",
-    "lodash": "^4.17.11",
-    "remark-parse": "^6.0.2",
-    "unified": "^7.0.1"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.2.0",
-    "@babel/core": "^7.2.0",
-    "@babel/preset-env": "^7.2.0",
-    "babel-core": "^7.0.0-bridge.0",
-    "babel-jest": "^23.6.0",
-    "babel-plugin-version": "^0.2.3",
-    "coveralls": "^3.0.2",
-    "jest": "^23.6.0"
-  },
   "author": "hustcc",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/hustcc/lint-md/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hustcc/lint-md.git"
-  },
-  "homepage": "https://github.com/hustcc/lint-md#readme"
+  "homepage": "https://atool.vip/"
 }

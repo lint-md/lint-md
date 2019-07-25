@@ -1,0 +1,49 @@
+{
+  "name": "ast-plugin",
+  "version": "0.0.7",
+  "description": "The simplest abstract syntax tree walker.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "jest --no-cache",
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "build": "rimraf ./lib && babel src -d lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hustcc/ast-plugin.git"
+  },
+  "keywords": [
+    "ast",
+    "plugin",
+    "ast-plugin"
+  ],
+  "author": "hustcc",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hustcc/ast-plugin/issues"
+  },
+  "homepage": "https://github.com/hustcc/ast-plugin#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.1.5",
+    "@babel/core": "^7.1.5",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/plugin-transform-spread": "^7.0.0",
+    "@babel/preset-env": "^7.1.5",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
+    "babel-plugin-version": "^0.2.3",
+    "coveralls": "^3.0.2",
+    "jest": "^23.6.0",
+    "remark-parse": "^6.0.2",
+    "rimraf": "^2.6.2",
+    "unified": "^7.0.1"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "testEnvironment": "node",
+    "testRegex": "(/__tests__/.*\\.(test|spec))\\.jsx?$",
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}"
+    ]
+  }
+}

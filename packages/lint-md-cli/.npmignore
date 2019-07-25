@@ -1,0 +1,13 @@
+.gitignore
+.travis.yml
+.babelrc
+.idea
+.dockerignore
+
+__tests__
+
+node_modules
+coverage
+tests
+package-lock.json
+src

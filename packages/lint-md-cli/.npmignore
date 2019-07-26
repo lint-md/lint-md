@@ -2,6 +2,7 @@
 .travis.yml
 .babelrc
 .idea
+Dockerfile
 .dockerignore
 
 __tests__

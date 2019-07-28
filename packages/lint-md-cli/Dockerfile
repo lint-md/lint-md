@@ -5,7 +5,7 @@ WORKDIR /usr/local/lint-md
 COPY . .
 
 RUN set -x \
-    && yarn install \
+    && yarn install --production \
     && ln -s ./bin/index.js /usr/local/bin/lint-md
 
-CMD ["lint-md"]
+ENTRYPOINT ["lint-md"]

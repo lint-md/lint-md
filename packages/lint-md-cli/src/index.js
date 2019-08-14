@@ -2,13 +2,12 @@
 
 const program = require('commander');
 
-const pkg = require('../package.json');
 const Lint = require('./Lint');
 const Fix = require('./Fix');
 const configure = require('./helper/configure');
 
 program
-  .version(pkg.version, '-v, --version')
+  .version(__VERSION__, '-v, --version')
   .usage('<lint-md> <files...> [options]')
   .description('lint your markdown files')
   .option('-c, --config [configure-file]', 'use the configure file, default .lintmdrc')

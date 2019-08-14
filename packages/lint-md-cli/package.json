@@ -1,12 +1,13 @@
 {
   "name": "lint-md-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cli tool to lint your markdown file for Chinese.",
   "bin": {
     "lint-md": "bin/index.js"
   },
   "scripts": {
-    "test": "node ./bin/index.js tests README.md -c tests/.lintmdrc"
+    "test": "node ./bin/index.js tests README.md -c tests/.lintmdrc",
+    "build": "rimraf ./bin && babel src -d bin"
   },
   "keywords": [
     "lint",
@@ -29,7 +30,8 @@
     "babel-jest": "^23.6.0",
     "babel-plugin-version": "^0.2.3",
     "coveralls": "^3.0.2",
-    "jest": "^23.6.0"
+    "jest": "^23.6.0",
+    "rimraf": "^2.7.0"
   },
   "author": "hustcc",
   "license": "MIT",

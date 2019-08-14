@@ -3,8 +3,6 @@
 
 > 用于检查中文 markdown 编写格式规范的命令行工具，基于 AST 开发，且方便集成 ci；同时提供 API 方法调用。Cli tool to lint your markdown file for Chinese.
 
-[![Build Status](https://travis-ci.org/hustcc/lint-md-cli.svg?branch=master)](https://travis-ci.org/hustcc/lint-md-cli)
-[![Coverage Status](https://coveralls.io/repos/github/hustcc/lint-md-cli/badge.svg?branch=master)](https://coveralls.io/github/hustcc/lint-md-cli)
 [![npm](https://img.shields.io/npm/v/lint-md-cli.svg)](https://www.npmjs.com/package/lint-md-cli)
 [![npm](https://img.shields.io/npm/dm/lint-md-cli.svg)](https://www.npmjs.com/package/lint-md-cli)
 
@@ -48,7 +46,7 @@ lint-md README.md Document.md --fix
 
 ## 检查类型
 
-基于 [lint-md](https://github.com/hustcc/lint-md/packages/lint-md)，具体支持的检查类型，请到该项目查看。
+基于 [lint-md](https://github.com/hustcc/lint-md/tree/master/packages/lint-md)，具体支持的检查类型，请到该项目查看。
 
 
 
@@ -69,7 +67,7 @@ lint-md README.md Document.md --fix
 }
 ```
 
- - 通过 rules 来配置规则。参考 [lint-md](https://github.com/hustcc/lint-md/packages/lint-md) 文档说明。
+ - 通过 rules 来配置规则。参考 [lint-md](https://github.com/hustcc/lint-md/tree/master/packages/lint-md) 文档说明。
  - 通过 excludeFiles 来忽略文件和目录，glob 语法。
 
 

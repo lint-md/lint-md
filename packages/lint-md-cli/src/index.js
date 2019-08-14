@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+require('babel-polyfill');
+
 const program = require('commander');
 
 const Lint = require('./Lint');

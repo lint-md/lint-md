@@ -113,7 +113,7 @@ const errors = lint(markdown, rules);
 
 ## 其他相关
 
- - [lint-md-cli](https://github.com/hustcc/lint-md/packages/lint-md-cli)：lint-md 模块的 CLI 工具，方便用于 ci 集成。
+ - [lint-md-cli](https://github.com/hustcc/lint-md/tree/master/packages/lint-md-cli)：lint-md 模块的 CLI 工具，方便用于 ci 集成。
  - [vscode 插件](https://marketplace.visualstudio.com/items?itemName=ZhixiangZhang.mdlint#review-details)：在 vscode 中使用 lint-md 工具。
  - [语雀 lint 服务](https://github.com/hustcc/yuque-lint)：利用语雀的 webhook 自动校验提交的文档格式并做提醒。
 

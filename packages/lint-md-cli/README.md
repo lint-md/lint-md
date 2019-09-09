@@ -106,7 +106,7 @@ script: lint-md README.md
 假设当前目录有一文件名为 `README.md`，可在本地使用以下命令：
 
 ```bash
-docker run --rm -it -v$(pwd)/docs yuque/lint-md:cli /docs/README.md # 也可直接带其它参数
+docker run --rm -it -v$(pwd):/docs yuque/lint-md:cli /docs/README.md # 也可直接带其它参数
 ```
 
 其中：

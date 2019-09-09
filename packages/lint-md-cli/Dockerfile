@@ -6,6 +6,6 @@ COPY . .
 
 RUN set -x \
     && yarn install --production \
-    && ln -s ./bin/index.js /usr/local/bin/lint-md
+    && ln -s /usr/local/lint-md/bin/index.js /usr/local/bin/lint-md
 
 ENTRYPOINT ["lint-md"]

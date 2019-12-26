@@ -20,10 +20,13 @@ module.exports = (src, config) => {
   const { excludeFiles } = config;
 
   return new Promise((resolve, reject) => {
-    const srcArr = Array.isArray(src) ? src : [src];
-
     setTimeout(() => {
       const files = [];
+      const srcArr = [];
+        
+      for (let i = 0; i < src.length; i ++) {
+        srcArr.push(...glob.sync(src[i]))
+      }
 
       for (let i = 0; i < srcArr.length; i ++) {
         let f = [];

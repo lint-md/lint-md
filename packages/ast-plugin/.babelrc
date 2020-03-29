@@ -1,8 +1,0 @@
-{
-  "presets": ["@babel/preset-env"],
-  "plugins": [
-    "@babel/plugin-transform-spread",
-    "@babel/plugin-proposal-class-properties",
-    "version"
-  ]
-}

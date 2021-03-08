@@ -1,3 +1,16 @@
+/*
+ * File: constants.ts
+ * Description: rules 生成器
+ *
+ * 对于一些无参 rules(几乎所有)
+ * 我们直接基于 lint-md 生成相应的模板，
+ * 这样无需再去花费大量时间单独写 rules
+ *
+ * Created: 2021-3-8 23:38:56
+ * Author: yuzhanglong
+ * Email: yuzl1123@163.com
+ */
+
 const path = require('path')
 const fs = require("fs");
 const {getTotalRuleNames} = require("./utils");

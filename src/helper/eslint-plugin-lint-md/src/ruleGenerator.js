@@ -5,6 +5,8 @@ const ruleDir = path.resolve(__dirname, '../../../lint-rules')
 const templatePath = path.resolve(__dirname, './ruleTemplate.js')
 const eslintRuleDir = path.resolve(__dirname, './rules')
 
+const NOT_SUPPORTED_FIX = ['no-long-code']
+
 const HEADERS = `/*
  * IMPORTANT!
  * This file has been automatically generated,
@@ -27,7 +29,10 @@ const generateRuleCode = () => {
 
   // 生成 rules && index.js
   rules.forEach(name => {
-    const result = template.toString().replace('$MD_LINT_RULE_NAME$', name)
+    const result = template.toString()
+      .replace(/\$MD_LINT_RULE_NAME\$/g, name)
+      .replace(/\$FIXABLE\$/g, NOT_SUPPORTED_FIX.indexOf(name) >= 0 ? false : '"code"')
+
     fs.writeFileSync(path.resolve(eslintRuleDir, `${name}.js`), `${HEADERS}${result}`)
     data += `  '${name}': require('./${name}'),\n`
   })

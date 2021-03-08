@@ -6,8 +6,9 @@ module.exports = {
         return [text];
       },
       postprocess: function (messages) {
-        return messages[0];
-      }
+        return messages.flat();
+      },
+      supportsAutofix: true
     }
   },
   rules: rules

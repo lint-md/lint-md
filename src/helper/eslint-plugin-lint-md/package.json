@@ -1,0 +1,16 @@
+{
+  "name": "eslint-plugin-lint-md",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sync-rules": "node ./src/ruleGenerator.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lint-md": "^0.2.0"
+  }
+}

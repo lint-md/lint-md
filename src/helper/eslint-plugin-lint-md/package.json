@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-lint-md",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "",
   "main": "./src/index.js",
   "scripts": {
@@ -12,5 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "lint-md": "^0.2.0"
-  }
+  },
+  "files": [
+    "src"
+  ]
 }

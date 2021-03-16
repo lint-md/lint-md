@@ -10,13 +10,13 @@ const findAllNumbers = s => {
   const r = [];
 
   // 循环找出所有的数字
-  while(true) {
+  while (true) {
     const matched = re.exec(s);
 
     if (matched) {
       r.push({
         number: matched[0],
-        index: matched.index,
+        index: matched.index
       });
     } else {
       break;
@@ -42,9 +42,7 @@ module.exports = class extends Plugin {
 
   static get type() {
     return 'no-fullwidth-number';
-  };
-
-  pre() {}
+  }
 
   visitor() {
     return {
@@ -60,20 +58,18 @@ module.exports = class extends Plugin {
             this.cfg.throwError({
               start: {
                 line,
-                column: column + index + 1,
+                column: column + index + 1
               },
               end: {
                 line,
-                column: column + index + 1 + number.length,
+                column: column + index + 1 + number.length
               },
               text: `'${number}'`,
-              ast,
+              ast
             });
           }
         });
-      },
-    }
+      }
+    };
   }
-
-  post() {}
 };

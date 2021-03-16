@@ -1,4 +1,5 @@
 import { Plugin } from 'ast-plugin';
+
 const { subErrorStr } = require('./helper/string');
 
 const SpecialCharacters = ['\b'];
@@ -12,9 +13,7 @@ module.exports = class extends Plugin {
 
   static get type() {
     return 'no-special-characters';
-  };
-
-  pre() {}
+  }
 
   visitor() {
     return {
@@ -33,20 +32,18 @@ module.exports = class extends Plugin {
             this.cfg.throwError({
               start: {
                 line,
-                column: column + idx,
+                column: column + idx
               },
               end: {
                 line,
-                column: column + idx + 1,
+                column: column + idx + 1
               },
               text: `'${text}'`,
-              ast,
+              ast
             });
           }
         });
-      },
-    }
+      }
+    };
   }
-
-  post() {}
 };

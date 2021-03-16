@@ -19,7 +19,7 @@ const PluginClasses = [
   require('./no-multiple-space-blockquote'),
   require('./no-space-in-inlinecode'),
   require('./no-trailing-punctuation'),
-  require('./no-long-code'),
+  require('./no-long-code')
 ];
 
 
@@ -36,7 +36,7 @@ export default (throwError, rules) => {
 
   _.forEach(PluginClasses, Plugin => {
     rulesConfig[Plugin.type] = {
-      level: 2, // 默认都是 error
+      level: 2 // 默认都是 error
     };
   });
 
@@ -45,7 +45,7 @@ export default (throwError, rules) => {
     const [level, config] = [].concat(rules[rule]);
     rulesConfig[rule] = {
       level,
-      config,
+      config
     };
   });
 
@@ -62,6 +62,16 @@ export default (throwError, rules) => {
       error.type = Plugin.type;
       throwError(error);
     };
+
+    const hasPreMethod = Object.prototype.hasOwnProperty.call(Plugin.prototype, 'pre');
+    const hasPostMethod = Object.prototype.hasOwnProperty.call(Plugin.prototype, 'post');
+    if (!hasPreMethod) {
+      Plugin.prototype.pre = () => null;
+    }
+    if (!hasPostMethod) {
+      Plugin.prototype.post = () => null;
+    }
+
 
     return new Plugin({ throwError: throwErrorFunc, config: rulesConfig[Plugin.type].config });
   });

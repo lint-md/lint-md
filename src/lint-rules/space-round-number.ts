@@ -12,17 +12,12 @@ module.exports = class extends Plugin {
 
   static get type() {
     return 'space-round-number';
-  };
-
-  pre() {}
-
+  }
   visitor() {
     return {
       text: ast => {
         processSpaceRuleAst(ast, matches, this.cfg.throwError);
-      },
-    }
+      }
+    };
   }
-
-  post() {}
 };

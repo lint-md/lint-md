@@ -27,7 +27,7 @@ export const lint = (markdown: string, rulesConfig?: LintMdRules, containAst?: b
 
   // 处理 plugin 规则
   // 通过配置的规则，来处理
-  new Ast(ast, undefined, markdown).traverse(plugins(throwFunc, rulesConfig));
+  new Ast(ast, undefined, markdown).traverse(plugins(throwFunc, rulesConfig || {}));
 
   // 去重
   const es = _.uniqWith(errors, _.isEqual);

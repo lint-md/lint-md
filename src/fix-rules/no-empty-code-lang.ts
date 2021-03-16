@@ -1,11 +1,11 @@
-import Text from '../helper/Text'
-import _ from 'lodash';
+import * as _ from 'lodash';
+import Text from '../helper/Text';
 
 export default (markdown, error) => {
   const { ast } = error;
 
   const { position } = ast.node;
-  const { start, end } = position;
+  const { start } = position;
 
   const { line } = start;
 

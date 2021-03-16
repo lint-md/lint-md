@@ -8,9 +8,7 @@ module.exports = class extends Plugin {
 
   static get type() {
     return 'no-empty-code-lang';
-  };
-
-  pre() {}
+  }
 
   visitor() {
     return {
@@ -21,23 +19,20 @@ module.exports = class extends Plugin {
         const column = ast.node.position.start.column;
 
         if (!lang) {
-          // @ts-ignore
           this.cfg.throwError({
             start: {
               line,
-              column,
+              column
             },
             end: {
               line,
               column: column + 3
             },
             text: '',
-            ast,
+            ast
           });
         }
-      },
-    }
+      }
+    };
   }
-
-  post() {}
 };

@@ -1,4 +1,5 @@
 import { Plugin } from 'ast-plugin';
+
 const { subErrorStr } = require('./helper/string');
 
 const showLength = 14;
@@ -54,9 +55,7 @@ module.exports = class extends Plugin {
 
   static get type() {
     return 'use-standard-ellipsis';
-  };
-
-  pre() {}
+  }
 
   visitor() {
     return {
@@ -70,19 +69,17 @@ module.exports = class extends Plugin {
           this.cfg.throwError({
             start: {
               line,
-              column: column + item.index,
+              column: column + item.index
             },
             end: {
               line,
-              column: column + item.index + item.length,
+              column: column + item.index + item.length
             },
             text: `'${subErrorStr(text, item.index, showLength)}'`,
-            ast,
+            ast
           });
         });
-      },
-    }
+      }
+    };
   }
-
-  post() {}
 };

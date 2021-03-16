@@ -1,4 +1,5 @@
 import { Plugin } from 'ast-plugin';
+
 const { getChildrenPosition } = require('../helper/ast');
 
 /**
@@ -20,7 +21,7 @@ module.exports = class extends Plugin {
       this.cfg.throwError({
         ...pos,
         text: '',
-        ast,
+        ast
       });
     }
   }
@@ -29,7 +30,7 @@ module.exports = class extends Plugin {
     return {
       code: ast => {
         this.emptyCode(ast);
-      },
-    }
+      }
+    };
   }
 };

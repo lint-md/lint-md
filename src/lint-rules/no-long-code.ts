@@ -2,7 +2,7 @@ import { Plugin } from 'ast-plugin';
 
 const defaultConfig = {
   length: 100,
-  exclude: [],
+  exclude: []
 };
 
 /**
@@ -13,8 +13,6 @@ module.exports = class extends Plugin {
   static get type() {
     return 'no-long-code';
   }
-
-  pre() { }
 
   visitor() {
     const config = Object.assign({}, defaultConfig, this.cfg.config);
@@ -29,21 +27,19 @@ module.exports = class extends Plugin {
             this.cfg.throwError({
               start: {
                 line: start.line + i + 1,
-                column: 1,
+                column: 1
               },
               end: {
                 line: start.line + i + 1,
-                column: line.length + 1,
+                column: line.length + 1
               },
               text: `line with ${line.length} characters exceeds code max length ${config.length}`,
-              ast,
+              ast
             });
           }
           return !isTooLong;
         });
-      },
+      }
     };
   }
-
-  post() { }
-}
+};

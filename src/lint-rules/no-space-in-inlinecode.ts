@@ -1,5 +1,5 @@
 import { Plugin } from 'ast-plugin';
-import _ from 'lodash';
+import * as _ from 'lodash';
 const { astPositionTrans } = require('../helper/ast');
 
 /**
@@ -10,9 +10,7 @@ module.exports = class extends Plugin {
 
   static get type() {
     return 'no-space-in-inlinecode';
-  };
-
-  pre() {}
+  }
 
   visitor() {
     return {
@@ -34,6 +32,4 @@ module.exports = class extends Plugin {
       },
     }
   }
-
-  post() {}
 };

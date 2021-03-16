@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 import Text from '../helper/Text';
 
 export default (markdown, error) => {
@@ -8,7 +8,7 @@ export default (markdown, error) => {
 
   const text = new Text(markdown);
 
-  let md = '';
+  let md: string;
 
   if (type === 'image') {
     const { alt } = ast.node;

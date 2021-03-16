@@ -1,4 +1,5 @@
 import { Plugin } from 'ast-plugin';
+
 const { getChildrenPosition } = require('../helper/ast');
 
 /**
@@ -11,23 +12,19 @@ module.exports = class extends Plugin {
     return 'no-empty-delete';
   }
 
-  pre() {}
-
   visitor() {
     return {
       delete: ast => {
         if (ast.node.children.length === 0) {
           const pos = getChildrenPosition(ast.node);
-          // @ts-ignore
+
           this.cfg.throwError({
             ...pos,
             text: '',
-            ast,
+            ast
           });
         }
-      },
-    }
+      }
+    };
   }
-
-  post() {}
 };

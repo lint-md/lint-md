@@ -1,4 +1,5 @@
 import { Plugin } from 'ast-plugin';
+
 const _ = require('lodash');
 const { astToText, getChildrenPosition } = require('../helper/ast');
 
@@ -10,9 +11,7 @@ module.exports = class extends Plugin {
 
   static get type() {
     return 'no-space-in-emphasis';
-  };
-
-  pre() {}
+  }
 
   visitor() {
     return {
@@ -25,12 +24,10 @@ module.exports = class extends Plugin {
           this.cfg.throwError({
             ...pos,
             text: `'${text}'`,
-            ast,
+            ast
           });
         }
-      },
-    }
+      }
+    };
   }
-
-  post() {}
 };

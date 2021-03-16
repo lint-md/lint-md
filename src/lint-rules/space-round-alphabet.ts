@@ -1,7 +1,6 @@
 import { Plugin } from 'ast-plugin';
 import processSpaceRuleAst from './helper/space-rule';
 
-
 // 匹配 [ZA, AZ]
 const matches = ['ZA', 'AZ'];
 

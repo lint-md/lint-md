@@ -1,4 +1,5 @@
 import { Plugin } from 'ast-plugin';
+
 const { getChildrenPosition } = require('../helper/ast');
 
 /**
@@ -9,9 +10,7 @@ module.exports = class extends Plugin {
 
   static get type() {
     return 'no-empty-list';
-  };
-
-  pre() {}
+  }
 
   visitor() {
     return {
@@ -24,12 +23,10 @@ module.exports = class extends Plugin {
           this.cfg.throwError({
             ...pos,
             text: '',
-            ast,
+            ast
           });
         }
-      },
-    }
+      }
+    };
   }
-
-  post() {}
 };

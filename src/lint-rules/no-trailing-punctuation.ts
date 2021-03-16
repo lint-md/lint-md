@@ -1,4 +1,5 @@
 import { Plugin } from 'ast-plugin';
+
 const _ = require('lodash');
 const { getLastChildLeaf } = require('../helper/ast');
 
@@ -12,9 +13,7 @@ module.exports = class extends Plugin {
 
   static get type() {
     return 'no-trailing-punctuation';
-  };
-
-  pre() {}
+  }
 
   visitor() {
     return {
@@ -28,19 +27,17 @@ module.exports = class extends Plugin {
           this.cfg.throwError({
             start: {
               line: start.line,
-              column: start.column,
+              column: start.column
             },
             end: {
               line: end.line,
-              column: end.column,
+              column: end.column
             },
             text: `'${text}'`,
-            ast,
+            ast
           });
         }
-      },
-    }
+      }
+    };
   }
-
-  post() {}
 };

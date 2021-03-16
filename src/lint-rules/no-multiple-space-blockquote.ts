@@ -1,4 +1,5 @@
 import { Plugin } from 'ast-plugin';
+
 const _ = require('lodash');
 const { astToText } = require('../helper/ast');
 const { substr, startSpaceLen } = require('./helper/string');
@@ -11,9 +12,7 @@ module.exports = class extends Plugin {
 
   static get type() {
     return 'no-multiple-space-blockquote';
-  };
-
-  pre() {}
+  }
 
   visitor() {
     return {
@@ -26,19 +25,17 @@ module.exports = class extends Plugin {
           this.cfg.throwError({
             start: {
               line,
-              column,
+              column
             },
             end: {
               line,
-              column: column + 1 + startSpaceLen(text),
+              column: column + 1 + startSpaceLen(text)
             },
             text: `'${substr(text)}'`,
-            ast,
+            ast
           });
         }
-      },
-    }
+      }
+    };
   }
-
-  post() {}
 };

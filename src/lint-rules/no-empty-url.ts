@@ -8,9 +8,7 @@ module.exports = class extends Plugin {
 
   static get type() {
     return 'no-empty-url';
-  };
-
-  pre() {}
+  }
 
   emptyUrl(ast, text) {
     const { url } = ast.node;
@@ -28,7 +26,7 @@ module.exports = class extends Plugin {
           column: end.column
         },
         text,
-        ast,
+        ast
       });
     }
   }
@@ -37,8 +35,6 @@ module.exports = class extends Plugin {
     return {
       link: ast => this.emptyUrl(ast, ''),
       image: ast => this.emptyUrl(ast, '')
-    }
+    };
   }
-
-  post() {}
 };

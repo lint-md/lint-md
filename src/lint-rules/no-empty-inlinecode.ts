@@ -1,4 +1,5 @@
 import { Plugin } from 'ast-plugin';
+
 const { getChildrenPosition } = require('../helper/ast');
 
 /**
@@ -9,9 +10,7 @@ module.exports = class extends Plugin {
 
   static get type() {
     return 'no-empty-inlinecode';
-  };
-
-  pre() {}
+  }
 
   emptyCode(ast) {
     const { value } = ast.node;
@@ -22,7 +21,7 @@ module.exports = class extends Plugin {
       this.cfg.throwError({
         ...pos,
         text: '',
-        ast,
+        ast
       });
     }
   }
@@ -32,8 +31,6 @@ module.exports = class extends Plugin {
       inlineCode: ast => {
         this.emptyCode(ast);
       }
-    }
+    };
   }
-
-  post() {}
 };

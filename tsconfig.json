@@ -1,18 +1,22 @@
 {
   "compilerOptions": {
+    "target": "ES5",
     "module": "CommonJS",
     "declaration": true,
-    "sourceMap": true,
-    "target": "es5",
-    "outDir": "lib",
-    "allowJs": true,
     "moduleResolution": "Node",
+    "removeComments": true,
+    "resolveJsonModule": true,
     "types": [
       "jest",
       "node"
     ],
-    "resolveJsonModule": true,
-    "baseUrl": "./"
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "sourceMap": true,
+    "baseUrl": "./",
+    "outDir": "bin",
+    "rootDir": "./src"
   },
   "include": [
     "src/**/*"

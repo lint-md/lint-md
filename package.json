@@ -8,16 +8,6 @@
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "build": "babel src -d lib"
   },
-  "jest": {
-    "testEnvironment": "node",
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx}",
-      "!**/node_modules/**",
-      "!**/vendor/**"
-    ],
-    "testRegex": "/__tests__/.*\\.spec\\.jsx?$"
-  },
   "keywords": [
     "lint",
     "markdown",
@@ -31,14 +21,11 @@
     "unified": "^7.0.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.2.0",
-    "@babel/core": "^7.2.0",
-    "@babel/preset-env": "^7.2.0",
-    "babel-core": "^7.0.0-bridge.0",
-    "babel-jest": "^23.6.0",
-    "babel-plugin-version": "^0.2.3",
+    "@types/jest": "^26.0.20",
     "coveralls": "^3.0.2",
-    "jest": "^23.6.0"
+    "jest": "^23.6.0",
+    "ts-jest": "^26.5.3",
+    "typescript": "^4.2.3"
   },
   "author": "hustcc",
   "license": "MIT",

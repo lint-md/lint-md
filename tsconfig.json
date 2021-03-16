@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES5",
+    "target": "ESNext",
     "module": "CommonJS",
     "declaration": true,
     "moduleResolution": "Node",
@@ -15,9 +15,12 @@
     "emitDecoratorMetadata": true,
     "sourceMap": true,
     "baseUrl": "./",
-    "outDir": "bin",
+    "outDir": "lib",
     "rootDir": "./src"
   },
+  "files": [
+    "./typings.d.ts"
+  ],
   "include": [
     "src/**/*"
   ]

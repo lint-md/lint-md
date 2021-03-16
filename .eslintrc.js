@@ -24,7 +24,8 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'warn',
     'import/no-unresolved': 'off',
     'no-multiple-empty-lines': 1,
-    'import/order': 'warn'
+    'import/order': 'warn',
+    '@typescript-eslint/no-empty-function': 'off'
   },
   env: {
     'node': true,

@@ -2,12 +2,13 @@
 
 declare module 'ast-plugin' {
   interface CfgOptions {
-    throwError: any;
-    config: any;
+    throwError: unknown;
+    config: unknown;
   }
 
   class Plugin {
     public cfg: CfgOptions;
+    public static type: string;
 
     pre();
 

@@ -1,6 +1,17 @@
+# IDE configurations
 .idea
+.vscode
+
+# Dependency directories
 node_modules
-lib
+
+# coverage files
 coverage
+
+# lock files
 package-lock.json
 yarn.lock
+
+# build files
+esm
+lib

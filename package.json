@@ -17,6 +17,7 @@
     "ast-plugin"
   ],
   "dependencies": {
+    "@types/eslint": "^7.2.7",
     "ast-plugin": "^0.0.7",
     "lodash": "^4.17.11",
     "remark-parse": "^6.0.2",

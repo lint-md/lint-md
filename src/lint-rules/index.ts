@@ -1,7 +1,9 @@
 import * as _ from 'lodash';
+import { Plugin, PluginError, PluginRuleConfig } from 'ast-plugin';
+import { LintMdRulesConfig } from '../types';
 import { ruleToLevel } from './helper/rule';
 
-const PluginClasses = [
+const PluginClasses: Plugin[] = [
   require('./space-round-alphabet'),
   require('./space-round-number'),
   require('./no-empty-code-lang'),
@@ -30,23 +32,36 @@ const PluginClasses = [
  * @param rules
  * @returns {*[]}
  */
-export default (throwError, rules) => {
-  // 所有的插件的默认 rules
-  const rulesConfig = {};
 
-  _.forEach(PluginClasses, Plugin => {
+type ThrowErrorFn = (LintError: PluginError) => void
+
+export default (throwError: ThrowErrorFn, rules: LintMdRulesConfig): Plugin[] => {
+  // 所有的插件的默认 rules
+  const rulesConfig: { [key: string]: PluginRuleConfig } = {};
+
+  _.forEach(PluginClasses, (Plugin) => {
     rulesConfig[Plugin.type] = {
-      level: 2 // 默认都是 error
+      // 默认都是 error
+      level: 2
     };
   });
 
   // 用 rules 覆盖初始配置
   Object.keys(rules).forEach((rule) => {
-    const [level, config] = [].concat(rules[rule]);
-    rulesConfig[rule] = {
-      level,
-      config
-    };
+    const targetRule = rules[rule];
+    // 当 targetRule 为 Array 时，分离出 level &&  config
+    if (Array.isArray(targetRule)) {
+      const [level, config] = targetRule;
+      rulesConfig[rule] = {
+        level,
+        config
+      };
+    } else {
+      rulesConfig[rule] = {
+        level: targetRule,
+        config: {}
+      };
+    }
   });
 
   // 配置为 0 的就是关闭，不启用插件！
@@ -63,8 +78,11 @@ export default (throwError, rules) => {
       throwError(error);
     };
 
+    // ast-plugin package 的基类没有定义 pre  / post 方法，
+    // 但 lint 时会执行它们，如果用户没有传入就会报错，我们需要规避这种情况
     const hasPreMethod = Object.prototype.hasOwnProperty.call(Plugin.prototype, 'pre');
     const hasPostMethod = Object.prototype.hasOwnProperty.call(Plugin.prototype, 'post');
+
     if (!hasPreMethod) {
       Plugin.prototype.pre = () => null;
     }
@@ -72,7 +90,8 @@ export default (throwError, rules) => {
       Plugin.prototype.post = () => null;
     }
 
-
+    // TODO: remove ts-ignore
+    // @ts-ignore
     return new Plugin({ throwError: throwErrorFunc, config: rulesConfig[Plugin.type].config });
   });
 };

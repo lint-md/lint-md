@@ -1,7 +1,10 @@
 import * as _ from 'lodash';
+import { PluginError } from 'ast-plugin';
+import { LintMdRules } from '../types';
+
 
 // 引入所有的规则
-const Rules = {
+const Rules: LintMdRules = {
   'no-empty-blockquote': require('./no-empty-blockquote').default,
   'no-empty-code': require('./no-empty-code').default,
   'no-empty-code-lang': require('./no-empty-code-lang').default,
@@ -18,21 +21,22 @@ const Rules = {
   'no-trailing-punctuation': require('./no-trailing-punctuation').default,
   'space-round-alphabet': require('./space-round-alphabet').default,
   'space-round-number': require('./space-round-number').default,
-  'use-standard-ellipsis': require('./use-standard-ellipsis').default,
+  'use-standard-ellipsis': require('./use-standard-ellipsis').default
 };
 
 /**
  * 处理 markdown 错误的拦截器机制
+ *
  * @param markdown
  * @param error
  * @returns {*}
  */
-export default (markdown, error) => {
+export default (markdown: string, error: PluginError) => {
   const { type } = error;
   // 使用对应的规则去处理
   const func = _.get(Rules, [type]);
 
-  if (func) {
+  if (func && typeof func === 'function') {
     return func(markdown, error);
   }
 

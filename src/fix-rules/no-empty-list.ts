@@ -1,8 +1,7 @@
-import Text from '../helper/Text'
+import Text from '../helper/Text';
 
 export default (markdown, error) => {
   const { ast } = error;
-
   const { position } = ast.node;
   const { start } = position;
 

@@ -1,18 +1,29 @@
 import * as _ from 'lodash';
 import { lint } from './lint';
-import rules from './fix-rules';
+import fixRules from './fix-rules';
+import { FIX_RETRY_MAX_COUNT } from './common/constants';
+import { LintMdRulesConfig } from './types';
 
-export const fix = (markdown, rulesConfig = {}) => {
+/**
+ * 基于 Lint API 进行 fix
+ *
+ * @param markdown markdown 字符串
+ * @param rulesConfig 配置中的 rule
+ * @return LintError[] lint 错误结果
+ * @return {string} 最终修复完成的 Markdown 结果
+ */
+export const fix = (markdown: string, rulesConfig?: LintMdRulesConfig) => {
   let newMarkdown = markdown;
 
-  let retryMax = 20;
+  let retryMax = FIX_RETRY_MAX_COUNT;
 
   let errorCnt = Infinity; // 最大值
 
-  // 循环 lint，每次只修复第一个错误，直到修复完；todo 可以优化为每次修改一行
+  // 循环 lint，每次只修复第一个错误，直到修复完
+  // TODO: 可以优化为每次修改一行
   // 为什么要循环 lint，因为每次修复错误，都会导致其他的错误位置产生偏移
   while (true) {
-    const errors = lint(newMarkdown, rulesConfig, true);
+    const errors = lint(newMarkdown, rulesConfig || {}, true);
     const newErrorCnt = errors.length;
 
     // 没有错误，终止处理
@@ -30,7 +41,7 @@ export const fix = (markdown, rulesConfig = {}) => {
     // const e = errors[0];
     // 随机处理
     const e = errors[_.random(newErrorCnt - 1)];
-    newMarkdown = rules(newMarkdown, e);
+    newMarkdown = fixRules(newMarkdown, e);
 
     errorCnt = newErrorCnt;
   }

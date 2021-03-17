@@ -6,7 +6,6 @@
     "moduleResolution": "Node",
     "removeComments": true,
     "resolveJsonModule": true,
-    "noImplicitAny": true,
     "types": [
       "jest",
       "node"

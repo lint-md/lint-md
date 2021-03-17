@@ -9,9 +9,7 @@ export interface ASTLocation {
 
 export type LintMdFixPlugin = (markdown: string, error: PluginError) => string
 
-export interface LintMdRules {
-  [key: string]: LintMdFixPlugin
-}
+export type LintMdRules = LooseObject<LintMdFixPlugin>
 
 // lint error 的级别
 type Severity = 0 | 1 | 2;
@@ -24,7 +22,11 @@ export type RuleLevelAndOptions<Options extends LooseObject = (undefined | Loose
 export type LintMdRuleEntry = RuleLevel | RuleLevelAndOptions
 
 // 用户传入的 lint 配置
-export interface LintMdRulesConfig {
-  [key: string]: LintMdRuleEntry
+export type LintMdRulesConfig = LooseObject<LintMdRuleEntry>
+
+export interface LintMdDescriptionOptions {
+  message: string
 }
+
+export type LintMdDescription = LooseObject<LintMdDescriptionOptions>
 

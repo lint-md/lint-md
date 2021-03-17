@@ -1,15 +1,25 @@
 import * as _ from 'lodash';
+import { LintMdDescription } from '../types';
+import { LooseObject } from '../types/common';
 import en_US from './en_US';
 
-const Descriptions = {
+type DescriptionSet = typeof Descriptions
+
+const Descriptions: LooseObject<LintMdDescription> = {
   en_US
 };
 
+
 /**
- * 获得类型的描述信息
- * @param type
- * @param lang
+ * 获得规则的描述信息
+ *
+ * @param type 规则名称
+ * @param lang 描述信息
  */
-export const getDescription = (type, lang = 'en_US') => {
-  return _.get(Descriptions, [lang, type], _.get(Descriptions, ['en_US', type]));
+export const getDescription = (type: string, lang?: string) => {
+  if (!lang) {
+    lang = 'en_US';
+  }
+
+  return _.get<DescriptionSet, keyof DescriptionSet, string>(Descriptions, [lang, type]);
 };

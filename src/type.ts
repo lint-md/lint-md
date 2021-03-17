@@ -1,13 +1,13 @@
-import { PluginError } from 'ast-plugin';
-import { LooseObject } from './common';
-
+export interface LooseObject<T = any> {
+  [key: string]: T;
+}
 
 export interface ASTLocation {
   line: number
   column: number
 }
 
-export type LintMdFixPlugin = (markdown: string, error: PluginError) => string
+export type LintMdFixPlugin = (markdown: string, error: any) => string
 
 export type LintMdRules = LooseObject<LintMdFixPlugin>
 

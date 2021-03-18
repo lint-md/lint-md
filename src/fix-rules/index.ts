@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { LintMdRules, PluginError } from '../type';
+import { LintMdFixer, PlainObject, LintMdError } from '../type';
 
 // 引入所有的规则
 import no_empty_blockquote from './no-empty-blockquote';
@@ -21,7 +21,7 @@ import no_empty_inlinecode from './no-empty-inlinecode';
 import no_empty_delete from './no-empty-delete';
 
 // 规则集合
-const Rules: LintMdRules = {
+const Rules: PlainObject<LintMdFixer> = {
   'no-empty-blockquote': no_empty_blockquote,
   'no-empty-code': no_empty_code,
   'no-empty-code-lang': no_empty_code_lang,
@@ -48,7 +48,7 @@ const Rules: LintMdRules = {
  * @param error
  * @returns {*}
  */
-export const fixRules = (markdown: string, error: PluginError) => {
+export const fixRules = (markdown: string, error: LintMdError) => {
   const { type } = error;
   // 使用对应的规则去处理
   const func = _.get(Rules, [type]);

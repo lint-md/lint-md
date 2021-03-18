@@ -3,7 +3,7 @@ import * as unified from 'unified';
 import * as md from 'remark-parse';
 import { Ast } from '@lint-md/ast-plugin';
 import lintMdRulePlugins from './lint-rules';
-import { LintMdRulesConfig, PluginError } from './type';
+import { LintMdRulesConfig, LintMdError } from './type';
 
 /**
  * 使用 ast 和插件进行 lint
@@ -13,11 +13,11 @@ import { LintMdRulesConfig, PluginError } from './type';
  * @param containAst error 结果中是否包含 ast，用于 fix，默认值 false
  * @return LintError[] lint 错误结果
  */
-export const lint = (markdown: string, rulesConfig?: LintMdRulesConfig, containAst?: boolean):PluginError[] => {
+export const lint = (markdown: string, rulesConfig?: LintMdRulesConfig, containAst?: boolean):LintMdError[] => {
   // 所有的错误
-  const errors: PluginError[] = [];
+  const errors: LintMdError[] = [];
 
-  const throwFunc = (error: PluginError) => {
+  const throwFunc = (error: LintMdError) => {
     errors.push(error);
   };
 
@@ -34,7 +34,7 @@ export const lint = (markdown: string, rulesConfig?: LintMdRulesConfig, containA
     .traverse(totalPlugins);
 
   // 去重
-  const es = _.uniqWith<PluginError>(errors, _.isEqual);
+  const es = _.uniqWith<LintMdError>(errors, _.isEqual);
 
   // 去除 ast 键值
   return containAst ? es : es.map(error => _.omit(error, ['ast']));

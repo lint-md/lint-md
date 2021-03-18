@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { Plugin } from '@lint-md/ast-plugin';
-import { LintMdRulesConfig, PluginError, PlainObject, RuleLevel } from '../type';
+import { LintMdRulesConfig, PlainObject, LintMdError, RuleLevel } from '../type';
 import { ruleToLevel } from './helper/rule';
 
 
@@ -34,7 +34,7 @@ const PluginClasses: Plugin[] = [
  * @returns {*[]}
  */
 
-type ThrowErrorFn = (LintError: PluginError) => void
+type ThrowErrorFn = (LintError: LintMdError) => void
 
 
 class PluginRuleConfig {
@@ -79,7 +79,7 @@ export default (throwError: ThrowErrorFn, rules: LintMdRulesConfig): Plugin[] =>
     const level = ruleToLevel(rulesConfig[Plugin.type].level);
 
     // 重新包装一下 throw 方法，加入 level
-    const throwErrorFunc = error => {
+    const throwErrorFunc = (error: LintMdError) => {
       error.level = level;
       error.type = Plugin.type;
       throwError(error);

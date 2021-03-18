@@ -6,14 +6,12 @@ export { getDescription } from './description';
 export {
   PlainObject,
   ASTLocation,
-  LintMdFixPlugin,
-  LintMdRules,
+  LintMdFixer,
   Severity,
   RuleLevel,
   RuleLevelAndOptions,
   LintMdRuleEntry,
   LintMdRulesConfig,
-  LintMdDescriptionOptions,
   LintMdDescription,
-  PluginError
+  LintMdError
 } from './type';

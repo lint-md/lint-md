@@ -37,7 +37,7 @@ const PluginClasses: Plugin[] = [
 type ThrowErrorFn = (LintError: LintMdError) => void
 
 
-class PluginRuleConfig {
+interface PluginRuleConfig {
   level?: RuleLevel;
   config?: PlainObject;
 }
@@ -55,20 +55,11 @@ export default (throwError: ThrowErrorFn, rules: LintMdRulesConfig): Plugin[] =>
 
   // 用 rules 覆盖初始配置
   Object.keys(rules).forEach((rule) => {
-    const targetRule = rules[rule];
-    // 当 targetRule 为 Array 时，分离出 level && config
-    if (Array.isArray(targetRule)) {
-      const [level, config] = targetRule;
-      rulesConfig[rule] = {
-        level,
-        config
-      };
-    } else {
-      rulesConfig[rule] = {
-        level: targetRule,
-        config: {}
-      };
-    }
+    const [level, config] = [].concat(rules[rule]);
+    rulesConfig[rule] = {
+      level,
+      config
+    };
   });
 
   // 配置为 0 的就是关闭，不启用插件！

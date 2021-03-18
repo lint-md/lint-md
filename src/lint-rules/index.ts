@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import {Plugin} from '@lint-md/ast-plugin'
-import { LintMdRulesConfig, PluginError, LooseObject, RuleLevel } from '../type';
+import { Plugin } from '@lint-md/ast-plugin';
+import { LintMdRulesConfig, PluginError, PlainObject, RuleLevel } from '../type';
 import { ruleToLevel } from './helper/rule';
 
 
@@ -39,12 +39,12 @@ type ThrowErrorFn = (LintError: PluginError) => void
 
 class PluginRuleConfig {
   level?: RuleLevel;
-  config?: LooseObject;
+  config?: PlainObject;
 }
 
 export default (throwError: ThrowErrorFn, rules: LintMdRulesConfig): Plugin[] => {
   // 所有的插件的默认 rules
-  const rulesConfig: LooseObject<PluginRuleConfig> = {};
+  const rulesConfig: PlainObject<PluginRuleConfig> = {};
 
   _.forEach(PluginClasses, (Plugin) => {
     rulesConfig[Plugin.type] = {

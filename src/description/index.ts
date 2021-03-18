@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
-import { LintMdDescription, LooseObject } from '../type';
+import { LintMdDescription, PlainObject } from '../type';
 import en_US from './en_US';
 
 type DescriptionSet = typeof Descriptions
 
-const Descriptions: LooseObject<LintMdDescription> = {
+const Descriptions: PlainObject<LintMdDescription> = {
   en_US
 };
 

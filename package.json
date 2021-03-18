@@ -6,14 +6,13 @@
   "module": "esm/index.js",
   "scripts": {
     "test": "jest --no-cache",
-    "coveralls": "cat ./coverage/lcov.info | coveralls",
     "lib:cjs": "tsc -p tsconfig.json --target ES5 --module commonjs --outDir lib",
-    "lib:esm": "tsc -p tsconfig.json --target ES5 --module ESNext --outDir esm",
-    "start": "tsc -w"
+    "lib:esm": "tsc -p tsconfig.json --target ES5 --module ESNext --outDir esm"
   },
   "files": [
     "esm",
-    "lib"
+    "lib",
+    "src"
   ],
   "keywords": [
     "lint",
@@ -22,7 +21,7 @@
     "ast-plugin"
   ],
   "dependencies": {
-    "ast-plugin": "^0.0.7",
+    "@lint-md/ast-plugin": "^1.0.0",
     "lodash": "^4.17.11",
     "remark-parse": "^6.0.2",
     "unified": "^7.0.1"

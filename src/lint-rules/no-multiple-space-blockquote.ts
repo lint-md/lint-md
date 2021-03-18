@@ -1,8 +1,8 @@
-import { Plugin } from 'ast-plugin';
+import { Plugin } from '@lint-md/ast-plugin';
+import * as _ from 'lodash';
+import { astToText } from '../helper/ast';
+import { startSpaceLen, substr } from './helper/string';
 
-const _ = require('lodash');
-const { astToText } = require('../helper/ast');
-const { substr, startSpaceLen } = require('./helper/string');
 
 /**
  * blockquote 后面不能有多个空格
@@ -37,5 +37,11 @@ module.exports = class extends Plugin {
         }
       }
     };
+  }
+
+  pre() {
+  }
+
+  post() {
   }
 };

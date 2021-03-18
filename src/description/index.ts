@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
-import { LintMdDescription } from '../types';
-import { LooseObject } from '../types/common';
+import { LintMdDescription, LooseObject } from '../type';
 import en_US from './en_US';
 
 type DescriptionSet = typeof Descriptions

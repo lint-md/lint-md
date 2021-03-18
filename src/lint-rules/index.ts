@@ -1,7 +1,8 @@
 import * as _ from 'lodash';
-import { Plugin, PluginError, PluginRuleConfig } from 'ast-plugin';
-import { LintMdRulesConfig } from '../types';
+import {Plugin} from '@lint-md/ast-plugin'
+import { LintMdRulesConfig, PluginError, LooseObject, RuleLevel } from '../type';
 import { ruleToLevel } from './helper/rule';
+
 
 const PluginClasses: Plugin[] = [
   require('./space-round-alphabet'),
@@ -35,9 +36,15 @@ const PluginClasses: Plugin[] = [
 
 type ThrowErrorFn = (LintError: PluginError) => void
 
+
+class PluginRuleConfig {
+  level?: RuleLevel;
+  config?: LooseObject;
+}
+
 export default (throwError: ThrowErrorFn, rules: LintMdRulesConfig): Plugin[] => {
   // 所有的插件的默认 rules
-  const rulesConfig: { [key: string]: PluginRuleConfig } = {};
+  const rulesConfig: LooseObject<PluginRuleConfig> = {};
 
   _.forEach(PluginClasses, (Plugin) => {
     rulesConfig[Plugin.type] = {
@@ -78,19 +85,6 @@ export default (throwError: ThrowErrorFn, rules: LintMdRulesConfig): Plugin[] =>
       throwError(error);
     };
 
-    // ast-plugin package 的基类没有定义 pre  / post 方法，
-    // 但 lint 时会执行它们，如果用户没有传入就会报错，我们需要规避这种情况
-    const hasPreMethod = Object.prototype.hasOwnProperty.call(Plugin.prototype, 'pre');
-    const hasPostMethod = Object.prototype.hasOwnProperty.call(Plugin.prototype, 'post');
-
-    if (!hasPreMethod) {
-      Plugin.prototype.pre = () => null;
-    }
-    if (!hasPostMethod) {
-      Plugin.prototype.post = () => null;
-    }
-
-    // TODO: remove ts-ignore
     // @ts-ignore
     return new Plugin({ throwError: throwErrorFunc, config: rulesConfig[Plugin.type].config });
   });

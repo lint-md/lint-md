@@ -1,4 +1,4 @@
-import { Plugin } from 'ast-plugin';
+import { Plugin } from '@lint-md/ast-plugin';
 import { getChildrenPosition } from '../helper/ast';
 
 
@@ -7,7 +7,6 @@ import { getChildrenPosition } from '../helper/ast';
  * no-empty-blockquote
  */
 module.exports = class extends Plugin {
-
   static get type() {
     return 'no-empty-blockquote';
   }
@@ -28,5 +27,11 @@ module.exports = class extends Plugin {
         }
       }
     };
+  }
+
+  pre() {
+  }
+
+  post() {
   }
 };

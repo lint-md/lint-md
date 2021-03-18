@@ -1,6 +1,7 @@
-import { Plugin } from 'ast-plugin';
+import { Plugin } from '@lint-md/ast-plugin';
 import * as _ from 'lodash';
-const { astPositionTrans } = require('../helper/ast');
+import { astPositionTrans } from '../helper/ast';
+
 
 /**
  * inlineCode 内容前后不能有空格
@@ -31,5 +32,11 @@ module.exports = class extends Plugin {
         }
       },
     }
+  }
+
+  pre() {
+  }
+
+  post() {
   }
 };

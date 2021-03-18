@@ -1,4 +1,4 @@
-import { Plugin } from 'ast-plugin';
+import { Plugin } from '@lint-md/ast-plugin';
 
 /**
  * 从字符串中找出所有的数字字符串和索引
@@ -71,5 +71,11 @@ module.exports = class extends Plugin {
         });
       }
     };
+  }
+
+  pre() {
+  }
+
+  post() {
   }
 };

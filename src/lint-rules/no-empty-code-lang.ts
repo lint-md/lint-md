@@ -1,4 +1,4 @@
-import { Plugin } from 'ast-plugin';
+import { Plugin } from '@lint-md/ast-plugin';
 
 /**
  * 中文和英文、数字之间需要有空格
@@ -34,5 +34,11 @@ module.exports = class extends Plugin {
         }
       }
     };
+  }
+
+  pre() {
+  }
+
+  post() {
   }
 };

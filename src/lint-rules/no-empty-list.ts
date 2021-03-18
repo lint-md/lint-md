@@ -1,6 +1,6 @@
-import { Plugin } from 'ast-plugin';
+import { Plugin } from '@lint-md/ast-plugin';
+import { getChildrenPosition } from '../helper/ast';
 
-const { getChildrenPosition } = require('../helper/ast');
 
 /**
  * list 内容不能为空
@@ -28,5 +28,11 @@ module.exports = class extends Plugin {
         }
       }
     };
+  }
+
+  pre() {
+  }
+
+  post() {
   }
 };

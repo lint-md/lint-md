@@ -1,4 +1,4 @@
-const { stringType, subErrorStr } = require('./string');
+import { stringType, subErrorStr } from './string';
 
 export default (ast, matches, cb) => {
   const text = ast.node.value;
@@ -8,7 +8,7 @@ export default (ast, matches, cb) => {
 
   const typeText = stringType(text);
 
-  for (let i = 0; i < typeText.length; i ++) {
+  for (let i = 0; i < typeText.length; i++) {
     const s = typeText.substr(i, 2);
 
     if (matches.indexOf(s) !== -1) {
@@ -23,7 +23,7 @@ export default (ast, matches, cb) => {
           column: column + i + 2
         },
         text: `'${subErrorStr(text, i, 12)}'`, // substring 12 个字符
-        ast,
+        ast
       });
     }
   }

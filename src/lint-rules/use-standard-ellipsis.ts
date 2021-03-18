@@ -1,6 +1,6 @@
-import { Plugin } from 'ast-plugin';
+import { Plugin } from '@lint-md/ast-plugin';
+import { subErrorStr } from './helper/string';
 
-const { subErrorStr } = require('./helper/string');
 
 const showLength = 14;
 
@@ -81,5 +81,11 @@ module.exports = class extends Plugin {
         });
       }
     };
+  }
+
+  pre() {
+  }
+
+  post() {
   }
 };

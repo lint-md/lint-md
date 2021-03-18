@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
-import { PluginError } from 'ast-plugin';
-import { LintMdRules } from '../types';
+import { LintMdRules, PluginError } from '../type';
 
 
 // 引入所有的规则
@@ -36,7 +35,7 @@ export default (markdown: string, error: PluginError) => {
   // 使用对应的规则去处理
   const func = _.get(Rules, [type]);
 
-  if (func && typeof func === 'function') {
+  if (func) {
     return func(markdown, error);
   }
 

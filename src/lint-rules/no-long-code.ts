@@ -1,4 +1,4 @@
-import { Plugin } from 'ast-plugin';
+import { Plugin } from '@lint-md/ast-plugin';
 
 const defaultConfig = {
   length: 100,
@@ -41,5 +41,11 @@ module.exports = class extends Plugin {
         });
       }
     };
+  }
+
+  pre() {
+  }
+
+  post() {
   }
 };

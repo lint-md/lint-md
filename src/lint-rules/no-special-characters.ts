@@ -1,6 +1,6 @@
-import { Plugin } from 'ast-plugin';
+import { Plugin } from '@lint-md/ast-plugin';
+import { subErrorStr } from './helper/string';
 
-const { subErrorStr } = require('./helper/string');
 
 const SpecialCharacters = ['\b'];
 const showLength = 12;
@@ -45,5 +45,11 @@ module.exports = class extends Plugin {
         });
       }
     };
+  }
+
+  pre() {
+  }
+
+  post() {
   }
 };

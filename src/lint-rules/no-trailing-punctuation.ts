@@ -1,7 +1,7 @@
-import { Plugin } from 'ast-plugin';
+import { Plugin } from '@lint-md/ast-plugin';
+import * as _ from 'lodash';
+import { getLastChildLeaf } from '../helper/ast';
 
-const _ = require('lodash');
-const { getLastChildLeaf } = require('../helper/ast');
 
 const Symbols = '.,;:!?。，；：！？…~*`';
 
@@ -39,5 +39,11 @@ module.exports = class extends Plugin {
         }
       }
     };
+  }
+
+  pre() {
+  }
+
+  post() {
   }
 };

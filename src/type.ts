@@ -12,9 +12,9 @@ export type LintMdFixPlugin = (markdown: string, error: any) => string
 export type LintMdRules = LooseObject<LintMdFixPlugin>
 
 // lint error 的级别
-type Severity = 0 | 1 | 2;
+export type Severity = 0 | 1 | 2;
 
-type RuleLevel = Severity | 'off' | 'warn' | 'error';
+export type RuleLevel = Severity | 'off' | 'warn' | 'error';
 
 
 export type RuleLevelAndOptions<Options extends LooseObject = (undefined | LooseObject)> = [RuleLevel, Options];
@@ -29,4 +29,7 @@ export interface LintMdDescriptionOptions {
 }
 
 export type LintMdDescription = LooseObject<LintMdDescriptionOptions>
+
+// TODO: define it!
+export type PluginError = any
 

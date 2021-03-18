@@ -16,11 +16,7 @@
     "sourceMap": true,
     "baseUrl": "./",
     "outDir": "lib",
-    "rootDir": "./src"
   },
-  "files": [
-    "./typings.d.ts"
-  ],
   "include": [
     "src/**/*"
   ]

@@ -1,4 +1,4 @@
-import { ASTLocation } from '../types';
+import { ASTLocation } from '../type';
 
 export default class Text {
   private readonly texts: string[][];

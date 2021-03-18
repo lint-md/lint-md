@@ -1,4 +1,4 @@
-import { Plugin } from 'ast-plugin';
+import { Plugin } from '@lint-md/ast-plugin';
 
 /**
  * link image 中地址不能为空
@@ -36,5 +36,11 @@ module.exports = class extends Plugin {
       link: ast => this.emptyUrl(ast, ''),
       image: ast => this.emptyUrl(ast, '')
     };
+  }
+
+  pre() {
+  }
+
+  post() {
   }
 };

@@ -1,4 +1,4 @@
-import { Plugin } from 'ast-plugin';
+import { Plugin } from '@lint-md/ast-plugin';
 import processSpaceRuleAst from './helper/space-rule';
 
 // 匹配 [ZN, NZ]
@@ -19,5 +19,11 @@ module.exports = class extends Plugin {
         processSpaceRuleAst(ast, matches, this.cfg.throwError);
       }
     };
+  }
+
+  pre() {
+  }
+
+  post() {
   }
 };

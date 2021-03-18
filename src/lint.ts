@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import * as unified from 'unified';
 import * as md from 'remark-parse';
-import { Ast, PluginError } from 'ast-plugin';
+import { Ast } from '@lint-md/ast-plugin';
 import lintMdRulePlugins from './lint-rules';
-import { LintMdRulesConfig } from './types';
+import { LintMdRulesConfig, PluginError } from './type';
 
 /**
  * 使用 ast 和插件进行 lint

@@ -1,7 +1,7 @@
-import { Plugin } from 'ast-plugin';
+import { Plugin } from '@lint-md/ast-plugin';
+import * as _ from 'lodash';
+import { astToText, getChildrenPosition } from '../helper/ast';
 
-const _ = require('lodash');
-const { astToText, getChildrenPosition } = require('../helper/ast');
 
 /**
  * Link 内容前后不能有空格
@@ -28,5 +28,11 @@ module.exports = class extends Plugin {
         }
       }
     };
+  }
+
+  pre() {
+  }
+
+  post() {
   }
 };

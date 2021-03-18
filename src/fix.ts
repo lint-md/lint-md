@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { lint } from './lint';
 import fixRules from './fix-rules';
 import { FIX_RETRY_MAX_COUNT } from './common/constants';
-import { LintMdRulesConfig } from './types';
+import { LintMdRulesConfig } from './type';
 
 /**
  * 基于 Lint API 进行 fix

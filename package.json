@@ -7,7 +7,9 @@
   "scripts": {
     "test": "jest --no-cache",
     "lib:cjs": "tsc -p tsconfig.json --target ES5 --module commonjs --outDir lib",
-    "lib:esm": "tsc -p tsconfig.json --target ES5 --module ESNext --outDir esm"
+    "lib:esm": "tsc -p tsconfig.json --target ES5 --module ESNext --outDir esm",
+    "build": "run-p lib:*",
+    "clean": "rimraf lib esm"
   },
   "files": [
     "esm",
@@ -31,12 +33,13 @@
     "@types/lodash": "^4.14.168",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
-    "coveralls": "^3.0.2",
     "eslint": "^7.22.0",
     "eslint-plugin-import": "^2.22.1",
     "jest": "^26.6.3",
     "ts-jest": "^26.5.3",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.3",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2"
   },
   "jest": {
     "preset": "ts-jest",
@@ -51,11 +54,11 @@
   "author": "hustcc",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hustcc/lint-md/issues"
+    "url": "https://github.com/lint-md/lint-md"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hustcc/lint-md.git"
+    "url": "git+https://github.com/lint-md.git"
   },
-  "homepage": "https://github.com/hustcc/lint-md#readme"
+  "homepage": "https://github.com/lint-md#readme"
 }

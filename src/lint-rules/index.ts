@@ -56,7 +56,7 @@ export default (throwError: ThrowErrorFn, rules: LintMdRulesConfig): Plugin[] =>
   // 用 rules 覆盖初始配置
   Object.keys(rules).forEach((rule) => {
     const targetRule = rules[rule];
-    // 当 targetRule 为 Array 时，分离出 level &&  config
+    // 当 targetRule 为 Array 时，分离出 level && config
     if (Array.isArray(targetRule)) {
       const [level, config] = targetRule;
       rulesConfig[rule] = {

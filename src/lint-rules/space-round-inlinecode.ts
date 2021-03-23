@@ -1,7 +1,25 @@
 import { Ast, Plugin } from '@lint-md/ast-plugin';
 import * as Unist from 'unist';
 
-const checkHasSpace = (node: Unist.Node, position: 'left' | 'right'): boolean => {
+
+/**
+ * 判断 inline code 左侧/右侧节点是否合法
+ *
+ * 判断方法：
+ *
+ * 1. 如果节点不是文字节点，直接返回 false，因为两侧的空格必然是 text 节点
+ *
+ * 2. 节点是文字节点
+ *
+ * 2-1. 如果节点位于 inline-code 左侧，如果节点 value 最右端有空格，返回 true
+ *
+ * 2-2. 如果节点位于 inline-code 右侧，如果节点 value 最左端有空格，返回 true
+ *
+ * @param node 节点
+ * @param position 该节点位于 inline code 的左侧还是右侧
+ * @return boolean 节点是否合法
+ */
+const isNodeAccepted = (node: Unist.Node, position: 'left' | 'right'): boolean => {
   // 左右两边是空格，那么必须存在文字节点
   if (node.type !== 'text') {
     return false;
@@ -39,9 +57,9 @@ module.exports = class extends Plugin {
           const rightIndex = nodeIndex + 1;
 
           // 1. 节点存在 -- 节点在合法的下标范围内
-          // 2.checkHasSpace 不通过，则 lint 异常
-          const isLeftLintError = isNodePositionAccepted(leftIndex) && !checkHasSpace(parentNodeChildren[leftIndex], 'left');
-          const isRightLintError = isNodePositionAccepted(rightIndex) && !checkHasSpace(parentNodeChildren[rightIndex], 'right');
+          // 2. isNodeAccepted 不通过，则 lint 异常
+          const isLeftLintError = isNodePositionAccepted(leftIndex) && !isNodeAccepted(parentNodeChildren[leftIndex], 'left');
+          const isRightLintError = isNodePositionAccepted(rightIndex) && !isNodeAccepted(parentNodeChildren[rightIndex], 'right');
 
           if (isLeftLintError || isRightLintError) {
             this.cfg.throwError(({

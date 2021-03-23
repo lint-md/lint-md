@@ -7,7 +7,6 @@ export default (markdown, error) => {
   const { start, end } = position;
 
   const text = error.text as string;
-  // 插入空格
 
   return new Text(markdown)
     .removeBlock(start, end)

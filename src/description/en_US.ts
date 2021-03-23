@@ -5,6 +5,9 @@ export default {
   'space-round-number': {
     message: 'No space between Chinese and number.'
   },
+  'space-round-inlinecode': {
+    message: 'No space between inline code.'
+  },
   'no-empty-code-lang': {
     message: 'Language of code can not be empty.'
   },
@@ -51,6 +54,6 @@ export default {
     message: 'Inline code content can not start / end with space.'
   },
   'no-long-code': {
-    message: 'Code Block cannot have too long line.',
-  },
-}
+    message: 'Code Block cannot have too long line.'
+  }
+};

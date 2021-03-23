@@ -46,6 +46,7 @@ const fixed = fix(markdown);
 | ------ | ------ | ------ | ----- | ----- |
 | space-round-alphabet | 中文与英文之间需要增加空格 | 对应提示的位置增加空格 | | √ |
 | space-round-number | 中文与数字之间需要增加空格 | 对应提示的位置增加空格 | | √ |
+| space-round-inlinecode | 行内代码块之间需要增加空格 | 对应提示的位置增加空格 | | √ |
 | no-empty-code-lang | 代码语言不能为空 | 在代码块语法上增加语言 | | √ |
 | no-empty-delete | delete 块内容不能为空 | 删除空的 delete 文本块 | | √ |
 | no-empty-url | 链接和图片地址不能为空 | 填写完整的 url，或者不使用链接和图片语法 | | √ |

@@ -28,7 +28,7 @@ describe('space-round-inlinecode', () => {
           column: 4,
           line: 1
         },
-        text: ' `world`',
+        text: '`world` ',
         type: 'space-round-inlinecode'
       }
     ]);
@@ -47,7 +47,7 @@ describe('space-round-inlinecode', () => {
           column: 3,
           line: 1
         },
-        text: '`world` ',
+        text: ' `world`',
         type: 'space-round-inlinecode'
       }
     ]);
@@ -66,7 +66,7 @@ describe('space-round-inlinecode', () => {
           column: 12,
           line: 1
         },
-        text: '`code` ',
+        text: ' `code`',
         type: 'space-round-inlinecode'
       }
     ]);

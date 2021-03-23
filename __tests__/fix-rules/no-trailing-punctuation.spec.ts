@@ -7,7 +7,7 @@ describe('no-trailing-punctuation', () => {
   });
 
   test('fail', () => {
-    const md = `### header 3~~!~~**.**\`。\``;
+    const md = `### header 3~~!~~**.**\`。`;
     // expect(lint(md)).toEqual([]);
     expect(fix(md)).toBe('### header 3');
   });

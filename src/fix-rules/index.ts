@@ -19,6 +19,7 @@ import no_empty_list from './no-empty-list';
 import no_empty_url from './no-empty-url';
 import no_empty_inlinecode from './no-empty-inlinecode';
 import no_empty_delete from './no-empty-delete';
+import space_round_inlinecode from './space-round-inlinecode';
 
 // 规则集合
 const Rules: PlainObject<LintMdFixer> = {
@@ -38,7 +39,8 @@ const Rules: PlainObject<LintMdFixer> = {
   'no-trailing-punctuation': no_trailing_punctuation,
   'space-round-alphabet': space_round_alphabet,
   'space-round-number': space_round_number,
-  'use-standard-ellipsis': use_standard_ellipsis
+  'use-standard-ellipsis': use_standard_ellipsis,
+  'space-round-inlinecode': space_round_inlinecode
 };
 
 /**

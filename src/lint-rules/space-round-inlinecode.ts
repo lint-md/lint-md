@@ -54,7 +54,7 @@ module.exports = class extends Plugin {
                 line: ast.node.position.end.line,
                 column: ast.node.position.end.column
               },
-              text: `\`${currentNode.value}\``
+              text: `${isLeftLintError ? ' ' : ''}\`${currentNode.value}\`${isRightLintError ? ' ' : ''}`
             }));
           }
         }

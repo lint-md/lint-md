@@ -1,6 +1,5 @@
 # lint-md
 
-
 > 用于检查中文 markdown 编写格式规范的核心模块，基于 AST 开发。Library used to lint your markdown file for Chinese.
 
 [![Build Status](https://travis-ci.org/hustcc/lint-md.svg?branch=master)](https://travis-ci.org/hustcc/lint-md)
@@ -8,35 +7,29 @@
 [![npm](https://img.shields.io/npm/v/lint-md.svg)](https://www.npmjs.com/package/lint-md)
 [![npm](https://img.shields.io/npm/dm/lint-md.svg)](https://www.npmjs.com/package/lint-md)
 
-
-
 ## 安装
 
-> **npm i --save lint-md**
-
-
+> **npm i --save @lint-md/core**
 
 ## API 调用
 
 ```js
-import { lint, fix, getDescription } from 'lint-md';
+import { lint, fix, getDescription } from '@lint-md/core';
 
 // get the markdown 's style errors
 const errors = lint(markdown, rules);
 
 // get the error type description
-const describe = getDescription(type[, lang = 'en_US']);
+const describe = getDescription('rule-type', 'en_US');
 
 // fix the markdown
 const fixed = fix(markdown);
 ```
 
- - **lint**：通过 API 方式来校验 markdown 文本；
- - **fix**：通过 API 方式来修复文本；
- - **getDescription**：获取错误类型的文本描述，包含多语言；
- - **version**：获得模块的版本号；
-
-
+- **lint**：通过 API 方式来校验 markdown 文本；
+- **fix**：通过 API 方式来修复文本；
+- **getDescription**：获取错误类型的文本描述，包含多语言；
+- **version**：获得模块的版本号；
 
 ## 检查类型
 
@@ -63,7 +56,6 @@ const fixed = fix(markdown);
 | no-space-in-inlinecode | 行内代码内容，前后不能有空格 | 删除行内代码中的前后空格 | | √ |
 | no-long-code | 代码块不能有过长的代码 | 对展示代码做格式上的修改 | `length`, `exclude` （见下文说明） | x |
 
-
 ### 配置选项
 
 `no-long-code` 接受两个可配置参数：
@@ -71,18 +63,15 @@ const fixed = fix(markdown);
 + `length`: 每行代码接受的最大长度，数字，默认值为 `100`
 + `exclude`: 可以配置部分代码类型不做长度检查，字符串数组，默认值为 `[]`
 
-
 ### Pull Request
 
 > 目前仅仅检查了比较通用的类型，**欢迎 pull request**，在 `rules` 中增加自己的规则，开发约束：
 
- - 规则主要针对于中文 markdown 的编写规范
- - 使用类 babel plugin 的方式来进行规则检查，一个插件对应一个规则
- - 规则名称对应和插件文件名保持一致
- - 先提 issue 进行讨论
- - [AST 工具](https://astexplorer.net/)，使用其中的 markdown AST 辅助开发插件
-
-
+- 规则主要针对于中文 markdown 的编写规范
+- 使用类 babel plugin 的方式来进行规则检查，一个插件对应一个规则
+- 规则名称对应和插件文件名保持一致
+- 先提 issue 进行讨论
+- [AST 工具](https://astexplorer.net/)，使用其中的 markdown AST 辅助开发插件
 
 ## Rules 配置
 
@@ -102,22 +91,18 @@ const errors = lint(markdown, rules);
 
 通过 rules 来配置规则。`key` 对应规则的名称。如果 `value` 是一个数字，那么表示规则的等级：
 
- - **0**：ignore 忽略不检查该规则
- - **1**：warning 警告，但不阻断 ci
- - **2**：error 错误，且阻断 ci
+- **0**：ignore 忽略不检查该规则
+- **1**：warning 警告，但不阻断 ci
+- **2**：error 错误，且阻断 ci
 
 如果 `value` 是一个数组，那么第一个是数字，表示该规则的等级；第二个为规则可接受的配置信息。
 
-
-
-
 ## 其他相关
 
- - [lint-md-cli](https://github.com/lint-md/cli)：lint-md 模块的 CLI 工具，方便用于 ci 集成。
- - [vscode 插件](https://marketplace.visualstudio.com/items?itemName=ZhixiangZhang.mdlint#review-details)：在 vscode 中使用 lint-md 工具。
- - [语雀 lint 服务](https://github.com/hustcc/yuque-lint)：利用语雀的 webhook 自动校验提交的文档格式并做提醒。
-
-
+- [lint-md-cli](https://github.com/lint-md/cli)：lint-md 模块的 CLI 工具，方便用于 ci 集成。
+- [vscode 插件](https://marketplace.visualstudio.com/items?itemName=ZhixiangZhang.mdlint#review-details)：在 vscode 中使用
+  lint-md 工具。
+- [语雀 lint 服务](https://github.com/hustcc/yuque-lint)：利用语雀的 webhook 自动校验提交的文档格式并做提醒。
 
 ## License
 

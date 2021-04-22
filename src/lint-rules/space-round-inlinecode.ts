@@ -34,7 +34,7 @@ const isNodeAccepted = (node: Unist.Node, position: 'left' | 'right'): boolean =
  * code 代码块之间要加空格
  * space-round-inlinecode
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
   static get type() {
     return 'space-round-inlinecode';
   }
@@ -85,4 +85,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

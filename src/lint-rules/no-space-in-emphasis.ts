@@ -7,7 +7,7 @@ import { astToText, getChildrenPosition } from '../helper/ast';
  * emphasis 内容前后不能有空格
  * no-space-in-emphasis
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
 
   static get type() {
     return 'no-space-in-emphasis';
@@ -36,4 +36,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

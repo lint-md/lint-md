@@ -38,7 +38,7 @@ const isFullWidthNumber = s => {
  * 无全角数字
  * no-fullwidth-number
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
 
   static get type() {
     return 'no-fullwidth-number';
@@ -78,4 +78,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

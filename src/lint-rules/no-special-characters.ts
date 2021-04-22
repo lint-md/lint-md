@@ -9,7 +9,7 @@ const showLength = 12;
  * 无特殊字符
  * no-special-characters
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
 
   static get type() {
     return 'no-special-characters';
@@ -52,4 +52,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

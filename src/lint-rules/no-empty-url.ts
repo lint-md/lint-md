@@ -4,7 +4,7 @@ import { Plugin } from '@lint-md/ast-plugin';
  * link image 中地址不能为空
  * no-empty-url
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
 
   static get type() {
     return 'no-empty-url';
@@ -43,4 +43,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

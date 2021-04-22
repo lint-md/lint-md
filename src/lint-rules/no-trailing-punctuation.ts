@@ -9,7 +9,7 @@ const Symbols = '.,;:!?。，；：！？…~*`';
  * Header 内容不能以标点符号结尾
  * no-trailing-punctuation
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
 
   static get type() {
     return 'no-trailing-punctuation';
@@ -46,4 +46,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

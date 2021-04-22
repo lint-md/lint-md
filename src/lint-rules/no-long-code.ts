@@ -9,7 +9,7 @@ const defaultConfig = {
  * 代码长度有限制
  * no-long-code
  */
-module.exports = class extends Plugin {
+export default  class extends Plugin {
   static get type() {
     return 'no-long-code';
   }
@@ -48,4 +48,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

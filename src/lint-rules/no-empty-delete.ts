@@ -6,7 +6,7 @@ import { getChildrenPosition } from '../helper/ast';
  * delete 代码块内容不能为空
  * no-empty-delete
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
 
   static get type() {
     return 'no-empty-delete';
@@ -33,4 +33,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

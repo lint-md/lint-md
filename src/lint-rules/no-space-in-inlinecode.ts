@@ -7,7 +7,7 @@ import { astPositionTrans } from '../helper/ast';
  * inlineCode 内容前后不能有空格
  * no-space-in-inlinecode
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
 
   static get type() {
     return 'no-space-in-inlinecode';
@@ -39,4 +39,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

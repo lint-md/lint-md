@@ -8,7 +8,7 @@ const matches = ['ZA', 'AZ'];
  * 中文和英文之间需要有空格
  * space-round-alphabet
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
   static get type() {
     return 'space-round-alphabet';
   }
@@ -26,4 +26,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

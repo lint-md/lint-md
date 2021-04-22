@@ -6,7 +6,7 @@ import { getChildrenPosition } from '../helper/ast';
  * list 内容不能为空
  * no-empty-list
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
 
   static get type() {
     return 'no-empty-list';
@@ -35,4 +35,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

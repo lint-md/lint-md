@@ -6,7 +6,7 @@ import { getChildrenPosition } from '../helper/ast';
  * blockquote 块内容不能为空
  * no-empty-blockquote
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
   static get type() {
     return 'no-empty-blockquote';
   }
@@ -34,4 +34,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

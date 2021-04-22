@@ -8,7 +8,7 @@ const matches = ['ZN', 'NZ'];
  * 中文和数字之间需要有空格
  * space-round-number
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
 
   static get type() {
     return 'space-round-number';
@@ -26,4 +26,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

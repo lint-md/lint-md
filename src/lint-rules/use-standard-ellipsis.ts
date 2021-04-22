@@ -51,7 +51,7 @@ const findAllDotEllipsis = s => {
  * 要判断准确，还是必须一个一个处理
  * use-standard-ellipsis
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
 
   static get type() {
     return 'use-standard-ellipsis';
@@ -88,4 +88,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

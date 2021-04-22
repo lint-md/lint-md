@@ -6,7 +6,7 @@ import { getChildrenPosition } from '../helper/ast';
  * code 代码块内容不能为空
  * no-empty-code
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
 
   static get type() {
     return 'no-empty-code';
@@ -39,4 +39,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

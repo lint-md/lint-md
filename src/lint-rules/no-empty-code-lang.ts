@@ -4,7 +4,7 @@ import { Plugin } from '@lint-md/ast-plugin';
  * 中文和英文、数字之间需要有空格
  * no-empty-code-lang
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
 
   static get type() {
     return 'no-empty-code-lang';
@@ -41,4 +41,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

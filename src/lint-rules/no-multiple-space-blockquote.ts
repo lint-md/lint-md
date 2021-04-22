@@ -8,7 +8,7 @@ import { startSpaceLen, substr } from './helper/string';
  * blockquote 后面不能有多个空格
  * no-multiple-space-blockquote
  */
-module.exports = class extends Plugin {
+export default class extends Plugin {
 
   static get type() {
     return 'no-multiple-space-blockquote';
@@ -44,4 +44,4 @@ module.exports = class extends Plugin {
 
   post() {
   }
-};
+}

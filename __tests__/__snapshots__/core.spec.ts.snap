@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`test core methods for lint-markdown test lintAndFix() to lint or fix markdown source 1`] = `
-"# Hello
-
-Some **importance**, and \`code\`.
-
-"
-`;

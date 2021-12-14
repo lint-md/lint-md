@@ -1,4 +1,4 @@
-import { createRuleContext } from '../src/utils/rule-context';
+import { createRuleContext } from '../../src/utils/rule-context';
 
 describe('test rule context', () => {
   test('test rule context creation', () => {

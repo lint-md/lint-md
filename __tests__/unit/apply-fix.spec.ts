@@ -1,5 +1,5 @@
 import { Fix } from 'src/types';
-import { applyFix } from '../src/utils/apply-fix';
+import { applyFix } from '../../src/utils/apply-fix';
 
 describe('test apply fix', () => {
   test('test when fixes is empty', () => {

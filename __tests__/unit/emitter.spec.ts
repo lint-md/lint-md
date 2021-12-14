@@ -1,4 +1,4 @@
-import { createEmitter } from '../src/utils/emitter';
+import { createEmitter } from '../../src/utils/emitter';
 
 describe('test emitter', () => {
   test('test sub/pub should running successfully', () => {

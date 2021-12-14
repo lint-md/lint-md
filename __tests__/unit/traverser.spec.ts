@@ -1,12 +1,20 @@
 import * as unified from 'unified';
 import * as remarkParse from 'remark-parse';
-import { createTraverser } from '../src/utils/traverser';
-import { MarkdownNode } from '../src/types';
-import { DEMO_MARKDOWN } from './test-utils';
+import { createTraverser } from '../../src/utils/traverser';
+import { MarkdownNode } from '../../src/types';
 
 describe('test node traverser', () => {
   let nodeQueue: MarkdownNode[] = [];
   let parentNodeQueue: MarkdownNode[] = [];
+
+  const DEMO_MARKDOWN = `# Hello
+
+Some **importance**, and \`code\`.
+
+\`\`\`javascript
+console.log('!');
+\`\`\`
+`;
 
   const ast = unified()
     .use(remarkParse)

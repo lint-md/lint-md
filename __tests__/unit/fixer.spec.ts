@@ -1,4 +1,4 @@
-import { createFixer } from '../src/utils/fixer';
+import { createFixer } from '../../src/utils/fixer';
 
 describe('test fixer', () => {
   const fixer = createFixer();

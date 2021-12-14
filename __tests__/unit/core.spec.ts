@@ -1,7 +1,7 @@
 import { isFunction } from 'lodash';
-import { lintMarkdown } from '../src/core/lint-markdown';
-import noEmptyCode from '../src/rules/no-empty-code';
-import { lintAndFix } from '../src/core/lint-and-fix';
+import { lintMarkdown } from '../../src/core/lint-markdown';
+import noEmptyCode from '../../src/rules/no-empty-code';
+import { lintAndFix } from '../../src/core/lint-and-fix';
 
 describe('test core methods for lint-markdown', () => {
   test('test lintMarkdown() to lint source', () => {

@@ -2,12 +2,10 @@ import { TextRange } from '../types';
 
 /**
  * 初始化一个 fixer (修复器）
- * fixer 有很多 fix 方法，每一个方法被调用则会对一个字符串进行 fix，其中每一次 fix 有以下参数
+ * fixer 有很多 fix 方法，每一个 fix 方法被调用则会对一个字符串进行 fix
+ * 其中每一次 fix 有以下参数：
  * - range 被替换的文本区间
  * - text 新增的文本
- *
- * 例如：当 range = [5, 5], text = 'hello world':
- * - - - - - - - -
  */
 export const createFixer = () => {
   /**

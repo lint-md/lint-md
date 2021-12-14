@@ -1,6 +1,6 @@
 import { noop } from 'lodash';
 import { MarkdownNode, TraverserOptions } from '../types';
-import { isNode } from './is-node';
+import { isNode } from './common';
 
 /**
  * 初始化遍历器

@@ -1,4 +1,5 @@
 import { Parent } from 'unist';
+import type { createFixer } from './utils/fixer';
 
 export interface MarkdownNodePosition {
   /**
@@ -12,13 +13,15 @@ export interface MarkdownNodePosition {
   column: number;
 }
 
-export interface Fixer {
-
-}
-
 export type MarkdownNode = Omit<Parent, 'children'> & {
   children?: MarkdownNode[]
 };
+
+
+export interface Fix {
+  range: TextRange;
+  text: string;
+}
 
 export interface ReportOption {
   message: string;
@@ -26,7 +29,7 @@ export interface ReportOption {
     start: MarkdownNodePosition;
     end: MarkdownNodePosition;
   };
-  fix?: (fixer: Fixer) => void;
+  fix?: (fixer: ReturnType<typeof createFixer>) => void;
 }
 
 // 每一个 rule 的上下文，一般从 create 方法的回调函数中拿到
@@ -34,16 +37,19 @@ export interface ReportOption {
 export interface RuleContext {
   report: (option: ReportOption) => void;
   getReportData: () => ReportOption[];
+  getAllFixItems: () => void;
 }
 
 export interface LintMdRule {
-  // 选择器初始化回调
+  /**
+   * 选择器初始化回调
+   */
   create: (context: RuleContext) => Record<string, (node: MarkdownNode) => void>;
-  // rule 的一些基本信息
-  meta: {
-    // 是否可修复
-    fixable: boolean;
-  };
+
+  /**
+   * rule 的一些基本信息，后续有需要再补充
+   */
+  meta: Record<any, any>;
 }
 
 // 节点队列

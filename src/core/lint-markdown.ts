@@ -1,9 +1,9 @@
 import * as unified from 'unified';
 import * as remarkParse from 'remark-parse';
-import { LintMdRule, MarkdownNode, NodeQueue } from './types';
-import { createEmitter } from './utils/emitter';
-import { createTraverser } from './utils/traverser';
-import { createRuleContext } from './utils/rule-context';
+import { LintMdRule, MarkdownNode, NodeQueue } from '../types';
+import { createEmitter } from '../utils/emitter';
+import { createTraverser } from '../utils/traverser';
+import { createRuleContext } from '../utils/rule-context';
 
 
 /**
@@ -11,7 +11,7 @@ import { createRuleContext } from './utils/rule-context';
  *
  * @date 2021-12-12 21:48:21
  */
-export const lint = (markdown: string, rules: LintMdRule[]) => {
+export const lintMarkdown = (markdown: string, rules: LintMdRule[]) => {
   // 将 markdown 转换成 ast
   const ast = unified()
     .use(remarkParse)
@@ -63,4 +63,8 @@ export const lint = (markdown: string, rules: LintMdRule[]) => {
       console.log(e);
     }
   }
+
+  return {
+    ruleContext: ruleContext
+  };
 };

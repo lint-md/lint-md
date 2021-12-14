@@ -1,5 +1,5 @@
 import { isFunction } from 'lodash';
-import { ReportOption, RuleContext } from '../types';
+import { ReportOption } from '../types';
 import { createFixer } from './fixer';
 
 /**
@@ -7,7 +7,7 @@ import { createFixer } from './fixer';
  *
  * @date 2021-12-14 11:45:09
  */
-export const createRuleContext = (): RuleContext => {
+export const createRuleContext = () => {
   // 修复器
   const fixer = createFixer();
 
@@ -25,7 +25,7 @@ export const createRuleContext = (): RuleContext => {
   };
 
   // 获取所有的 fix
-  const getAllFixItems = () => {
+  const getAllFixes = () => {
     return allReportedData
       .filter(item => isFunction(item.fix))
       .map(item => item.fix(fixer));
@@ -34,6 +34,6 @@ export const createRuleContext = (): RuleContext => {
   return {
     report: report,
     getReportData: getReportData,
-    getAllFixItems: getAllFixItems
+    getAllFixes: getAllFixes
   };
 };

@@ -7,7 +7,7 @@ export const createEmitter = () => {
   const listeners: Record<string, any> = {};
 
   const on = (eventName, listener) => {
-    if (listener[eventName]) {
+    if (listeners[eventName]) {
       listeners[eventName].push(listener);
     } else {
       listeners[eventName] = [listener];

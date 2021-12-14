@@ -47,6 +47,7 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
+    "testRegex": "(/__tests__/.*\\.(test|spec))\\.ts$",
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",

@@ -86,7 +86,7 @@ const rules = {
   }]
 };
 
-const errors = lintMarkdown(markdown, rules);
+const errors = lint(markdown, rules);
 ```
 
 通过 rules 来配置规则。`key` 对应规则的名称。如果 `value` 是一个数字，那么表示规则的等级：

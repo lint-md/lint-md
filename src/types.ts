@@ -1,0 +1,63 @@
+import { Parent } from 'unist';
+import type { createFixer } from './utils/fixer';
+import { createRuleContext } from './utils/rule-context';
+
+export interface MarkdownNodePosition {
+  /**
+   * 所在行（索引从 1 开始）
+   */
+  line: number;
+
+  /**
+   * 所在列（索引从 1 开始）
+   */
+  column: number;
+}
+
+export type MarkdownNode = Omit<Parent, 'children'> & {
+  children?: MarkdownNode[]
+};
+
+
+export interface Fix {
+  range: TextRange;
+  text: string;
+}
+
+export interface ReportOption {
+  message: string;
+  loc: {
+    start: MarkdownNodePosition;
+    end: MarkdownNodePosition;
+  };
+  fix?: (fixer: ReturnType<typeof createFixer>) => Fix;
+}
+
+export interface LintMdRule {
+  /**
+   * 选择器初始化回调
+   */
+  create: (context: ReturnType<typeof createRuleContext>) => Record<string, (node: MarkdownNode) => void>;
+
+  /**
+   * rule 的一些基本信息，后续有需要再补充
+   */
+  meta?: Record<any, any>;
+}
+
+// 节点队列
+export interface NodeQueue {
+  node: MarkdownNode;
+  isEntering: boolean;
+}
+
+// 遍历器的相关选项
+export interface TraverserOptions {
+  // 在节点进入时做些什么
+  onEnter?: (node: MarkdownNode, parent: MarkdownNode) => void;
+
+  // 在节点退出时做些什么
+  onLeave?: (node: MarkdownNode, parent: MarkdownNode) => void;
+}
+
+export type TextRange = [number, number]

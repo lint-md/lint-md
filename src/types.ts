@@ -60,4 +60,4 @@ export interface TraverserOptions {
   onLeave?: (node: MarkdownNode, parent: MarkdownNode) => void;
 }
 
-export type TextRange = [number, number]
+export type TextRange = number[]

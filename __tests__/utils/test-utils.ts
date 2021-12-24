@@ -1,5 +1,5 @@
 import * as Benchmark from 'benchmark';
-import { LintMdRule } from '../../src/types';
+import { LintMdRule, LintMdRuleConfig } from '../../src/types';
 import { lintAndFix } from '../../src/core/lint-and-fix';
 
 interface BenchMarkBetweenOptions {
@@ -54,8 +54,8 @@ export const benchMarkBetween = async (opt: BenchMarkBetweenOptions) => {
   });
 };
 
-export const createFixer = (rules: LintMdRule[]) => {
+export const createFixer = (ruleConfigs: LintMdRuleConfig[]) => {
   return (md: string) => {
-    return lintAndFix(md, rules, true);
+    return lintAndFix(md, ruleConfigs, true);
   };
 };

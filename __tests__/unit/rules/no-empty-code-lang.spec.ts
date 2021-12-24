@@ -1,7 +1,9 @@
 import { createFixer } from '../../utils/test-utils';
 import noEmptyCodeLang from '../../../src/rules/no-empty-code-lang';
 
-const fixer = createFixer([noEmptyCodeLang]);
+const fixer = createFixer([{
+  rule: noEmptyCodeLang
+}]);
 
 describe('test no-empty-code-lang', () => {
   test('no fix applied', () => {
@@ -12,7 +14,7 @@ describe('test no-empty-code-lang', () => {
     const { fixedResult, lintResult } = fixer(md);
 
     expect(fixedResult.result).toBe(md);
-    expect(lintResult.ruleContext.getReportData().length).toStrictEqual(0);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
   });
 
   test('fix applied', () => {
@@ -25,7 +27,6 @@ describe('test no-empty-code-lang', () => {
     expect(fixedResult.result).toBe('```plain\n' +
       'const b = 2;\n' +
       '```');
-    expect(lintResult.ruleContext.getReportData().length).toStrictEqual(1);
-
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
   });
 });

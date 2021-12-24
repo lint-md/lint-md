@@ -1,9 +1,9 @@
 import * as unified from 'unified';
 import * as remarkParse from 'remark-parse';
-import { LintMdRule, MarkdownNode, NodeQueue } from '../types';
+import { LintMdRuleConfig, MarkdownNode, NodeQueue } from '../types';
 import { createEmitter } from '../utils/emitter';
 import { createTraverser } from '../utils/traverser';
-import { createRuleContext } from '../utils/rule-context';
+import { createRuleManager } from '../utils/rule-manager';
 
 
 /**
@@ -11,7 +11,7 @@ import { createRuleContext } from '../utils/rule-context';
  *
  * @date 2021-12-12 21:48:21
  */
-export const lintMarkdown = (markdown: string, rules: LintMdRule[]) => {
+export const lintMarkdown = (markdown: string, allRuleConfigs: LintMdRuleConfig[]) => {
   // 将 markdown 转换成 ast
   const ast = unified()
     .use(remarkParse)
@@ -20,8 +20,8 @@ export const lintMarkdown = (markdown: string, rules: LintMdRule[]) => {
   // 节点队列，遍历到的节点都会被推入这里
   const nodeQueue: NodeQueue[] = [];
 
-  // 全局规则上下文
-  const ruleContext = createRuleContext();
+  // 全局规则管理器
+  const ruleManager = createRuleManager();
 
   // 初始化遍历器，对于每一个节点的进入和退出，都将其推入到上面的 nodeQueue 队列中，供后续处理
   const traverser = createTraverser({
@@ -41,7 +41,8 @@ export const lintMarkdown = (markdown: string, rules: LintMdRule[]) => {
   const emitter = createEmitter();
 
   // 遍历所有的 rules，并拿到它们的选择器，为每一个选择器订阅相关事件
-  for (const rule of rules) {
+  for (const { rule, options } of allRuleConfigs) {
+    const ruleContext = ruleManager.createRuleContext(options);
     const ruleSelectors = rule.create(ruleContext);
     for (const selector of Object.keys(ruleSelectors)) {
       emitter.on(selector, ruleSelectors[selector]);
@@ -65,6 +66,6 @@ export const lintMarkdown = (markdown: string, rules: LintMdRule[]) => {
   }
 
   return {
-    ruleContext: ruleContext
+    ruleManager: ruleManager
   };
 };

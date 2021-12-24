@@ -1,4 +1,4 @@
-import { Fix, LintMdRule } from '../types';
+import { Fix, LintMdRuleConfig } from '../types';
 import { applyFix } from '../utils/apply-fix';
 import { MAX_LINT_AND_FIX_CALL_TIMES } from '../common/constant';
 import { lintMarkdown } from './lint-markdown';
@@ -8,7 +8,7 @@ import { lintMarkdown } from './lint-markdown';
  *
  * @date 2021-12-14 17:16:12
  */
-export const lintAndFix = (markdown: string, rules: LintMdRule[], isFixMode: boolean) => {
+export const lintAndFix = (markdown: string, rules: LintMdRuleConfig[], isFixMode: boolean) => {
   let lintTimes = 0;
   let lintResult = lintMarkdown(markdown, rules);
 
@@ -16,7 +16,7 @@ export const lintAndFix = (markdown: string, rules: LintMdRule[], isFixMode: boo
 
   while (isFixMode && lintTimes <= MAX_LINT_AND_FIX_CALL_TIMES) {
     lintTimes += 1;
-    fixedResult = applyFix(markdown, lintResult.ruleContext.getAllFixes());
+    fixedResult = applyFix(markdown, lintResult.ruleManager.getAllFixes());
     if (!fixedResult.notAppliedFixes.length) {
       break;
     }

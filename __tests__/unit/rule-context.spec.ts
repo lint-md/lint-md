@@ -1,15 +1,15 @@
-import { createRuleContext } from '../../src/utils/rule-context';
+import { createRuleManager } from '../../src/utils/rule-manager';
 
 describe('test rule context', () => {
   test('test rule context creation', () => {
-    const ctx = createRuleContext();
+    const ctx = createRuleManager();
     expect(ctx).toBeTruthy();
-    expect(typeof ctx.report).toStrictEqual('function');
+    expect(typeof ctx.createRuleContext().report).toStrictEqual('function');
   });
 
   test('test rule context report() call', () => {
-    const ctx = createRuleContext();
-    ctx.report({
+    const manager = createRuleManager();
+    manager.createRuleContext().report({
       message: 'message 1',
       loc: {
         start: {
@@ -22,7 +22,7 @@ describe('test rule context', () => {
         }
       }
     });
-    ctx.report({
+    manager.createRuleContext().report({
       message: 'message 2',
       loc: {
         start: {
@@ -35,8 +35,8 @@ describe('test rule context', () => {
         }
       }
     });
-    expect(ctx.getReportData().length).toStrictEqual(2);
-    expect(ctx.getReportData().map(item => item.message))
+    expect(manager.getReportData().length).toStrictEqual(2);
+    expect(manager.getReportData().map(item => item.message))
       .toStrictEqual(['message 1', 'message 2']);
   });
 });

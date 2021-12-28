@@ -16,7 +16,9 @@ Some **importance**, and \`code\`.
 
     const newLintMd = () => {
       lintAndFix(NO_EMPTY_CODE_DEMO, [
-        noEmptyCode
+        {
+          rule: noEmptyCode
+        }
       ], true);
     };
 
@@ -30,7 +32,7 @@ Some **importance**, and \`code\`.
     };
 
     await benchMarkBetween({
-      magnification: 90,
+      magnification: 85,
       cb1: newLintMd,
       cb2: oldLintMd,
       check: true

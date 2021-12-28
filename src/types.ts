@@ -1,6 +1,6 @@
 import { Parent } from 'unist';
 import type { createFixer } from './utils/fixer';
-import { createRuleContext } from './utils/rule-context';
+import { createRuleManager } from './utils/rule-manager';
 
 export interface MarkdownNodePosition {
   /**
@@ -37,12 +37,18 @@ export interface LintMdRule {
   /**
    * 选择器初始化回调
    */
-  create: (context: ReturnType<typeof createRuleContext>) => Record<string, (node: MarkdownNode) => void>;
+  create: (context: ReturnType<ReturnType<typeof createRuleManager>['createRuleContext']>) => Record<string, (node: MarkdownNode) => void>;
 
   /**
    * rule 的一些基本信息，后续有需要再补充
    */
   meta?: Record<any, any>;
+}
+
+export interface LintMdRuleConfig {
+  rule: LintMdRule,
+  options?: Record<string, any>
+  fileName?: string
 }
 
 // 节点队列
@@ -60,4 +66,4 @@ export interface TraverserOptions {
   onLeave?: (node: MarkdownNode, parent: MarkdownNode) => void;
 }
 
-export type TextRange = [number, number]
+export type TextRange = number[]

@@ -12,11 +12,13 @@ Some **importance**, and \`code\`.
 \`\`\`javascript
 
 \`\`\``, [
-      noEmptyCode
+      {
+        rule: noEmptyCode
+      }
     ]);
 
-    expect(lintResult.ruleContext.getReportData().length).toStrictEqual(1);
-    const res = lintResult.ruleContext.getReportData().pop();
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    const res = lintResult.ruleManager.getReportData().pop();
     expect(isFunction(res.fix)).toBeTruthy();
     expect(res.message).toStrictEqual('[lint-md] 代码块内容不能为空，请删除空的代码块，或者填充代码内容');
   });
@@ -29,7 +31,9 @@ Some **importance**, and \`code\`.
 \`\`\`javascript
 
 \`\`\``, [
-      noEmptyCode
+      {
+        rule: noEmptyCode
+      }
     ], true);
 
     expect(res.fixedResult.notAppliedFixes).toStrictEqual([]);

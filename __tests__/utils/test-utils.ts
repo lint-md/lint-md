@@ -1,4 +1,6 @@
 import * as Benchmark from 'benchmark';
+import { LintMdRule, LintMdRuleConfig } from '../../src/types';
+import { lintAndFix } from '../../src/core/lint-and-fix';
 
 interface BenchMarkBetweenOptions {
   // 回调函数 1
@@ -50,4 +52,10 @@ export const benchMarkBetween = async (opt: BenchMarkBetweenOptions) => {
       });
     suite.run();
   });
+};
+
+export const createFixer = (ruleConfigs: LintMdRuleConfig[]) => {
+  return (md: string) => {
+    return lintAndFix(md, ruleConfigs, true);
+  };
 };

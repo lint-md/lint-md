@@ -3,11 +3,11 @@ import { ReportOption } from '../types';
 import { createFixer } from './fixer';
 
 /**
- * 初始化 rule 上下文实例
+ * 初始化全局 rule 管理器
  *
- * @date 2021-12-14 11:45:09
+ * @date 2021-12-24 22:57:11
  */
-export const createRuleContext = () => {
+export const createRuleManager = () => {
   // 修复器
   const fixer = createFixer();
 
@@ -31,9 +31,17 @@ export const createRuleContext = () => {
       .map(item => item.fix(fixer));
   };
 
+  // 初始化一个 rule context
+  const createRuleContext = (options?: Record<string, any>) => {
+    return {
+      report: report,
+      options: options || {}
+    };
+  };
+
   return {
-    report: report,
     getReportData: getReportData,
-    getAllFixes: getAllFixes
+    getAllFixes: getAllFixes,
+    createRuleContext: createRuleContext
   };
 };

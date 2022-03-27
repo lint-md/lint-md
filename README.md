@@ -1,6 +1,8 @@
 # lint-md
 
-> 用于检查中文 markdown 编写格式规范的核心模块，基于 AST 开发。Library used to lint your markdown file for Chinese.
+> 用于检查中文 Markdown 编写格式规范的核心模块，基于 AST 开发。
+> 
+> Library used to lint your Markdown file for Chinese.
 
 [![Build Status](https://travis-ci.org/hustcc/lint-md.svg?branch=master)](https://travis-ci.org/hustcc/lint-md)
 [![Coverage Status](https://coveralls.io/repos/github/hustcc/lint-md/badge.svg?branch=master)](https://coveralls.io/github/hustcc/lint-md)
@@ -26,7 +28,7 @@ const describe = getDescription('rule-type', 'en_US');
 const fixed = fix(markdown);
 ```
 
-- **lint**：通过 API 方式来校验 markdown 文本；
+- **lint**：通过 API 方式来校验 Markdown 文本；
 - **fix**：通过 API 方式来修复文本；
 - **getDescription**：获取错误类型的文本描述，包含多语言；
 - **version**：获得模块的版本号；
@@ -42,7 +44,7 @@ const fixed = fix(markdown);
 | no-empty-code-lang | 代码语言不能为空 | 在代码块语法上增加语言 | | √ |
 | no-empty-delete | delete 块内容不能为空 | 删除空的 delete 文本块 | | √ |
 | no-empty-url | 链接和图片地址不能为空 | 填写完整的 url，或者不使用链接和图片语法 | | √ |
-| no-empty-list | List 内容不能为空 | List 语法中，填写内容 | | √ |
+| no-empty-list | list 内容不能为空 | list 语法中，填写内容 | | √ |
 | no-empty-code | 代码块内容不能为空 | 删除空的代码块，或者填充代码内容 | | √ |
 | no-empty-inlinecode | 行内代码块内容不能为空 | 删除空的代码块，或者填充代码内容 | | √ |
 | no-empty-blockquote | blockquote 内容不能为空 | 删除空的 blockquote，或者填充内容 | | √ |
@@ -67,11 +69,11 @@ const fixed = fix(markdown);
 
 > 目前仅仅检查了比较通用的类型，**欢迎 pull request**，在 `rules` 中增加自己的规则，开发约束：
 
-- 规则主要针对于中文 markdown 的编写规范
+- 规则主要针对于中文 Markdown 的编写规范
 - 使用类 babel plugin 的方式来进行规则检查，一个插件对应一个规则
 - 规则名称对应和插件文件名保持一致
 - 先提 issue 进行讨论
-- [AST 工具](https://astexplorer.net/)，使用其中的 markdown AST 辅助开发插件
+- [AST 工具](https://astexplorer.net/)，使用其中的 Markdown AST 辅助开发插件
 
 ## Rules 配置
 
@@ -92,17 +94,17 @@ const errors = lint(markdown, rules);
 通过 rules 来配置规则。`key` 对应规则的名称。如果 `value` 是一个数字，那么表示规则的等级：
 
 - **0**：ignore 忽略不检查该规则
-- **1**：warning 警告，但不阻断 ci
-- **2**：error 错误，且阻断 ci
+- **1**：warning 警告，但不阻断 CI
+- **2**：error 错误，且阻断 CI
 
 如果 `value` 是一个数组，那么第一个是数字，表示该规则的等级；第二个为规则可接受的配置信息。
 
 ## 其他相关
 
-- [lint-md-cli](https://github.com/lint-md/cli)：lint-md 模块的 CLI 工具，方便用于 ci 集成。
-- [vscode 插件](https://marketplace.visualstudio.com/items?itemName=ZhixiangZhang.mdlint#review-details)：在 vscode 中使用
+- [lint-md-cli](https://github.com/lint-md/cli)：lint-md 模块的 CLI 工具，方便用于 CI 集成。
+- [VS Code 插件](https://marketplace.visualstudio.com/items?itemName=ZhixiangZhang.mdlint#review-details)：在 VS Code 中使用
   lint-md 工具。
-- [语雀 lint 服务](https://github.com/hustcc/yuque-lint)：利用语雀的 webhook 自动校验提交的文档格式并做提醒。
+- [语雀 lint 服务](https://github.com/hustcc/yuque-lint)：利用语雀的 WebHook 自动校验提交的文档格式并做提醒。
 
 ## License
 

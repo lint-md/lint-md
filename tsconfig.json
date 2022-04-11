@@ -4,6 +4,7 @@
     "module": "CommonJS",
     "declaration": true,
     "moduleResolution": "Node",
+    "skipLibCheck": true,
     "removeComments": true,
     "resolveJsonModule": true,
     "types": [
@@ -15,7 +16,7 @@
     "emitDecoratorMetadata": true,
     "sourceMap": true,
     "baseUrl": "./",
-    "outDir": "lib",
+    "outDir": "lib"
   },
   "include": [
     "src/**/*"

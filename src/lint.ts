@@ -1,7 +1,8 @@
 import * as _ from 'lodash';
 import * as unified from 'unified';
-import * as md from 'remark-parse';
+import * as markdownParser from 'remark-parse';
 import { Ast } from '@lint-md/ast-plugin';
+import * as frontmatter from 'remark-frontmatter';
 import lintMdRulePlugins from './lint-rules';
 import { LintMdRulesConfig, LintMdError } from './type';
 
@@ -22,7 +23,8 @@ export const lint = (markdown: string, rulesConfig?: LintMdRulesConfig, containA
   };
 
   const ast = unified()
-    .use(md)
+    .use(markdownParser)
+    .use(frontmatter, ['yaml', 'toml'])
     .parse(markdown);
 
   // 拿到所有匹配的 rules

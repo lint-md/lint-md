@@ -1,0 +1,29 @@
+{
+  "name": "@lint-md/parser",
+  "version": "0.0.0",
+  "description": "> TODO: add description",
+  "author": "> TODO: add author",
+  "homepage": "",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "files": [
+    "src",
+    "esm",
+    "lib"
+  ],
+  "scripts": {
+    "dev:start": "tsc -w",
+    "build:dist": "rm -rf dist && webpack --config config/webpack.config.ts",
+    "build": "npm-run-all --parallel build:*",
+    "lint": "eslint --ext js,jsx,ts,tsx src",
+    "test": "jest"
+  },
+  "dependencies": {
+    "remark-parse": "^10.0.1",
+    "terser-webpack-plugin": "^5.3.1",
+    "unified": "^10.1.2",
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2"
+  }
+}

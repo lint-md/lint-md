@@ -1,4 +1,4 @@
-import { Fix } from 'packages/core/src/types';
+import { Fix } from '../../src/types';
 import { applyFix } from '../../src/utils/apply-fix';
 
 describe('test apply fix', () => {

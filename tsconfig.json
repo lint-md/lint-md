@@ -16,8 +16,5 @@
     "sourceMap": true,
     "baseUrl": "./",
     "outDir": "lib",
-  },
-  "include": [
-    "packages/core/src/**/*"
-  ]
+  }
 }

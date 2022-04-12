@@ -2,7 +2,11 @@
   "name": "@lint-md/parser",
   "version": "0.0.0",
   "description": "> TODO: add description",
-  "author": "> TODO: add author",
+  "author": "hustcc",
+  "contributors": [
+    "hustcc <i@hust.cc>",
+    "yuzhanglong <loveyzl1123@gmail.com>"
+  ],
   "homepage": "",
   "license": "MIT",
   "main": "lib/index.js",
@@ -14,7 +18,7 @@
   ],
   "scripts": {
     "dev:start": "tsc -w",
-    "build:dist": "rm -rf dist && webpack --config config/webpack.config.ts",
+    "build:dist": "rm -rf lib && webpack --config ./config/webpack.config.ts",
     "build": "npm-run-all --parallel build:*",
     "lint": "eslint --ext js,jsx,ts,tsx src",
     "test": "jest"
@@ -25,5 +29,8 @@
     "unified": "^10.1.2",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2"
+  },
+  "devDependencies": {
+    "ts-loader": "^9.2.8"
   }
 }

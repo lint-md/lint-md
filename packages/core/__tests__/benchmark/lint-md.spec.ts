@@ -1,4 +1,4 @@
-import { fix, lint } from 'lib';
+import { fix, lint } from '@lint-md/core';
 import { lintAndFix } from '../../src/core/lint-and-fix';
 import noEmptyCode from '../../src/rules/no-empty-code';
 import { benchMarkBetween } from '../utils/test-utils';

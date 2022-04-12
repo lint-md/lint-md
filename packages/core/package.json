@@ -9,8 +9,8 @@
     "yuzhanglong <loveyzl1123@gmail.com>"
   ],
   "scripts": {
-    "lib:cjs": "tsc -p tsconfig.json --target ES5 --module commonjs --outDir lib",
-    "lib:esm": "tsc -p tsconfig.json --target ES5 --module ESNext --outDir esm",
+    "lib:cjs": "tsc -p tsconfig.json --target ES6 --module commonjs --outDir lib",
+    "lib:esm": "tsc -p tsconfig.json --target ES6 --module ESNext --outDir esm",
     "build": "run-p lib:*",
     "clean": "rimraf lib esm"
   },

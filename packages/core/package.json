@@ -9,9 +9,9 @@
     "yuzhanglong <loveyzl1123@gmail.com>"
   ],
   "scripts": {
-    "lib:cjs": "tsc -p tsconfig.json --target ES6 --module commonjs --outDir lib",
-    "lib:esm": "tsc -p tsconfig.json --target ES6 --module ESNext --outDir esm",
-    "build": "run-p lib:*",
+    "build:cjs": "tsc -p tsconfig.json --target ES6 --module commonjs --outDir lib",
+    "build:esm": "tsc -p tsconfig.json --target ES6 --module ESNext --outDir esm",
+    "build": "run-p build:*",
     "clean": "rimraf lib esm"
   },
   "files": [
@@ -27,9 +27,7 @@
   ],
   "dependencies": {
     "@lint-md/parser": "0.0.0",
-    "lodash": "^4.17.21",
-    "remark-parse": "^9",
-    "unified": "^9"
+    "lodash": "^4.17.21"
   },
   "author": "hustcc",
   "license": "MIT",

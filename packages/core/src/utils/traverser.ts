@@ -1,5 +1,6 @@
 import { noop } from 'lodash';
-import { MarkdownNode, TraverserOptions } from '../types';
+import { MarkdownNode } from '@lint-md/parser';
+import { TraverserOptions } from '../types';
 import { isNode } from './common';
 
 /**
@@ -28,6 +29,6 @@ export const createTraverser = (options: TraverserOptions) => {
   };
 
   return {
-    traverse: traverse
+    traverse: traverse,
   };
 };

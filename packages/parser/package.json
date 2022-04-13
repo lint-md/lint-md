@@ -19,7 +19,7 @@
     "dev:start": "tsc -w",
     "build:ts-declaration": "tsc && api-extractor run --local --verbose",
     "build:dist": "webpack --config ./config/webpack.config.ts",
-    "build": "npm-run-all --parallel build:*",
+    "build": "rm -rf lib && pnpm run build:dist && pnpm run build:ts-declaration",
     "lint": "eslint --ext js,jsx,ts,tsx src",
     "test": "jest"
   },

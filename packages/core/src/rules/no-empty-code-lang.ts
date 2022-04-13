@@ -1,9 +1,10 @@
-import { LintMdRule, MarkdownNode } from '../types';
+import { MarkdownNode } from '@lint-md/parser';
+import { LintMdRule } from '../types';
 
 type MarkdownCodeNode = MarkdownNode & {
-  value: string
-  lang: string
-}
+  value: string;
+  lang: string;
+};
 
 /**
  * 代码语言不能为空
@@ -20,17 +21,20 @@ const noEmptyCodeLang: LintMdRule = {
             loc: node.position,
             message: '[lint-md] 代码语言不能为空，请在代码块语法上增加语言',
             fix: (fixer) => {
-              return fixer.insertTextAfterRange([
-                node.position.start.offset,
-                // + 3 的原因是代码块以 ``` 开头
-                node.position.start.offset + 3
-              ], 'plain');
-            }
+              return fixer.insertTextAfterRange(
+                [
+                  node.position.start.offset,
+                  // + 3 的原因是代码块以 ``` 开头
+                  node.position.start.offset + 3,
+                ],
+                'plain'
+              );
+            },
           });
         }
-      }
+      },
     };
-  }
+  },
 };
 
 export default noEmptyCodeLang;

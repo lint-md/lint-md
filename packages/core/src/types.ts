@@ -1,7 +1,6 @@
+import { MarkdownNode } from '@lint-md/parser/lib/tmp';
 import { createFixer } from './utils/fixer';
 import { createRuleManager } from './utils/rule-manager';
-
-type MarkdownNode = any;
 
 export interface MarkdownNodePosition {
   /**

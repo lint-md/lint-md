@@ -1,8 +1,9 @@
-import { LintMdRule, MarkdownNode } from '../types';
+import { MarkdownNode } from '@lint-md/parser';
+import { LintMdRule } from '../types';
 
 type MarkdownCodeNode = MarkdownNode & {
-  value: string
-}
+  value: string;
+};
 
 /**
  * inline code 前后不能有空格
@@ -20,19 +21,20 @@ const noSpaceInInlineCode: LintMdRule = {
           if (trimmedText !== node.value) {
             context.report({
               loc: node.position,
-              message: '[lint-md] 行内代码内容，前后不能有空格，请删除行内代码中的前后空格',
-              fix: (fixer => {
-                return fixer.replaceTextRange([
-                  node.position.start.offset,
-                  node.position.end.offset
-                ], `\`${trimmedText}\``);
-              })
+              message:
+                '[lint-md] 行内代码内容，前后不能有空格，请删除行内代码中的前后空格',
+              fix: (fixer) => {
+                return fixer.replaceTextRange(
+                  [node.position.start.offset, node.position.end.offset],
+                  `\`${trimmedText}\``
+                );
+              },
             });
           }
         }
-      }
+      },
     };
-  }
+  },
 };
 
 export default noSpaceInInlineCode;

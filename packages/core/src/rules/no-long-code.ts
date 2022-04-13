@@ -1,9 +1,10 @@
-import { LintMdRule, MarkdownNode } from '../types';
+import { MarkdownNode } from '@lint-md/parser';
+import { LintMdRule } from '../types';
 
 type MarkdownCodeNode = MarkdownNode & {
-  value: string
-  lang: string
-}
+  value: string;
+  lang: string;
+};
 
 /**
  * 代码块不能有过长的代码
@@ -30,28 +31,27 @@ const noLongCode: LintMdRule = {
             // 列数则从第一列开始
             const start = {
               line: firstLineInCodeArea + i,
-              column: 1
+              column: 1,
             };
 
             // 很明显，结束处在同一行，列数则是该行的长度
             const end = {
               line: firstLineInCodeArea + i,
-              column: codeArray[i].length
+              column: codeArray[i].length,
             };
 
             context.report({
               loc: {
                 start: start,
-                end: end
+                end: end,
               },
-              message: '[lint-md] 代码块不能有过长的代码'
+              message: '[lint-md] 代码块不能有过长的代码',
             });
-
           }
         }
-      }
+      },
     };
-  }
+  },
 };
 
 export default noLongCode;

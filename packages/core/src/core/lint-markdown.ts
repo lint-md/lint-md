@@ -1,21 +1,20 @@
-import * as unified from 'unified';
-import * as remarkParse from 'remark-parse';
-import { LintMdRuleConfig, MarkdownNode, NodeQueue } from '../types';
+import { parseMd } from '@lint-md/parser/lib/tmp';
+import { LintMdRuleConfig, NodeQueue } from '../types';
 import { createEmitter } from '../utils/emitter';
 import { createTraverser } from '../utils/traverser';
 import { createRuleManager } from '../utils/rule-manager';
-
 
 /**
  * 基于各种 rules 对 Markdown 文本进行校验
  *
  * @date 2021-12-12 21:48:21
  */
-export const lintMarkdown = (markdown: string, allRuleConfigs: LintMdRuleConfig[]) => {
+export const lintMarkdown = (
+  markdown: string,
+  allRuleConfigs: LintMdRuleConfig[]
+) => {
   // 将 markdown 转换成 ast
-  const ast = unified()
-    .use(remarkParse)
-    .parse(markdown) as MarkdownNode;
+  const ast = parseMd(markdown);
 
   // 节点队列，遍历到的节点都会被推入这里
   const nodeQueue: NodeQueue[] = [];
@@ -28,14 +27,14 @@ export const lintMarkdown = (markdown: string, allRuleConfigs: LintMdRuleConfig[
     onEnter: (node) => {
       nodeQueue.push({
         isEntering: true,
-        node: node
+        node: node,
       });
 
       nodeQueue.push({
         isEntering: false,
-        node: node
+        node: node,
       });
-    }
+    },
   });
 
   const emitter = createEmitter();
@@ -66,6 +65,6 @@ export const lintMarkdown = (markdown: string, allRuleConfigs: LintMdRuleConfig[
   }
 
   return {
-    ruleManager: ruleManager
+    ruleManager: ruleManager,
   };
 };

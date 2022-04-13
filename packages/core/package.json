@@ -2,35 +2,13 @@
   "name": "@lint-md/core",
   "version": "0.2.1",
   "description": "Core of lint-md which used to lint your markdown file for Chinese.",
-  "main": "lib/index.js",
-  "module": "esm/index.js",
-  "contributors": [
-    "hustcc <i@hust.cc>",
-    "yuzhanglong <loveyzl1123@gmail.com>"
-  ],
-  "scripts": {
-    "build:cjs": "tsc -p tsconfig.json --target ES6 --module commonjs --outDir lib",
-    "build:esm": "tsc -p tsconfig.json --target ES6 --module ESNext --outDir esm",
-    "build": "run-p build:*",
-    "clean": "rimraf lib esm"
-  },
-  "files": [
-    "esm",
-    "lib",
-    "src"
-  ],
   "keywords": [
     "lint",
     "markdown",
     "lint-md",
     "ast-plugin"
   ],
-  "dependencies": {
-    "@lint-md/parser": "0.0.0",
-    "lodash": "^4.17.21"
-  },
-  "author": "hustcc",
-  "license": "MIT",
+  "homepage": "https://github.com/lint-md#readme",
   "bugs": {
     "url": "https://github.com/lint-md/lint-md"
   },
@@ -38,5 +16,27 @@
     "type": "git",
     "url": "git+https://github.com/lint-md.git"
   },
-  "homepage": "https://github.com/lint-md#readme"
+  "license": "MIT",
+  "author": "hustcc",
+  "contributors": [
+    "hustcc <i@hust.cc>",
+    "yuzhanglong <loveyzl1123@gmail.com>"
+  ],
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "files": [
+    "esm",
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "build": "run-p build:*",
+    "build:cjs": "tsc -p tsconfig.json --target ES6 --module commonjs --outDir lib",
+    "build:esm": "tsc -p tsconfig.json --target ES6 --module ESNext --outDir esm",
+    "clean": "rimraf lib esm"
+  },
+  "dependencies": {
+    "@lint-md/parser": "0.0.0",
+    "lodash": "^4.17.21"
+  }
 }

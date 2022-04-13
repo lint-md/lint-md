@@ -2,24 +2,24 @@
   "name": "@lint-md/parser",
   "version": "0.0.0",
   "description": "> TODO: add description",
+  "license": "MIT",
   "author": "hustcc",
-  "main": "./lib/lint-md-parser.js",
-  "typings": "./lib/lint-md-parser.d.ts",
   "contributors": [
     "hustcc <i@hust.cc>",
     "yuzhanglong <loveyzl1123@gmail.com>"
   ],
-  "license": "MIT",
+  "main": "./lib/lint-md-parser.js",
+  "typings": "./lib/lint-md-parser.d.ts",
   "files": [
     "src",
     "esm",
     "lib"
   ],
   "scripts": {
-    "dev:start": "tsc -w",
-    "build:ts-declaration": "tsc && api-extractor run --local --verbose",
-    "build:dist": "webpack --config ./config/webpack.config.ts",
     "build": "rm -rf lib && pnpm run build:dist && pnpm run build:ts-declaration",
+    "build:dist": "webpack --config ./config/webpack.config.ts",
+    "build:ts-declaration": "tsc && api-extractor run --local --verbose",
+    "dev:start": "tsc -w",
     "lint": "eslint --ext js,jsx,ts,tsx src",
     "test": "jest"
   },

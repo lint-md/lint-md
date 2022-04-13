@@ -7,8 +7,8 @@ Object {
       "position": Object {
         "end": Object {
           "column": 4,
-          "line": 1,
-          "offset": 3,
+          "line": 8,
+          "offset": 68,
         },
         "start": Object {
           "column": 1,
@@ -16,284 +16,13 @@ Object {
           "offset": 0,
         },
       },
-      "type": "thematicBreak",
-    },
-    Object {
-      "children": Array [
-        Object {
-          "position": Object {
-            "end": Object {
-              "column": 12,
-              "line": 2,
-              "offset": 15,
-            },
-            "start": Object {
-              "column": 1,
-              "line": 2,
-              "offset": 4,
-            },
-          },
-          "type": "text",
-          "value": "categories:",
-        },
-      ],
-      "position": Object {
-        "end": Object {
-          "column": 12,
-          "line": 2,
-          "offset": 15,
-        },
-        "start": Object {
-          "column": 1,
-          "line": 2,
-          "offset": 4,
-        },
-      },
-      "type": "paragraph",
-    },
-    Object {
-      "children": Array [
-        Object {
-          "checked": null,
-          "children": Array [
-            Object {
-              "children": Array [
-                Object {
-                  "position": Object {
-                    "end": Object {
-                      "column": 6,
-                      "line": 4,
-                      "offset": 30,
-                    },
-                    "start": Object {
-                      "column": 5,
-                      "line": 3,
-                      "offset": 20,
-                    },
-                  },
-                  "type": "text",
-                  "value": "Code
-tags:",
-                },
-              ],
-              "position": Object {
-                "end": Object {
-                  "column": 6,
-                  "line": 4,
-                  "offset": 30,
-                },
-                "start": Object {
-                  "column": 5,
-                  "line": 3,
-                  "offset": 20,
-                },
-              },
-              "type": "paragraph",
-            },
-          ],
-          "position": Object {
-            "end": Object {
-              "column": 6,
-              "line": 4,
-              "offset": 30,
-            },
-            "start": Object {
-              "column": 3,
-              "line": 3,
-              "offset": 18,
-            },
-          },
-          "spread": false,
-          "type": "listItem",
-        },
-        Object {
-          "checked": null,
-          "children": Array [
-            Object {
-              "children": Array [
-                Object {
-                  "position": Object {
-                    "end": Object {
-                      "column": 9,
-                      "line": 5,
-                      "offset": 39,
-                    },
-                    "start": Object {
-                      "column": 5,
-                      "line": 5,
-                      "offset": 35,
-                    },
-                  },
-                  "type": "text",
-                  "value": "Java",
-                },
-              ],
-              "position": Object {
-                "end": Object {
-                  "column": 9,
-                  "line": 5,
-                  "offset": 39,
-                },
-                "start": Object {
-                  "column": 5,
-                  "line": 5,
-                  "offset": 35,
-                },
-              },
-              "type": "paragraph",
-            },
-          ],
-          "position": Object {
-            "end": Object {
-              "column": 9,
-              "line": 5,
-              "offset": 39,
-            },
-            "start": Object {
-              "column": 3,
-              "line": 5,
-              "offset": 33,
-            },
-          },
-          "spread": false,
-          "type": "listItem",
-        },
-        Object {
-          "checked": null,
-          "children": Array [
-            Object {
-              "children": Array [
-                Object {
-                  "position": Object {
-                    "end": Object {
-                      "column": 9,
-                      "line": 6,
-                      "offset": 48,
-                    },
-                    "start": Object {
-                      "column": 5,
-                      "line": 6,
-                      "offset": 44,
-                    },
-                  },
-                  "type": "text",
-                  "value": "IDEA",
-                },
-              ],
-              "position": Object {
-                "end": Object {
-                  "column": 9,
-                  "line": 6,
-                  "offset": 48,
-                },
-                "start": Object {
-                  "column": 5,
-                  "line": 6,
-                  "offset": 44,
-                },
-              },
-              "type": "paragraph",
-            },
-          ],
-          "position": Object {
-            "end": Object {
-              "column": 9,
-              "line": 6,
-              "offset": 48,
-            },
-            "start": Object {
-              "column": 3,
-              "line": 6,
-              "offset": 42,
-            },
-          },
-          "spread": false,
-          "type": "listItem",
-        },
-        Object {
-          "checked": null,
-          "children": Array [
-            Object {
-              "children": Array [
-                Object {
-                  "position": Object {
-                    "end": Object {
-                      "column": 16,
-                      "line": 7,
-                      "offset": 64,
-                    },
-                    "start": Object {
-                      "column": 5,
-                      "line": 7,
-                      "offset": 53,
-                    },
-                  },
-                  "type": "text",
-                  "value": "Spring Boot",
-                },
-              ],
-              "position": Object {
-                "end": Object {
-                  "column": 16,
-                  "line": 7,
-                  "offset": 64,
-                },
-                "start": Object {
-                  "column": 5,
-                  "line": 7,
-                  "offset": 53,
-                },
-              },
-              "type": "paragraph",
-            },
-          ],
-          "position": Object {
-            "end": Object {
-              "column": 16,
-              "line": 7,
-              "offset": 64,
-            },
-            "start": Object {
-              "column": 3,
-              "line": 7,
-              "offset": 51,
-            },
-          },
-          "spread": false,
-          "type": "listItem",
-        },
-      ],
-      "ordered": false,
-      "position": Object {
-        "end": Object {
-          "column": 16,
-          "line": 7,
-          "offset": 64,
-        },
-        "start": Object {
-          "column": 3,
-          "line": 3,
-          "offset": 18,
-        },
-      },
-      "spread": false,
-      "start": null,
-      "type": "list",
-    },
-    Object {
-      "position": Object {
-        "end": Object {
-          "column": 4,
-          "line": 8,
-          "offset": 68,
-        },
-        "start": Object {
-          "column": 1,
-          "line": 8,
-          "offset": 65,
-        },
-      },
-      "type": "thematicBreak",
+      "type": "yaml",
+      "value": "categories:
+  - Code
+tags:
+  - Java
+  - IDEA
+  - Spring Boot",
     },
     Object {
       "children": Array [
@@ -365,11 +94,29 @@ tags:",
     Object {
       "children": Array [
         Object {
+          "children": Array [
+            Object {
+              "position": Object {
+                "end": Object {
+                  "column": 16,
+                  "line": 14,
+                  "offset": 107,
+                },
+                "start": Object {
+                  "column": 1,
+                  "line": 14,
+                  "offset": 92,
+                },
+              },
+              "type": "text",
+              "value": "www.example.com",
+            },
+          ],
           "position": Object {
             "end": Object {
-              "column": 63,
+              "column": 16,
               "line": 14,
-              "offset": 154,
+              "offset": 107,
             },
             "start": Object {
               "column": 1,
@@ -377,8 +124,127 @@ tags:",
               "offset": 92,
             },
           },
+          "title": null,
+          "type": "link",
+          "url": "http://www.example.com",
+        },
+        Object {
+          "position": Object {
+            "end": Object {
+              "column": 18,
+              "line": 14,
+              "offset": 109,
+            },
+            "start": Object {
+              "column": 16,
+              "line": 14,
+              "offset": 107,
+            },
+          },
           "type": "text",
-          "value": "www.example.com, https://example.com, and contact@example.com.",
+          "value": ", ",
+        },
+        Object {
+          "children": Array [
+            Object {
+              "position": Object {
+                "end": Object {
+                  "column": 37,
+                  "line": 14,
+                  "offset": 128,
+                },
+                "start": Object {
+                  "column": 18,
+                  "line": 14,
+                  "offset": 109,
+                },
+              },
+              "type": "text",
+              "value": "https://example.com",
+            },
+          ],
+          "position": Object {
+            "end": Object {
+              "column": 37,
+              "line": 14,
+              "offset": 128,
+            },
+            "start": Object {
+              "column": 18,
+              "line": 14,
+              "offset": 109,
+            },
+          },
+          "title": null,
+          "type": "link",
+          "url": "https://example.com",
+        },
+        Object {
+          "position": Object {
+            "end": Object {
+              "column": 43,
+              "line": 14,
+              "offset": 134,
+            },
+            "start": Object {
+              "column": 37,
+              "line": 14,
+              "offset": 128,
+            },
+          },
+          "type": "text",
+          "value": ", and ",
+        },
+        Object {
+          "children": Array [
+            Object {
+              "position": Object {
+                "end": Object {
+                  "column": 62,
+                  "line": 14,
+                  "offset": 153,
+                },
+                "start": Object {
+                  "column": 43,
+                  "line": 14,
+                  "offset": 134,
+                },
+              },
+              "type": "text",
+              "value": "contact@example.com",
+            },
+          ],
+          "position": Object {
+            "end": Object {
+              "column": 62,
+              "line": 14,
+              "offset": 153,
+            },
+            "start": Object {
+              "column": 43,
+              "line": 14,
+              "offset": 134,
+            },
+          },
+          "title": null,
+          "type": "link",
+          "url": "mailto:contact@example.com",
+        },
+        Object {
+          "position": Object {
+            "end": Object {
+              "column": 63,
+              "line": 14,
+              "offset": 154,
+            },
+            "start": Object {
+              "column": 62,
+              "line": 14,
+              "offset": 153,
+            },
+          },
+          "type": "text",
+          "value": ".",
         },
       ],
       "position": Object {
@@ -398,6 +264,24 @@ tags:",
     Object {
       "children": Array [
         Object {
+          "children": Array [
+            Object {
+              "position": Object {
+                "end": Object {
+                  "column": 16,
+                  "line": 16,
+                  "offset": 171,
+                },
+                "start": Object {
+                  "column": 7,
+                  "line": 16,
+                  "offset": 162,
+                },
+              },
+              "type": "text",
+              "value": "Big note.",
+            },
+          ],
           "position": Object {
             "end": Object {
               "column": 16,
@@ -405,15 +289,16 @@ tags:",
               "offset": 171,
             },
             "start": Object {
-              "column": 1,
+              "column": 7,
               "line": 16,
-              "offset": 156,
+              "offset": 162,
             },
           },
-          "type": "text",
-          "value": "[^1]: Big note.",
+          "type": "paragraph",
         },
       ],
+      "identifier": "1",
+      "label": "1",
       "position": Object {
         "end": Object {
           "column": 16,
@@ -426,10 +311,92 @@ tags:",
           "offset": 156,
         },
       },
-      "type": "paragraph",
+      "type": "footnoteDefinition",
     },
     Object {
       "children": Array [
+        Object {
+          "children": Array [
+            Object {
+              "position": Object {
+                "end": Object {
+                  "column": 5,
+                  "line": 18,
+                  "offset": 177,
+                },
+                "start": Object {
+                  "column": 2,
+                  "line": 18,
+                  "offset": 174,
+                },
+              },
+              "type": "text",
+              "value": "one",
+            },
+          ],
+          "position": Object {
+            "end": Object {
+              "column": 6,
+              "line": 18,
+              "offset": 178,
+            },
+            "start": Object {
+              "column": 1,
+              "line": 18,
+              "offset": 173,
+            },
+          },
+          "type": "delete",
+        },
+        Object {
+          "position": Object {
+            "end": Object {
+              "column": 10,
+              "line": 18,
+              "offset": 182,
+            },
+            "start": Object {
+              "column": 6,
+              "line": 18,
+              "offset": 178,
+            },
+          },
+          "type": "text",
+          "value": " or ",
+        },
+        Object {
+          "children": Array [
+            Object {
+              "position": Object {
+                "end": Object {
+                  "column": 15,
+                  "line": 18,
+                  "offset": 187,
+                },
+                "start": Object {
+                  "column": 12,
+                  "line": 18,
+                  "offset": 184,
+                },
+              },
+              "type": "text",
+              "value": "two",
+            },
+          ],
+          "position": Object {
+            "end": Object {
+              "column": 17,
+              "line": 18,
+              "offset": 189,
+            },
+            "start": Object {
+              "column": 10,
+              "line": 18,
+              "offset": 182,
+            },
+          },
+          "type": "delete",
+        },
         Object {
           "position": Object {
             "end": Object {
@@ -438,13 +405,13 @@ tags:",
               "offset": 197,
             },
             "start": Object {
-              "column": 1,
+              "column": 17,
               "line": 18,
-              "offset": 173,
+              "offset": 189,
             },
           },
           "type": "text",
-          "value": "~one~ or ~~two~~ tildes.",
+          "value": " tildes.",
         },
       ],
       "position": Object {

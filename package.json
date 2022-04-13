@@ -35,16 +35,5 @@
     "test": "jest --no-cache",
     "build-all": "pnpm -r build",
     "clean-all": "lerna clean"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "testRegex": "(/__tests__/.*\\.(test|spec))\\.ts$",
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
-      "!**/node_modules/**",
-      "!**/vendor/**"
-    ]
   }
 }

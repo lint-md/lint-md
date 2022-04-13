@@ -1,0 +1,479 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test lint-md-parser test invoke parseMd 1`] = `
+Object {
+  "children": Array [
+    Object {
+      "position": Object {
+        "end": Object {
+          "column": 4,
+          "line": 1,
+          "offset": 3,
+        },
+        "start": Object {
+          "column": 1,
+          "line": 1,
+          "offset": 0,
+        },
+      },
+      "type": "thematicBreak",
+    },
+    Object {
+      "children": Array [
+        Object {
+          "position": Object {
+            "end": Object {
+              "column": 12,
+              "line": 2,
+              "offset": 15,
+            },
+            "start": Object {
+              "column": 1,
+              "line": 2,
+              "offset": 4,
+            },
+          },
+          "type": "text",
+          "value": "categories:",
+        },
+      ],
+      "position": Object {
+        "end": Object {
+          "column": 12,
+          "line": 2,
+          "offset": 15,
+        },
+        "start": Object {
+          "column": 1,
+          "line": 2,
+          "offset": 4,
+        },
+      },
+      "type": "paragraph",
+    },
+    Object {
+      "children": Array [
+        Object {
+          "checked": null,
+          "children": Array [
+            Object {
+              "children": Array [
+                Object {
+                  "position": Object {
+                    "end": Object {
+                      "column": 6,
+                      "line": 4,
+                      "offset": 30,
+                    },
+                    "start": Object {
+                      "column": 5,
+                      "line": 3,
+                      "offset": 20,
+                    },
+                  },
+                  "type": "text",
+                  "value": "Code
+tags:",
+                },
+              ],
+              "position": Object {
+                "end": Object {
+                  "column": 6,
+                  "line": 4,
+                  "offset": 30,
+                },
+                "start": Object {
+                  "column": 5,
+                  "line": 3,
+                  "offset": 20,
+                },
+              },
+              "type": "paragraph",
+            },
+          ],
+          "position": Object {
+            "end": Object {
+              "column": 6,
+              "line": 4,
+              "offset": 30,
+            },
+            "start": Object {
+              "column": 3,
+              "line": 3,
+              "offset": 18,
+            },
+          },
+          "spread": false,
+          "type": "listItem",
+        },
+        Object {
+          "checked": null,
+          "children": Array [
+            Object {
+              "children": Array [
+                Object {
+                  "position": Object {
+                    "end": Object {
+                      "column": 9,
+                      "line": 5,
+                      "offset": 39,
+                    },
+                    "start": Object {
+                      "column": 5,
+                      "line": 5,
+                      "offset": 35,
+                    },
+                  },
+                  "type": "text",
+                  "value": "Java",
+                },
+              ],
+              "position": Object {
+                "end": Object {
+                  "column": 9,
+                  "line": 5,
+                  "offset": 39,
+                },
+                "start": Object {
+                  "column": 5,
+                  "line": 5,
+                  "offset": 35,
+                },
+              },
+              "type": "paragraph",
+            },
+          ],
+          "position": Object {
+            "end": Object {
+              "column": 9,
+              "line": 5,
+              "offset": 39,
+            },
+            "start": Object {
+              "column": 3,
+              "line": 5,
+              "offset": 33,
+            },
+          },
+          "spread": false,
+          "type": "listItem",
+        },
+        Object {
+          "checked": null,
+          "children": Array [
+            Object {
+              "children": Array [
+                Object {
+                  "position": Object {
+                    "end": Object {
+                      "column": 9,
+                      "line": 6,
+                      "offset": 48,
+                    },
+                    "start": Object {
+                      "column": 5,
+                      "line": 6,
+                      "offset": 44,
+                    },
+                  },
+                  "type": "text",
+                  "value": "IDEA",
+                },
+              ],
+              "position": Object {
+                "end": Object {
+                  "column": 9,
+                  "line": 6,
+                  "offset": 48,
+                },
+                "start": Object {
+                  "column": 5,
+                  "line": 6,
+                  "offset": 44,
+                },
+              },
+              "type": "paragraph",
+            },
+          ],
+          "position": Object {
+            "end": Object {
+              "column": 9,
+              "line": 6,
+              "offset": 48,
+            },
+            "start": Object {
+              "column": 3,
+              "line": 6,
+              "offset": 42,
+            },
+          },
+          "spread": false,
+          "type": "listItem",
+        },
+        Object {
+          "checked": null,
+          "children": Array [
+            Object {
+              "children": Array [
+                Object {
+                  "position": Object {
+                    "end": Object {
+                      "column": 16,
+                      "line": 7,
+                      "offset": 64,
+                    },
+                    "start": Object {
+                      "column": 5,
+                      "line": 7,
+                      "offset": 53,
+                    },
+                  },
+                  "type": "text",
+                  "value": "Spring Boot",
+                },
+              ],
+              "position": Object {
+                "end": Object {
+                  "column": 16,
+                  "line": 7,
+                  "offset": 64,
+                },
+                "start": Object {
+                  "column": 5,
+                  "line": 7,
+                  "offset": 53,
+                },
+              },
+              "type": "paragraph",
+            },
+          ],
+          "position": Object {
+            "end": Object {
+              "column": 16,
+              "line": 7,
+              "offset": 64,
+            },
+            "start": Object {
+              "column": 3,
+              "line": 7,
+              "offset": 51,
+            },
+          },
+          "spread": false,
+          "type": "listItem",
+        },
+      ],
+      "ordered": false,
+      "position": Object {
+        "end": Object {
+          "column": 16,
+          "line": 7,
+          "offset": 64,
+        },
+        "start": Object {
+          "column": 3,
+          "line": 3,
+          "offset": 18,
+        },
+      },
+      "spread": false,
+      "start": null,
+      "type": "list",
+    },
+    Object {
+      "position": Object {
+        "end": Object {
+          "column": 4,
+          "line": 8,
+          "offset": 68,
+        },
+        "start": Object {
+          "column": 1,
+          "line": 8,
+          "offset": 65,
+        },
+      },
+      "type": "thematicBreak",
+    },
+    Object {
+      "children": Array [
+        Object {
+          "position": Object {
+            "end": Object {
+              "column": 14,
+              "line": 10,
+              "offset": 83,
+            },
+            "start": Object {
+              "column": 3,
+              "line": 10,
+              "offset": 72,
+            },
+          },
+          "type": "text",
+          "value": "hello world",
+        },
+      ],
+      "depth": 1,
+      "position": Object {
+        "end": Object {
+          "column": 14,
+          "line": 10,
+          "offset": 83,
+        },
+        "start": Object {
+          "column": 1,
+          "line": 10,
+          "offset": 70,
+        },
+      },
+      "type": "heading",
+    },
+    Object {
+      "children": Array [
+        Object {
+          "position": Object {
+            "end": Object {
+              "column": 6,
+              "line": 12,
+              "offset": 90,
+            },
+            "start": Object {
+              "column": 1,
+              "line": 12,
+              "offset": 85,
+            },
+          },
+          "type": "text",
+          "value": "你好 世界",
+        },
+      ],
+      "position": Object {
+        "end": Object {
+          "column": 6,
+          "line": 12,
+          "offset": 90,
+        },
+        "start": Object {
+          "column": 1,
+          "line": 12,
+          "offset": 85,
+        },
+      },
+      "type": "paragraph",
+    },
+    Object {
+      "children": Array [
+        Object {
+          "position": Object {
+            "end": Object {
+              "column": 63,
+              "line": 14,
+              "offset": 154,
+            },
+            "start": Object {
+              "column": 1,
+              "line": 14,
+              "offset": 92,
+            },
+          },
+          "type": "text",
+          "value": "www.example.com, https://example.com, and contact@example.com.",
+        },
+      ],
+      "position": Object {
+        "end": Object {
+          "column": 63,
+          "line": 14,
+          "offset": 154,
+        },
+        "start": Object {
+          "column": 1,
+          "line": 14,
+          "offset": 92,
+        },
+      },
+      "type": "paragraph",
+    },
+    Object {
+      "children": Array [
+        Object {
+          "position": Object {
+            "end": Object {
+              "column": 16,
+              "line": 16,
+              "offset": 171,
+            },
+            "start": Object {
+              "column": 1,
+              "line": 16,
+              "offset": 156,
+            },
+          },
+          "type": "text",
+          "value": "[^1]: Big note.",
+        },
+      ],
+      "position": Object {
+        "end": Object {
+          "column": 16,
+          "line": 16,
+          "offset": 171,
+        },
+        "start": Object {
+          "column": 1,
+          "line": 16,
+          "offset": 156,
+        },
+      },
+      "type": "paragraph",
+    },
+    Object {
+      "children": Array [
+        Object {
+          "position": Object {
+            "end": Object {
+              "column": 25,
+              "line": 18,
+              "offset": 197,
+            },
+            "start": Object {
+              "column": 1,
+              "line": 18,
+              "offset": 173,
+            },
+          },
+          "type": "text",
+          "value": "~one~ or ~~two~~ tildes.",
+        },
+      ],
+      "position": Object {
+        "end": Object {
+          "column": 25,
+          "line": 18,
+          "offset": 197,
+        },
+        "start": Object {
+          "column": 1,
+          "line": 18,
+          "offset": 173,
+        },
+      },
+      "type": "paragraph",
+    },
+  ],
+  "position": Object {
+    "end": Object {
+      "column": 25,
+      "line": 18,
+      "offset": 197,
+    },
+    "start": Object {
+      "column": 1,
+      "line": 1,
+      "offset": 0,
+    },
+  },
+  "type": "root",
+}
+`;

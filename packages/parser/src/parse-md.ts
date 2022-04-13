@@ -1,5 +1,7 @@
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
+import frontmatter from 'remark-frontmatter';
+import remarkGfm from 'remark-gfm';
 import { MarkdownNode } from './types';
 
 /**
@@ -10,5 +12,5 @@ import { MarkdownNode } from './types';
  * @author YuZhanglong <loveyzl1123@gmail.com>
  */
 export const parseMd = (md: string): MarkdownNode => {
-  return unified().use(remarkParse).parse(md);
+  return unified().use(remarkParse).use(frontmatter).use(remarkGfm).parse(md);
 };

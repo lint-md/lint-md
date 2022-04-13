@@ -24,6 +24,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "remark-frontmatter": "^4.0.1",
+    "remark-gfm": "^3.0.1",
     "remark-parse": "^10.0.1",
     "terser-webpack-plugin": "^5.3.1",
     "unified": "^10.1.2",

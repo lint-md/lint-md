@@ -3,6 +3,7 @@
     "target": "ESNext",
     "module": "CommonJS",
     "declaration": true,
+    "declarationMap": true,
     "moduleResolution": "Node",
     "removeComments": true,
     "resolveJsonModule": true,
@@ -13,8 +14,6 @@
     "allowJs": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "sourceMap": true,
-    "baseUrl": "./",
-    "outDir": "lib",
+    "sourceMap": true
   }
 }

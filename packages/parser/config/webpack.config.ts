@@ -1,8 +1,8 @@
-import * as path from 'path'
+import * as path from 'path';
 import * as TerserPlugin from 'terser-webpack-plugin';
 
 const config = () => {
-  const isDev = true
+  const isDev = true;
 
   return {
     entry: './src/index.ts',
@@ -27,7 +27,7 @@ const config = () => {
             },
           },
           extractComments: false,
-        }),
+        }) as any,
       ],
     },
     module: {
@@ -44,7 +44,7 @@ const config = () => {
     resolve: {
       extensions: ['.ts', '.js'],
     },
-  }
-}
+  };
+};
 
-export default config
+export default config;

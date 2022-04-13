@@ -3,11 +3,11 @@
   "version": "0.0.0",
   "description": "> TODO: add description",
   "author": "hustcc",
+  "typings": "./lib/lint-md-parser.d.ts",
   "contributors": [
     "hustcc <i@hust.cc>",
     "yuzhanglong <loveyzl1123@gmail.com>"
   ],
-  "homepage": "",
   "license": "MIT",
   "main": "lib/index.js",
   "module": "esm/index.js",

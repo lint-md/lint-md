@@ -8,8 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install modules
-        run: yarn install
+      - name: Install modules and build projects
+        run: pnpm install && pnpm build-all
 
       - name: Run tests
-        run: yarn test
+        run: pnpm test

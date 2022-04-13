@@ -3,14 +3,13 @@
   "version": "0.0.0",
   "description": "> TODO: add description",
   "author": "hustcc",
+  "main": "./lib/lint-md-parser.js",
   "typings": "./lib/lint-md-parser.d.ts",
   "contributors": [
     "hustcc <i@hust.cc>",
     "yuzhanglong <loveyzl1123@gmail.com>"
   ],
   "license": "MIT",
-  "main": "lib/index.js",
-  "module": "esm/index.js",
   "files": [
     "src",
     "esm",
@@ -18,7 +17,8 @@
   ],
   "scripts": {
     "dev:start": "tsc -w",
-    "build:dist": "rm -rf lib && webpack --config ./config/webpack.config.ts",
+    "build:ts-declaration": "tsc && api-extractor run --local --verbose",
+    "build:dist": "webpack --config ./config/webpack.config.ts",
     "build": "npm-run-all --parallel build:*",
     "lint": "eslint --ext js,jsx,ts,tsx src",
     "test": "jest"

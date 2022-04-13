@@ -1,12 +1,22 @@
 name: build
 
-on: [ pull_request ]
+on: [pull_request]
 
 jobs:
   unit-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.1.1
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2.2.1
+        with:
+          version: 6.32.3
+
 
       - name: Install modules and build projects
         run: pnpm install && pnpm build-all

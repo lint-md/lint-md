@@ -1,4 +1,4 @@
-import { parseMd } from '@lint-md/parser/lib/tmp';
+import { parseMd } from '@lint-md/parser';
 import { LintMdRuleConfig, NodeQueue } from '../types';
 import { createEmitter } from '../utils/emitter';
 import { createTraverser } from '../utils/traverser';

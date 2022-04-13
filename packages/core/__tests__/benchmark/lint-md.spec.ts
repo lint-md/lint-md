@@ -4,7 +4,7 @@ import noEmptyCode from '../../src/rules/no-empty-code';
 import { benchMarkBetween } from '../utils/test-utils';
 
 describe('test benchmark with old version lint-md', () => {
-  test('test lint and fix', async () => {
+  test.skip('test lint and fix', async () => {
     const NO_EMPTY_CODE_DEMO = new Array(100).fill(`# Hello
 
 Some **importance**, and \`code\`.

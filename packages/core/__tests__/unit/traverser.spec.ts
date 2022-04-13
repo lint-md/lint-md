@@ -1,7 +1,5 @@
-import * as unified from 'unified';
-import * as remarkParse from 'remark-parse';
+import { parseMd , MarkdownNode } from '@lint-md/parser';
 import { createTraverser } from '../../src/utils/traverser';
-import { MarkdownNode } from '../../src/types';
 
 describe('test node traverser', () => {
   let nodeQueue: MarkdownNode[] = [];
@@ -16,9 +14,7 @@ console.log('!');
 \`\`\`
 `;
 
-  const ast = unified()
-    .use(remarkParse)
-    .parse(DEMO_MARKDOWN) as MarkdownNode;
+  const ast = parseMd(DEMO_MARKDOWN);
 
   beforeEach(() => {
     nodeQueue = [];
@@ -27,14 +23,14 @@ console.log('!');
 
   test('test onLeave in options should be called correctly', () => {
     const traverser = createTraverser({
-      onLeave: ((node, parent) => {
+      onLeave: (node, parent) => {
         nodeQueue.push(node);
         parentNodeQueue.push(parent);
-      })
+      },
     });
 
     traverser.traverse(ast, null);
-    expect(nodeQueue.map(item => item.type)).toStrictEqual([
+    expect(nodeQueue.map((item) => item.type)).toStrictEqual([
       'text',
       'heading',
       'text',
@@ -45,9 +41,9 @@ console.log('!');
       'text',
       'paragraph',
       'code',
-      'root'
+      'root',
     ]);
-    expect(parentNodeQueue.map(item => item?.type)).toStrictEqual([
+    expect(parentNodeQueue.map((item) => item?.type)).toStrictEqual([
       'heading',
       'root',
       'paragraph',
@@ -58,20 +54,20 @@ console.log('!');
       'paragraph',
       'root',
       'root',
-      undefined
+      undefined,
     ]);
   });
 
   test('test onEnter in options should be called correctly', () => {
     const traverser = createTraverser({
-      onEnter: ((node, parent) => {
+      onEnter: (node, parent) => {
         nodeQueue.push(node);
         parentNodeQueue.push(parent);
-      })
+      },
     });
 
     traverser.traverse(ast, null);
-    expect(nodeQueue.map(item => item.type)).toStrictEqual([
+    expect(nodeQueue.map((item) => item.type)).toStrictEqual([
       'root',
       'heading',
       'text',
@@ -82,9 +78,9 @@ console.log('!');
       'text',
       'inlineCode',
       'text',
-      'code'
+      'code',
     ]);
-    expect(parentNodeQueue.map(item => item?.type)).toStrictEqual([
+    expect(parentNodeQueue.map((item) => item?.type)).toStrictEqual([
       undefined,
       'root',
       'heading',
@@ -95,16 +91,16 @@ console.log('!');
       'paragraph',
       'paragraph',
       'paragraph',
-      'root'
+      'root',
     ]);
   });
 
   test('test invalid node', () => {
     const traverser = createTraverser({
-      onLeave: ((node, parent) => {
+      onLeave: (node, parent) => {
         nodeQueue.push(node);
         parentNodeQueue.push(parent);
-      })
+      },
     });
 
     traverser.traverse(undefined, undefined);

@@ -1,5 +1,6 @@
 import { noop } from 'lodash';
-import { MarkdownNode, TraverserOptions } from '../types';
+import { MarkdownNode } from '@lint-md/parser';
+import { TraverserOptions } from '../types';
 import { isNode } from './common';
 
 /**
@@ -21,7 +22,7 @@ export const createTraverser = (options: TraverserOptions) => {
 
     // 递归处理各个子节点
     for (const child of children) {
-      traverse(child, node);
+      traverse(child as MarkdownNode, node);
     }
 
     onLeave(node, parent);

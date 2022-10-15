@@ -1,7 +1,5 @@
-import * as unified from 'unified';
-import * as remarkParse from 'remark-parse';
+import { MarkdownNode, parseMd } from '@lint-md/parser';
 import { createTraverser } from '../../src/utils/traverser';
-import { MarkdownNode } from '../../src/types';
 
 describe('test node traverser', () => {
   let nodeQueue: MarkdownNode[] = [];
@@ -16,9 +14,7 @@ console.log('!');
 \`\`\`
 `;
 
-  const ast = unified()
-    .use(remarkParse)
-    .parse(DEMO_MARKDOWN) as MarkdownNode;
+  const ast = parseMd(DEMO_MARKDOWN);
 
   beforeEach(() => {
     nodeQueue = [];

@@ -1,4 +1,5 @@
-import { LintMdRule, MarkdownNode } from '../types';
+import { MarkdownNode } from '@lint-md/parser';
+import { LintMdRule } from '../types';
 
 type MarkdownCodeNode = MarkdownNode & {
   value: string

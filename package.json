@@ -27,6 +27,7 @@
     "ast-plugin"
   ],
   "dependencies": {
+    "@lint-md/parser": "^0.0.6",
     "lodash": "^4.17.21",
     "remark-parse": "^9",
     "unified": "^9"

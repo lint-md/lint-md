@@ -1,4 +1,4 @@
-import { Parent } from 'unist';
+import { MarkdownNode } from '@lint-md/parser';
 import type { createFixer } from './utils/fixer';
 import { createRuleManager } from './utils/rule-manager';
 
@@ -13,10 +13,6 @@ export interface MarkdownNodePosition {
    */
   column: number;
 }
-
-export type MarkdownNode = Omit<Parent, 'children'> & {
-  children?: MarkdownNode[]
-};
 
 
 export interface Fix {

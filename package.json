@@ -24,7 +24,7 @@
     "lint",
     "markdown",
     "lint-md",
-    "ast-plugin"
+    "chinese"
   ],
   "dependencies": {
     "@lint-md/parser": "^0.0.7",

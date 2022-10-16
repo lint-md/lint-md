@@ -5,12 +5,6 @@ type MarkdownListItemNode = MarkdownNode & {
   children: MarkdownNode[]
 }
 
-/**
- * code 代码块内容不能为空
- * no-empty-code
- *
- * @date 2021-12-05 19:35:14
- */
 const noEmptyList: LintMdRule = {
   create: (context) => {
     return {

@@ -1,8 +1,8 @@
 import { createFixer } from '../../utils/test-utils';
-import spaceRoundAlphabet from '../../../src/rules/space-round-alphabet';
+import spaceAroundAlphabet from '../../../src/rules/space-around-alphabet';
 
 const fixer = createFixer([{
-  rule: spaceRoundAlphabet
+  rule: spaceAroundAlphabet
 }]);
 
 //language=markdown

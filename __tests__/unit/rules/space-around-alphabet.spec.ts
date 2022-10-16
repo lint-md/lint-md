@@ -1,8 +1,8 @@
 import { createFixer } from '../../utils/test-utils';
-import spaceRoundAlphabet from '../../../src/rules/space-round-alphabet';
+import spaceAroundAlphabet from '../../../src/rules/space-around-alphabet';
 
 const fixer = createFixer([{
-  rule: spaceRoundAlphabet
+  rule: spaceAroundAlphabet
 }]);
 
 //language=markdown
@@ -25,7 +25,7 @@ const fixedMarkdownToCheck = `
   - 通过创建实例的方式，例如 new Image() 等代码来实现初始化。
 `;
 
-describe('test space-round-alphabet', () => {
+describe('test space-around-alphabet', () => {
   test('fix applied', () => {
     const { fixedResult, lintResult } = fixer(markdownToCheck);
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(5);

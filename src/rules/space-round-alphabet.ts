@@ -36,6 +36,7 @@ const spaceRoundAlphabet: LintMdRule = {
               },
               message: '[lint-md] 中英文之间需要添加空格',
               fix: (fixer) => {
+                // 将第 loc.start.offset + i + 1 位置处的字符替换成空格
                 return fixer.insertTextAt(loc.start.offset + i + 1, ' ');
               }
             });

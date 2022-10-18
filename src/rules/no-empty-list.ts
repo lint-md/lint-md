@@ -1,9 +1,6 @@
-import { MarkdownNode } from '@lint-md/parser';
+import { MarkdownListItemNode } from '@lint-md/parser';
 import { LintMdRule } from '../types';
 
-type MarkdownListItemNode = MarkdownNode & {
-  children: MarkdownNode[]
-}
 
 const noEmptyList: LintMdRule = {
   create: (context) => {

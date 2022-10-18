@@ -27,7 +27,7 @@
     "chinese"
   ],
   "dependencies": {
-    "@lint-md/parser": "^0.0.7",
+    "@lint-md/parser": "^0.0.8",
     "lodash": "^4.17.21",
     "remark-parse": "^9",
     "unified": "^9"

@@ -1,19 +1,6 @@
-import { MarkdownNode } from '@lint-md/parser';
+import { MarkdownNode, MarkdownNodePosition } from '@lint-md/parser';
 import type { createFixer } from './utils/fixer';
 import { createRuleManager } from './utils/rule-manager';
-
-export interface MarkdownNodePosition {
-  /**
-   * 所在行（索引从 1 开始）
-   */
-  line: number;
-
-  /**
-   * 所在列（索引从 1 开始）
-   */
-  column: number;
-}
-
 
 export interface Fix {
   range: TextRange;
@@ -64,4 +51,4 @@ export interface TraverserOptions {
   onLeave?: (node: MarkdownNode, parent: MarkdownNode) => void;
 }
 
-export type TextRange = number[]
+export type TextRange = number[];

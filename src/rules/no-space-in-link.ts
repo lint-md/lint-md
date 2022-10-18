@@ -1,9 +1,5 @@
-import { MarkdownNode } from '@lint-md/parser';
+import { MarkdownTextNode } from '@lint-md/parser';
 import { LintMdRule, LintMdRuleContext } from '../types';
-
-type MarkdownTextNode = MarkdownNode & {
-  value: string
-}
 
 const checkAndReportTextNode = (ctx: LintMdRuleContext, node: MarkdownTextNode, pos: 'between' | 'start-only' | 'end-only') => {
   if (!node && node.type !== 'text') {

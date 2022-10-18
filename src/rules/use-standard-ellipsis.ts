@@ -1,9 +1,5 @@
-import { MarkdownNode } from '@lint-md/parser';
+import { MarkdownCodeNode } from '@lint-md/parser';
 import { LintMdRule } from '../types';
-
-type MarkdownCodeNode = MarkdownNode & {
-  value: string
-}
 
 /**
  * 找到所有的 …

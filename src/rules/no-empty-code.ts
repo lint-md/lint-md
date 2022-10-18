@@ -1,9 +1,6 @@
-import { MarkdownNode } from '@lint-md/parser';
+import { MarkdownCodeNode } from '@lint-md/parser';
 import { LintMdRule } from '../types';
 
-type MarkdownCodeNode = MarkdownNode & {
-  value: string
-}
 
 const noEmptyCode: LintMdRule = {
   create: (context) => {

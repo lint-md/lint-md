@@ -1,9 +1,5 @@
-import { MarkdownNode } from '@lint-md/parser';
+import { MarkdownLinkNode } from '@lint-md/parser';
 import { LintMdRule } from '../types';
-
-type MarkdownLinkNode = MarkdownNode & {
-  url: string
-}
 
 const noEmptyURL: LintMdRule = {
   create: (context) => {

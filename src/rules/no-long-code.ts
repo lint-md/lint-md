@@ -1,10 +1,5 @@
-import { MarkdownNode } from '@lint-md/parser';
+import { MarkdownCodeNode } from '@lint-md/parser';
 import { LintMdRule } from '../types';
-
-type MarkdownCodeNode = MarkdownNode & {
-  value: string
-  lang: string
-}
 
 /**
  * 代码块不能有过长的代码

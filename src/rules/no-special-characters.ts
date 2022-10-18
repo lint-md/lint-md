@@ -1,9 +1,6 @@
-import { MarkdownNode } from '@lint-md/parser';
+import { MarkdownTextNode } from '@lint-md/parser';
 import { LintMdRule } from '../types';
 
-type MarkdownTextNode = MarkdownNode & {
-  value: string
-}
 
 const SPECIAL_CHARACTERS = ['\b'];
 

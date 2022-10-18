@@ -5,12 +5,6 @@ type MarkdownCodeNode = MarkdownNode & {
   value: string
 }
 
-/**
- * code 代码块内容不能为空
- * no-empty-code
- *
- * @date 2021-12-05 19:35:14
- */
 const noEmptyCode: LintMdRule = {
   create: (context) => {
     return {

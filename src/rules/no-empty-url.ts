@@ -5,12 +5,6 @@ type MarkdownLinkNode = MarkdownNode & {
   url: string
 }
 
-/**
- * inline code 代码块内容不能为空
- * no-empty-inline-code
- *
- * @date 2021-12-05 19:35:14
- */
 const noEmptyURL: LintMdRule = {
   create: (context) => {
     return {

@@ -29,11 +29,13 @@ export interface ReportOption {
   fix?: (fixer: ReturnType<typeof createFixer>) => Fix;
 }
 
+export type LintMdRuleContext = ReturnType<ReturnType<typeof createRuleManager>['createRuleContext']>
+
 export interface LintMdRule {
   /**
    * 选择器初始化回调
    */
-  create: (context: ReturnType<ReturnType<typeof createRuleManager>['createRuleContext']>) => Record<string, (node: MarkdownNode) => void>;
+  create: (context: LintMdRuleContext) => Record<string, (node: MarkdownNode) => void>;
 
   /**
    * rule 的一些基本信息，后续有需要再补充

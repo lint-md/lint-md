@@ -1,4 +1,4 @@
-import { MarkdownNode, MarkdownTextNode } from '@lint-md/parser';
+import { MarkdownTextNode } from '@lint-md/parser';
 import { LintMdRule } from '../types';
 import { markText } from '../utils/mark-text';
 

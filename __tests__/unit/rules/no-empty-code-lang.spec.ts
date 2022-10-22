@@ -13,7 +13,7 @@ describe('test no-empty-code-lang', () => {
 
     const { fixedResult, lintResult } = fixer(md);
 
-    expect(fixedResult.result).toBe(md);
+    expect(fixedResult?.result).toBe(md);
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
   });
 
@@ -24,7 +24,7 @@ describe('test no-empty-code-lang', () => {
 
     const { fixedResult, lintResult } = fixer(md);
 
-    expect(fixedResult.result).toBe('```plain\n' +
+    expect(fixedResult?.result).toBe('```plain\n' +
       'const b = 2;\n' +
       '```');
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);

@@ -30,12 +30,12 @@ describe('test correct-title-trailing-punctuation', () => {
 
     const { fixedResult, lintResult } = fixer(mdToFix.trim());
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
-    expect(fixedResult.result).toStrictEqual(fixedMd.trim());
+    expect(fixedResult?.result).toStrictEqual(fixedMd.trim());
   });
 
   test('fix applied (复杂内容物)', () => {
     const { fixedResult, lintResult } = fixer(`# 这就是 ~~删除线~~ ![12312313](213213) **啦啦啦**<div>~~123123~~!<a>测试测试</a></div> [123123123~](12312313)`);
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
-    expect(fixedResult.result).toStrictEqual(`# 这就是 ~~删除线~~ ![12312313](213213) **啦啦啦**<div>~~123123~~!<a>测试测试</a></div> [123123123](12312313)`);
+    expect(fixedResult?.result).toStrictEqual(`# 这就是 ~~删除线~~ ![12312313](213213) **啦啦啦**<div>~~123123~~!<a>测试测试</a></div> [123123123](12312313)`);
   });
 });

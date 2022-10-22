@@ -10,6 +10,6 @@ describe('test no-special-characters', () => {
     const md = 'hello world, before here has a \\b.';
     const { fixedResult, lintResult } = fixer(md);
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
-    expect(fixedResult.result).toBe('hello world, before here has a \\b.');
+    expect(fixedResult?.result).toStrictEqual('hello world, before here has a \\b.');
   });
 });

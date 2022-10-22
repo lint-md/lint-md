@@ -21,7 +21,7 @@ describe('test no-long-code', () => {
 
     const { fixedResult, lintResult } = fixer(md);
 
-    expect(fixedResult.result).toBe(md);
+    expect(fixedResult?.result).toBe(md);
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
   });
 
@@ -34,9 +34,9 @@ describe('test no-long-code', () => {
     ].join('\n');
 
     const { lintResult } = fixer(md);
-    const { loc } = lintResult.ruleManager.getReportData().pop();
+    const options = lintResult.ruleManager.getReportData().pop();
 
-    expect(loc).toStrictEqual({
+    expect(options?.loc).toStrictEqual({
       'end': {
         'column': 114,
         'line': 1
@@ -73,7 +73,7 @@ describe('test no-long-code', () => {
 
     const { fixedResult, lintResult } = fixer(md);
 
-    expect(fixedResult.result).toBe(md);
+    expect(fixedResult?.result).toStrictEqual(md);
     const [r1, r2] = lintResult.ruleManager.getReportData();
     expect(r1.loc).toStrictEqual({
       'end': {

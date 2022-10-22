@@ -12,7 +12,7 @@ import { lintMarkdown } from './lint-markdown';
 
 export const handleFixMode = (markdown: string, rules: LintMdRuleWithOptions[]) => {
   let lintTimes = 0;
-  let initialLintResult: ReturnType<typeof lintMarkdown> | null = null;
+  let initialLintResult = {} as ReturnType<typeof lintMarkdown>;
 
   let fixedResult: { result: string, notAppliedFixes: FixConfig[] } = {
     result: markdown,

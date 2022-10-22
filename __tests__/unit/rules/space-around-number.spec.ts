@@ -19,6 +19,6 @@ describe('test space-around-number', () => {
   test('fix applied', () => {
     const { fixedResult, lintResult } = fixer(markdownToCheck);
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(3);
-    expect(fixedResult.result).toStrictEqual(fixedMarkdownToCheck);
+    expect(fixedResult?.result).toStrictEqual(fixedMarkdownToCheck);
   });
 });

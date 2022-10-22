@@ -7,6 +7,9 @@ const isMarkedTextBetweenChineseAndNumber = (value: string) => {
 };
 
 const spaceAroundNumber: LintMdRule = {
+  meta: {
+    name: 'space-around-number'
+  },
   create: (context) => {
     return {
       text: (node: MarkdownTextNode) => {

@@ -40,6 +40,9 @@ const findAllFullWidthNumbers = (s: string) => {
 };
 
 const noFullWidthNumber: LintMdRule = {
+  meta: {
+    name: 'no-full-width-number'
+  },
   create: (context) => {
     return {
       text: (node: MarkdownNode & {

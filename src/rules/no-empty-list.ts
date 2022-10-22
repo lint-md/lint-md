@@ -3,6 +3,9 @@ import { LintMdRule } from '../types';
 
 
 const noEmptyList: LintMdRule = {
+  meta: {
+    name: 'no-empty-list'
+  },
   create: (context) => {
     return {
       listItem: (node: MarkdownListItemNode) => {

@@ -2,13 +2,10 @@ import { MarkdownCodeNode } from '@lint-md/parser';
 import { LintMdRule } from '../types';
 
 
-/**
- * inline code 代码块内容不能为空
- * no-empty-inline-code
- *
- * @date 2021-12-05 19:35:14
- */
 const noEmptyInlineCode: LintMdRule = {
+  meta: {
+    name: 'no-empty-inline-code'
+  },
   create: (context) => {
     return {
       inlineCode: (node: MarkdownCodeNode) => {

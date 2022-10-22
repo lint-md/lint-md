@@ -1,13 +1,10 @@
 import { MarkdownCodeNode } from '@lint-md/parser';
 import { LintMdRule } from '../types';
 
-/**
- * 代码块不能有过长的代码
- * no-long-code
- *
- * @date 2021-12-24 22:37:04
- */
 const noLongCode: LintMdRule = {
+  meta: {
+    name: 'no-long-code'
+  },
   create: (context) => {
     return {
       code: (node: MarkdownCodeNode) => {

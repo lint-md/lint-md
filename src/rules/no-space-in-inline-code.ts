@@ -1,13 +1,10 @@
 import { MarkdownCodeNode } from '@lint-md/parser';
 import { LintMdRule } from '../types';
 
-/**
- * inline code 前后不能有空格
- * no-space-in-inline-code
- *
- * @date 2021-12-05 19:35:14
- */
 const noSpaceInInlineCode: LintMdRule = {
+  meta: {
+    name: 'no-space-in-inline-code'
+  },
   create: (context) => {
     return {
       inlineCode: (node: MarkdownCodeNode) => {

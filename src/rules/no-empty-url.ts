@@ -2,6 +2,9 @@ import { MarkdownLinkNode } from '@lint-md/parser';
 import { LintMdRule } from '../types';
 
 const noEmptyURL: LintMdRule = {
+  meta: {
+    name: 'no-empty-url'
+  },
   create: (context) => {
     return {
       link: (node: MarkdownLinkNode) => {

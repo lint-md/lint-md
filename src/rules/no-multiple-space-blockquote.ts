@@ -2,6 +2,9 @@ import { MarkdownCodeNode } from '@lint-md/parser';
 import { LintMdRule } from '../types';
 
 const noMultipleSpaceBlockquote: LintMdRule = {
+  meta: {
+    name: 'no-multiple-space-blockquote'
+  },
   create: (context) => {
     return {
       blockquote: (node: MarkdownCodeNode) => {

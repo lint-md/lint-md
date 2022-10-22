@@ -5,6 +5,9 @@ import { LintMdRule } from '../types';
 const SPECIAL_CHARACTERS = ['\b'];
 
 const noSpecialCharacters: LintMdRule = {
+  meta: {
+    name: 'no-special-characters'
+  },
   create: (context) => {
     return {
       text: (node: MarkdownTextNode) => {
@@ -13,7 +16,7 @@ const noSpecialCharacters: LintMdRule = {
         SPECIAL_CHARACTERS.forEach(sc => {
           const idx = value.indexOf(sc);
 
-          if (idx) {
+          if (idx !== -1) {
             context.report({
               loc: node.position,
               message: `[lint-md] 文本中不能包含特殊字符 '${sc}'，请删除或者替换`,

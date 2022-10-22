@@ -3,6 +3,9 @@ import { LintMdRule } from '../types';
 
 
 const noEmptyCode: LintMdRule = {
+  meta: {
+    name: 'no-empty-code'
+  },
   create: (context) => {
     return {
       code: (node: MarkdownCodeNode) => {

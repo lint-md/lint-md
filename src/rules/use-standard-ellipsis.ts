@@ -48,6 +48,9 @@ const findAllDotEllipsis = (s: string) => {
 
 
 const useStandardEllipsis: LintMdRule = {
+  meta: {
+    name: 'use-standard-ellipsis'
+  },
   create: (context) => {
     return {
       text: (node: MarkdownCodeNode) => {

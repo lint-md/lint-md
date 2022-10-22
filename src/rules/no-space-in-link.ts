@@ -37,6 +37,9 @@ const checkAndReportTextNode = (ctx: LintMdRuleContext, node: MarkdownTextNode, 
 };
 
 const noSpaceInLink: LintMdRule = {
+  meta: {
+    name: 'no-space-in-link'
+  },
   create: (context) => {
     return {
       link: (node) => {

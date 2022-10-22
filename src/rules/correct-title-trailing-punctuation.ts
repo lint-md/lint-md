@@ -5,6 +5,9 @@ const ALLOWED_PUNCTUATION = ['!', '?', '！', '？', '…'];
 const COMMON_PUNCTUATION = ['.', ',', ';', ':', '。', '，', '；', '：', '…', '~', '*', '`'];
 
 const correctTitleTrailingPunctuation: LintMdRule = {
+  meta: {
+    name: 'correct-title-trailing-punctuation',
+  },
   create: (context) => {
     return {
       heading: (node) => {

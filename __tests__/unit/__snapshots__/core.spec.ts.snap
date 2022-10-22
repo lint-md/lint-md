@@ -36,7 +36,8 @@ console.log('hello world')
 # 禁止全角数字
 
 > 这件蛋糕只卖 1000 元。
->  这10１０ 哈哈
+
+> 这个 10 哈哈。
 
 # 超长代码
 
@@ -65,7 +66,7 @@ hello world, before here has a \\\\b.
 
 # 中英文之间缺少空格
 
-通过XMLHttpRequest 的方式来请求的 http 资源
+通过 XMLHttpRequest 的方式来请求的 http 资源
 
 
 # 数字两侧缺少空格

@@ -1,3 +1,4 @@
+export { default as spaceAroundAlphabet } from './space-around-alphabet';
 export { default as noEmptyList } from './no-empty-list';
 export { default as noEmptyCode } from './no-empty-code';
 export { default as noEmptyCodeLang } from './no-empty-code-lang';

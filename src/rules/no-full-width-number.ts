@@ -49,7 +49,8 @@ const noFullWidthNumber: LintMdRule = {
         value: string
       }) => {
         const text = node.value;
-        findAllFullWidthNumbers(text).forEach(res => {
+        const fullWidthNumbers = findAllFullWidthNumbers(text);
+        fullWidthNumbers.forEach(res => {
           const { index, number } = res;
           const { line: startLine, column: startColumn, offset: startOffset } = node.position.start;
 

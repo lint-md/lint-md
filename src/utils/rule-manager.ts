@@ -28,7 +28,11 @@ export const createRuleManager = () => {
       })
       .map(item => {
         // @ts-ignore
-        return item.fix(fixer);
+        const fix = item.fix(fixer);
+        return {
+          ...fix,
+          targetRule: item.name
+        };
       });
   };
 

@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`test core methods for lint-markdown test lintAndFix() to lint or fix markdown source 1`] = `
-"# 标题后面不可以使用………规范的符号
+"# 标题后面不可以使用不规范的符号
 
 ## 标题后面不可以使用不规范的符号~
 
@@ -65,7 +65,7 @@ hello world, before here has a \\\\b.
 
 # 中英文之间缺少空格
 
-通过 XMLHttpRequest、Fetch()的方式来请求的 http 资源
+通过XMLHttpRequest 的方式来请求的 http 资源
 
 
 # 数字两侧缺少空格
@@ -75,6 +75,6 @@ hello world, before here has a \\\\b.
 
 # 使用标准省略号
 
-hello world…
+hello world……
 "
 `;

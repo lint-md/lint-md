@@ -1,4 +1,3 @@
-import { isFunction } from 'lodash';
 import { lintMarkdown, lintAndFixInternal } from '../../src';
 import noEmptyCode from '../../src/rules/no-empty-code';
 import { lintAndFix } from '../../src/core/lint-and-fix';

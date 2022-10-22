@@ -64,12 +64,12 @@ hello world, before here has a \b.
 
 # 中英文之间缺少空格
 
-通过 XMLHttpRequest、Fetch()的方式来请求的 http 资源
+通过XMLHttpRequest 的方式来请求的 http 资源
 
 
 # 数字两侧缺少空格
 
-33 你好世界 520 测试测试 32123123
+33你好世界520 测试测试 32123123
 
 
 # 使用标准省略号

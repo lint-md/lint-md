@@ -1,5 +1,5 @@
 import { isFunction } from 'lodash';
-import { LintMdRuleConfig, LintMdRuleInternalConfig, ReportOption } from '../types';
+import { LintMdRuleWithOptions, ReportOption } from '../types';
 import { createFixer } from './fixer';
 
 /**
@@ -23,15 +23,16 @@ export const createRuleManager = () => {
   // 获取所有的 fix
   const getAllFixes = () => {
     return allReportedData
-      .filter(item => isFunction(item.fix))
+      .filter(item => {
+        return isFunction(item.fix);
+      })
       .map(item => {
-        const res = item.fix(fixer);
-        return res;
+        return item.fix(fixer);
       });
   };
 
   // 初始化一个 rule context
-  const createRuleContext = (ruleConfig: LintMdRuleInternalConfig) => {
+  const createRuleContext = (ruleConfig: LintMdRuleWithOptions) => {
     const { rule, options } = ruleConfig;
 
     // 上报方法，供选择器内部调用

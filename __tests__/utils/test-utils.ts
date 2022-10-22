@@ -1,6 +1,8 @@
+import * as path from 'path';
+import * as fs from 'fs';
 import * as Benchmark from 'benchmark';
-import { LintMdRule, LintMdRuleInternalConfig } from '../../src/types';
-import { lintAndFixInternal } from '../../src/core/lint-and-fix';
+import { LintMdRuleWithOptions } from '../../src/types';
+import { lintAndFixInternal } from '../../src';
 
 interface BenchMarkBetweenOptions {
   // 回调函数 1
@@ -54,8 +56,14 @@ export const benchMarkBetween = async (opt: BenchMarkBetweenOptions) => {
   });
 };
 
-export const createFixer = (ruleConfigs: LintMdRuleInternalConfig[]) => {
+export const createFixer = (ruleConfigs: LintMdRuleWithOptions[]) => {
   return (md: string) => {
     return lintAndFixInternal(md, ruleConfigs, true);
   };
+};
+
+
+export const getExample = (name: string) => {
+  const file = path.resolve(__dirname, '../examples', `${name}.md`);
+  return fs.readFileSync(file).toString();
 };

@@ -1,15 +1,23 @@
 import { createRuleManager } from '../../src/utils/rule-manager';
 
+const fakeRule = {
+  rule: {
+    meta: {
+      name: 'fake-rule'
+    }
+  }
+};
+
 describe('test rule context', () => {
   test('test rule context creation', () => {
     const ctx = createRuleManager();
     expect(ctx).toBeTruthy();
-    expect(typeof ctx.createRuleContext().report).toStrictEqual('function');
+    expect(typeof ctx.createRuleContext(fakeRule as any).report).toStrictEqual('function');
   });
 
   test('test rule context report() call', () => {
     const manager = createRuleManager();
-    manager.createRuleContext().report({
+    manager.createRuleContext(fakeRule as any).report({
       message: 'message 1',
       loc: {
         start: {
@@ -22,7 +30,7 @@ describe('test rule context', () => {
         }
       }
     });
-    manager.createRuleContext().report({
+    manager.createRuleContext(fakeRule as any).report({
       message: 'message 2',
       loc: {
         start: {

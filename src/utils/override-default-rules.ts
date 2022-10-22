@@ -1,11 +1,11 @@
-import { LintMdRule, LintMdRules, RegisteredRules, RULE_SEVERITY } from '../types';
+import { LintMdRule, LintMdRulesConfig, RegisteredRules, RULE_SEVERITY } from '../types';
 
 /**
  * 覆盖默认规则
  *
  * @author YuZhanglong <loveyzl1123@gmail.com>
  */
-export const overrideDefaultRules = (defaultRules: Record<string, LintMdRule>, ruleConfig: LintMdRules) => {
+export const overrideDefaultRules = (defaultRules: Record<string, LintMdRule>, ruleConfig: LintMdRulesConfig) => {
   // 默认所有的内部 rules 都会被初始化，等级为 Error，参数为空
   const registeredRules: RegisteredRules = {};
 

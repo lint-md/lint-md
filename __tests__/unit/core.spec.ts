@@ -2,6 +2,7 @@ import { isFunction } from 'lodash';
 import { lintMarkdown, lintAndFixInternal } from '../../src';
 import noEmptyCode from '../../src/rules/no-empty-code';
 import { lintAndFix } from '../../src/core/lint-and-fix';
+import { getExample } from '../utils/test-utils';
 
 describe('test core methods for lint-markdown', () => {
   test('test lintMarkdown() to lint source', () => {
@@ -41,14 +42,9 @@ Some **importance**, and \`code\`.
   });
 
   test('test lintAndFix() to lint or fix markdown source', () => {
-    const res = lintAndFix(`# Hello
+    const example = getExample('docs-for-all-rules');
+    const res = lintAndFix(example);
 
-Some **importance**, and \`code\`.
-
-\`\`\`javascript
-
-\`\`\``);
-
-    console.log(res);
+    expect(res.fixedContent).toMatchSnapshot();
   });
 });

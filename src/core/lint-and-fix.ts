@@ -1,5 +1,10 @@
 import * as path from 'path';
-import { FixConfig, LintMdRule, LintMdRuleInternalConfig, LintMdRules, RegisteredRules, RULE_SEVERITY } from '../types';
+import {
+  FixConfig,
+  LintMdRule,
+  LintMdRuleWithOptions,
+  LintMdRulesConfig
+} from '../types';
 import { applyFix } from '../utils/apply-fix';
 import { MAX_LINT_AND_FIX_CALL_TIMES } from '../common/constant';
 import { overrideDefaultRules } from '../utils/override-default-rules';
@@ -10,7 +15,7 @@ import { lintMarkdown } from './lint-markdown';
  *
  * @date 2021-12-14 17:16:12
  */
-export const lintAndFixInternal = (markdown: string, rules: LintMdRuleInternalConfig[], isFixMode: boolean) => {
+export const lintAndFixInternal = (markdown: string, rules: LintMdRuleWithOptions[], isFixMode: boolean) => {
   let lintTimes = 0;
   let lintResult = lintMarkdown(markdown, rules);
 
@@ -32,7 +37,7 @@ export const lintAndFixInternal = (markdown: string, rules: LintMdRuleInternalCo
 };
 
 
-export const lintAndFix = (markdown: string, rules: LintMdRules = {}, isFixMode = true) => {
+export const lintAndFix = (markdown: string, rules: LintMdRulesConfig = {}, isFixMode = true) => {
   // 获取内部 rules
   const internalRuleConfig: Record<string, LintMdRule> = require(path.resolve(__dirname, '../rules'));
 

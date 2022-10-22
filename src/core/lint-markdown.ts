@@ -1,5 +1,5 @@
 import { parseMd } from '@lint-md/parser';
-import { LintMdRuleInternalConfig, NodeQueue } from '../types';
+import { LintMdRuleWithOptions, NodeQueue } from '../types';
 import { createEmitter } from '../utils/emitter';
 import { createTraverser } from '../utils/traverser';
 import { createRuleManager } from '../utils/rule-manager';
@@ -10,7 +10,7 @@ import { createRuleManager } from '../utils/rule-manager';
  *
  * @date 2021-12-12 21:48:21
  */
-export const lintMarkdown = (markdown: string, allRuleConfigs: LintMdRuleInternalConfig[]) => {
+export const lintMarkdown = (markdown: string, allRuleConfigs: LintMdRuleWithOptions[]) => {
   // 将 markdown 转换成 ast
   const ast = parseMd(markdown);
 

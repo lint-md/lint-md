@@ -52,18 +52,6 @@ export interface LintMdRule {
   };
 }
 
-export interface LintMdRuleInternalConfig {
-  /**
-   * 规则函数
-   */
-  rule: LintMdRule,
-
-  /**
-   * 相关选项
-   */
-  options?: Record<string, any>
-}
-
 /** 节点队列 */
 export interface NodeQueue {
   node: MarkdownNode;
@@ -83,13 +71,26 @@ export interface TraverserOptions {
   onLeave?: (node: MarkdownNode, parent: MarkdownNode) => void;
 }
 
+export interface LintMdRuleWithOptions {
+  /**
+   * 规则函数
+   */
+  rule: LintMdRule,
+
+  /**
+   * 相关选项
+   */
+  options?: Record<string, any>;
+}
+
+
 export type LintMdRuleConfig =
   number
   | [number, Record<string, any>]
   | [LintMdRule, number, Record<string, any>];
 
 /** 对外暴露的规则配置 */
-export type LintMdRules = Record<string, LintMdRuleConfig>
+export type LintMdRulesConfig = Record<string, LintMdRuleConfig>
 
 /** 规则级别 */
 export enum RULE_SEVERITY {
@@ -99,6 +100,6 @@ export enum RULE_SEVERITY {
 }
 
 /** 注册的规则 */
-export type RegisteredRules = Record<string, LintMdRuleInternalConfig & { severity: number }>
+export type RegisteredRules = Record<string, LintMdRuleWithOptions & { severity: number }>
 
 

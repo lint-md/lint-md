@@ -23,7 +23,7 @@ interface BenchMarkBetweenOptions {
  * @see BenchMarkBetweenOptions
  */
 export const benchMarkBetween = async (opt: BenchMarkBetweenOptions) => {
-  const { check, magnification, cb1, cb2 } = opt;
+  const { check, magnification = 1, cb1, cb2 } = opt;
 
   return new Promise((resolve) => {
     // test env, do not use browser to prevent bugs

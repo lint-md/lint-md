@@ -15,10 +15,10 @@ describe('test no-empty-list', () => {
   });
 
   test('fix applied for common list', () => {
-    const md = '- \n' +
+    const md = '- 测试\n' +
       '-         ';
     const { fixedResult, lintResult } = fixer(md);
-    expect(fixedResult.result).toBe(md);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(fixedResult.result.trim()).toStrictEqual('- 测试');
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
   });
 });

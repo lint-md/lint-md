@@ -13,6 +13,7 @@ const findAllSingleEllipsis = (s: string) => {
 
     // 只要不是两个，都是不规范的
     if (matched && matched[0].length !== 2) {
+      // @ts-ignore
       r.push({
         index: matched.index,
         length: matched[0].length
@@ -35,6 +36,7 @@ const findAllDotEllipsis = (s: string) => {
     const matched = re.exec(s);
 
     if (matched) {
+      // @ts-ignore
       r.push({
         index: matched.index,
         length: matched[0].length
@@ -58,7 +60,10 @@ const useStandardEllipsis: LintMdRule = {
 
         const { line, column } = node.position.start;
 
-        const toFixList = findAllDotEllipsis(text).concat(findAllSingleEllipsis(text));
+        const toFixList: {
+          index: number
+          length: number
+        }[] = findAllDotEllipsis(text).concat(findAllSingleEllipsis(text));
 
         toFixList.forEach(item => {
           context.report({

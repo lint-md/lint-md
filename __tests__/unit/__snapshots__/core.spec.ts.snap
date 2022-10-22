@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`test core methods for lint-markdown test lintAndFix() to lint or fix markdown source 1`] = `
-"# 标题后面不可以使用……规范的符号
+"# 标题后面不可以使用………规范的符号
 
-## 标题后面不可以使用不规范的符号~~
+## 标题后面不可以使用不规范的符号~
 
 # 代码块不得为空
 
@@ -22,12 +22,12 @@ console.log('hello world')
 # 不允许空列表
 
 - 11
--
--
 
 
-1.
-2.
+
+
+
+
 
 # 链接不得为空
 
@@ -36,7 +36,7 @@ console.log('hello world')
 # 禁止全角数字
 
 > 这件蛋糕只卖 1000 元。
-> 这10１０ 哈哈
+>  这10１０ 哈哈
 
 # 超长代码
 

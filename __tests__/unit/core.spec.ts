@@ -20,8 +20,7 @@ Some **importance**, and \`code\`.
 
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
     const res = lintResult.ruleManager.getReportData().pop();
-    expect(isFunction(res.fix)).toBeTruthy();
-    expect(res.message).toStrictEqual('[lint-md] 代码块内容不能为空，请删除空的代码块，或者填充代码内容');
+    expect(res?.message).toStrictEqual('[lint-md] 代码块内容不能为空，请删除空的代码块，或者填充代码内容');
   });
 
   test('test lintAndFixInternal() to lint or fix markdown source', () => {
@@ -37,14 +36,14 @@ Some **importance**, and \`code\`.
       }
     ], true);
 
-    expect(res.fixedResult.notAppliedFixes).toStrictEqual([]);
-    expect(res.fixedResult.result).toMatchSnapshot();
+    expect(res.fixedResult?.notAppliedFixes).toStrictEqual([]);
+    expect(res.fixedResult?.result).toMatchSnapshot();
   });
 
   test('test lintAndFix() to lint or fix markdown source', () => {
     const example = getExample('docs-for-all-rules');
     const res = lintAndFix(example);
 
-    expect(res.fixedContent).toMatchSnapshot();
+    expect(res.fixedResult?.result).toMatchSnapshot();
   });
 });

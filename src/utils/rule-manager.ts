@@ -27,6 +27,7 @@ export const createRuleManager = () => {
         return isFunction(item.fix);
       })
       .map(item => {
+        // @ts-ignore
         return item.fix(fixer);
       });
   };

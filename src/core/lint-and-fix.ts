@@ -1,14 +1,49 @@
 import * as path from 'path';
 import {
-  FixConfig,
   LintMdRule,
   LintMdRuleWithOptions,
-  LintMdRulesConfig
+  LintMdRulesConfig,
+  FixConfig
 } from '../types';
 import { applyFix } from '../utils/apply-fix';
 import { MAX_LINT_AND_FIX_CALL_TIMES } from '../common/constant';
 import { overrideDefaultRules } from '../utils/override-default-rules';
 import { lintMarkdown } from './lint-markdown';
+
+export const handleFixMode = (markdown: string, rules: LintMdRuleWithOptions[]) => {
+  let lintTimes = 0;
+  let initialLintResult: ReturnType<typeof lintMarkdown> | null = null;
+
+  let fixedResult: { result: string, notAppliedFixes: FixConfig[] } = {
+    result: markdown,
+    notAppliedFixes: []
+  };
+
+  while (lintTimes <= MAX_LINT_AND_FIX_CALL_TIMES) {
+    // 1. 先 lint
+    const lintResult = lintMarkdown(fixedResult.result, rules);
+
+    lintTimes += 1;
+
+    // 第一次的 lint 操作需要作为 lint 结果保存起来
+    if (lintTimes === 1) {
+      initialLintResult = lintResult;
+    }
+
+    // 2. 尝试修复
+    fixedResult = applyFix(fixedResult.result, lintResult.ruleManager.getAllFixes());
+
+    // 4. 没有剩余的修复项，退出循环
+    if (!fixedResult.notAppliedFixes.length) {
+      break;
+    }
+  }
+
+  return {
+    lintResult: initialLintResult,
+    fixedResult
+  };
+};
 
 /**
  * 核心方法，对某个 Markdown 文本进行 lint 或者 fix
@@ -16,24 +51,15 @@ import { lintMarkdown } from './lint-markdown';
  * @date 2021-12-14 17:16:12
  */
 export const lintAndFixInternal = (markdown: string, rules: LintMdRuleWithOptions[], isFixMode: boolean) => {
-  let lintTimes = 0;
-  let lintResult = lintMarkdown(markdown, rules);
-
-  let fixedResult: { result: string, notAppliedFixes: FixConfig[] } = null;
-
-  while (isFixMode && lintTimes <= MAX_LINT_AND_FIX_CALL_TIMES) {
-    lintTimes += 1;
-    fixedResult = applyFix(markdown, lintResult.ruleManager.getAllFixes());
-    if (!fixedResult.notAppliedFixes.length) {
-      break;
-    }
-    lintResult = lintMarkdown(markdown, rules);
+  if (!isFixMode) {
+    const lintResult = lintMarkdown(markdown, rules);
+    return {
+      lintResult,
+      fixedResult: null
+    };
+  } else {
+    return handleFixMode(markdown, rules);
   }
-
-  return {
-    lintResult: lintResult,
-    fixedResult: fixedResult
-  };
 };
 
 
@@ -55,11 +81,9 @@ export const lintAndFix = (markdown: string, rules: LintMdRulesConfig = {}, isFi
     };
   });
 
-  const lintAndFixResult = lintAndFixInternal(markdown, internalRules, isFixMode);
+  const { fixedResult, lintResult } = lintAndFixInternal(markdown, internalRules, isFixMode);
 
-  const { fixedResult: { result, notAppliedFixes }, lintResult } = lintAndFixResult;
-
-  const reportDataWithSeverity = lintResult.ruleManager.getReportData().map(item => {
+  const reportDataWithSeverity = lintResult?.ruleManager.getReportData().map(item => {
     const { loc, message, name } = item;
     return {
       loc, message, name,
@@ -69,8 +93,7 @@ export const lintAndFix = (markdown: string, rules: LintMdRulesConfig = {}, isFi
 
 
   return {
-    fixedContent: result,
-    notAppliedFixes,
-    reportData: reportDataWithSeverity
+    lintResult: reportDataWithSeverity,
+    fixedResult
   };
 };

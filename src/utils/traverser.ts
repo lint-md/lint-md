@@ -11,7 +11,7 @@ import { isNode } from './common';
 export const createTraverser = (options: TraverserOptions) => {
   const { onLeave = noop, onEnter = noop } = options;
 
-  const traverse = (node: MarkdownNode, parent: MarkdownNode) => {
+  const traverse = (node: MarkdownNode, parent: MarkdownNode | null) => {
     if (!isNode(node)) {
       return;
     }

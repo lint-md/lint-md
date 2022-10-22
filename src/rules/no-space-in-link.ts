@@ -6,7 +6,7 @@ const checkAndReportTextNode = (ctx: LintMdRuleContext, node: MarkdownTextNode, 
     return;
   }
 
-  let finalTrimmedText = null;
+  let finalTrimmedText:string | null = null;
   if (pos === 'between') {
     if (node.value.trim() !== node.value) {
       finalTrimmedText = node.value.trim();
@@ -30,7 +30,7 @@ const checkAndReportTextNode = (ctx: LintMdRuleContext, node: MarkdownTextNode, 
         return fixer.replaceTextRange([
           node.position.start.offset,
           node.position.end.offset
-        ], finalTrimmedText);
+        ], finalTrimmedText as string);
       })
     });
   }

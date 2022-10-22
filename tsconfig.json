@@ -16,8 +16,10 @@
     "sourceMap": true,
     "baseUrl": "./",
     "outDir": "lib",
+    "strictNullChecks": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "__tests__/**/*"
   ]
 }

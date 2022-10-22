@@ -1,5 +1,5 @@
 import { fix, lint } from '@lint-md/core';
-import { lintAndFix } from '../../src/core/lint-and-fix';
+import { lintAndFixInternal } from '../../src/core/lint-and-fix';
 import noEmptyCode from '../../src/rules/no-empty-code';
 import { benchMarkBetween } from '../utils/test-utils';
 
@@ -15,7 +15,7 @@ Some **importance**, and \`code\`.
 `).join('\n');
 
     const newLintMd = () => {
-      lintAndFix(NO_EMPTY_CODE_DEMO, [
+      lintAndFixInternal(NO_EMPTY_CODE_DEMO, [
         {
           rule: noEmptyCode
         }

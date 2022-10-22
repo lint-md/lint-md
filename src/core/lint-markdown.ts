@@ -1,5 +1,5 @@
 import { parseMd } from '@lint-md/parser';
-import { LintMdRuleConfig, NodeQueue } from '../types';
+import { LintMdRuleInternalConfig, NodeQueue } from '../types';
 import { createEmitter } from '../utils/emitter';
 import { createTraverser } from '../utils/traverser';
 import { createRuleManager } from '../utils/rule-manager';
@@ -10,7 +10,7 @@ import { createRuleManager } from '../utils/rule-manager';
  *
  * @date 2021-12-12 21:48:21
  */
-export const lintMarkdown = (markdown: string, allRuleConfigs: LintMdRuleConfig[]) => {
+export const lintMarkdown = (markdown: string, allRuleConfigs: LintMdRuleInternalConfig[]) => {
   // 将 markdown 转换成 ast
   const ast = parseMd(markdown);
 
@@ -39,7 +39,7 @@ export const lintMarkdown = (markdown: string, allRuleConfigs: LintMdRuleConfig[
 
   // 遍历所有的 rules，并拿到它们的选择器，为每一个选择器订阅相关事件
   for (const { rule, options } of allRuleConfigs) {
-    const ruleContext = ruleManager.createRuleContext(options);
+    const ruleContext = ruleManager.createRuleContext({ rule, options });
     const ruleSelectors = rule.create(ruleContext);
     for (const selector of Object.keys(ruleSelectors)) {
       emitter.on(selector, ruleSelectors[selector]);

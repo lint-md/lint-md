@@ -1,4 +1,4 @@
-import { Fix } from 'src/types';
+import { FixConfig } from 'src/types';
 import { applyFix } from '../../src/utils/apply-fix';
 
 describe('test apply fix', () => {
@@ -10,7 +10,7 @@ describe('test apply fix', () => {
     const content = 'hello world! Do you like JavaScript?';
     expect(content[25]).toStrictEqual('J');
     expect(content[35]).toStrictEqual('?');
-    const fixes: Fix[] = [
+    const fixes: FixConfig[] = [
       {
         text: 'TypeScript',
         range: [25, 35]
@@ -21,7 +21,7 @@ describe('test apply fix', () => {
 
   test('test when fixes in different range and they are not overlapped', () => {
     const content = 'hello world! Do you like JavaScript?';
-    const fixes: Fix[] = [
+    const fixes: FixConfig[] = [
       {
         text: 'TypeScript',
         range: [25, 35]
@@ -36,7 +36,7 @@ describe('test apply fix', () => {
 
   test('test when fixes in different range and THEY ARE OVERLAPPED', () => {
     const content = '你喜欢哪一门编程语言? Python、JavaScript 还是 TypeScript?';
-    const fixes: Fix[] = [
+    const fixes: FixConfig[] = [
       {
         text: '最不喜欢',
         range: [1, 3]
@@ -73,7 +73,7 @@ describe('test apply fix', () => {
 
   test('test the fixes will be sorted by range', () => {
     const content = 'hello world! Do you like JavaScript?';
-    const fixes: Fix[] = [
+    const fixes: FixConfig[] = [
       {
         text: 'TypeScript',
         range: [25, 35]
@@ -126,7 +126,7 @@ describe('test apply fix', () => {
 
   test('test illegal fix range', () => {
     const content = 'hello world! Do you like JavaScript?';
-    const fixes: Fix[] = [
+    const fixes: FixConfig[] = [
       {
         text: 'TypeScript',
         range: [222, 10]

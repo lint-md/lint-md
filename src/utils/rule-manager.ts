@@ -1,5 +1,5 @@
 import { isFunction } from 'lodash';
-import { ReportOption } from '../types';
+import { LintMdRuleConfig, LintMdRuleInternalConfig, ReportOption } from '../types';
 import { createFixer } from './fixer';
 
 /**
@@ -14,10 +14,6 @@ export const createRuleManager = () => {
   // 已经上报的数据
   const allReportedData: ReportOption[] = [];
 
-  // 上报方法，供选择器内部调用
-  const report = (option: ReportOption) => {
-    allReportedData.push(option);
-  };
 
   // 获取所有上报的数据
   const getReportData = () => {
@@ -28,11 +24,24 @@ export const createRuleManager = () => {
   const getAllFixes = () => {
     return allReportedData
       .filter(item => isFunction(item.fix))
-      .map(item => item.fix(fixer));
+      .map(item => {
+        const res = item.fix(fixer);
+        return res;
+      });
   };
 
   // 初始化一个 rule context
-  const createRuleContext = (options?: Record<string, any>) => {
+  const createRuleContext = (ruleConfig: LintMdRuleInternalConfig) => {
+    const { rule, options } = ruleConfig;
+
+    // 上报方法，供选择器内部调用
+    const report = (option: Omit<ReportOption, 'name'>) => {
+      allReportedData.push({
+        ...option,
+        name: rule.meta.name
+      });
+    };
+
     return {
       report: report,
       options: options || {}

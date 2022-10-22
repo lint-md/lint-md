@@ -1,5 +1,5 @@
 import { isFunction } from 'lodash';
-import { lintMarkdown } from '../../src/core/lint-markdown';
+import { lintMarkdown, lintAndFixInternal } from '../../src';
 import noEmptyCode from '../../src/rules/no-empty-code';
 import { lintAndFix } from '../../src/core/lint-and-fix';
 
@@ -23,8 +23,8 @@ Some **importance**, and \`code\`.
     expect(res.message).toStrictEqual('[lint-md] 代码块内容不能为空，请删除空的代码块，或者填充代码内容');
   });
 
-  test('test lintAndFix() to lint or fix markdown source', () => {
-    const res = lintAndFix(`# Hello
+  test('test lintAndFixInternal() to lint or fix markdown source', () => {
+    const res = lintAndFixInternal(`# Hello
 
 Some **importance**, and \`code\`.
 
@@ -38,5 +38,17 @@ Some **importance**, and \`code\`.
 
     expect(res.fixedResult.notAppliedFixes).toStrictEqual([]);
     expect(res.fixedResult.result).toMatchSnapshot();
+  });
+
+  test('test lintAndFix() to lint or fix markdown source', () => {
+    const res = lintAndFix(`# Hello
+
+Some **importance**, and \`code\`.
+
+\`\`\`javascript
+
+\`\`\``);
+
+    console.log(res);
   });
 });

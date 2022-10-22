@@ -1,11 +1,11 @@
-import { Fix } from '../types';
+import { FixConfig } from '../types';
 
 /**
  * 基于多个 fix 来修复一个字符串，关于 fix 的数据结构请查看相关类型定义
  *
  * @date 2021-12-14 15:48:27
  */
-export const applyFix = (content: string, fixes: Fix[]) => {
+export const applyFix = (content: string, fixes: FixConfig[]) => {
   // 对所有的 fix 进行排序
   fixes.sort((a, b) => {
     return a.range[0] - b.range[0] || a.range[1] - b.range[1];
@@ -16,9 +16,9 @@ export const applyFix = (content: string, fixes: Fix[]) => {
   let currentIndex = Number.NEGATIVE_INFINITY;
 
   // 未被处理的 fix
-  const notAppliedFixes: Fix[] = [];
+  const notAppliedFixes: FixConfig[] = [];
 
-  const tryApplyOneFix = (fix: Fix) => {
+  const tryApplyOneFix = (fix: FixConfig) => {
     const [start, end] = fix.range;
 
     // 不合法 range

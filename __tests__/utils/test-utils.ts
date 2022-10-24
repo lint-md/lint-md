@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as Benchmark from 'benchmark';
 import { LintMdRuleWithOptions } from '../../src/types';
-import { lintAndFixInternal } from '../../src';
+import { lintMarkdownInternal } from '../../src';
 
 interface BenchMarkBetweenOptions {
   // 回调函数 1
@@ -58,7 +58,7 @@ export const benchMarkBetween = async (opt: BenchMarkBetweenOptions) => {
 
 export const createFixer = (ruleConfigs: LintMdRuleWithOptions[]) => {
   return (md: string) => {
-    return lintAndFixInternal(md, ruleConfigs, true);
+    return lintMarkdownInternal(md, ruleConfigs, true);
   };
 };
 

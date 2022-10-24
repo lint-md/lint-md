@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`test core methods for lint-markdown test lintAndFix() to lint or fix markdown source 1`] = `
+exports[`test core methods for lint-markdown test lintMarkdown() to lint or fix markdown source 1`] = `
 "# 标题后面不可以使用不规范的符号
 
 ## 我爱前端！

@@ -1,11 +1,12 @@
-import { lintMarkdown, lintAndFixInternal } from '../../src';
+import { lintMarkdownInternal } from '../../src';
 import noEmptyCode from '../../src/rules/no-empty-code';
-import { lintAndFix } from '../../src/core/lint-and-fix';
 import { getExample } from '../utils/test-utils';
+import { runLint } from '../../src/core/run-lint';
+import { lintMarkdown } from '../../src/core/lint-markdown';
 
 describe('test core methods for lint-markdown', () => {
-  test('test lintMarkdown() to lint source', () => {
-    const lintResult = lintMarkdown(`# Hello
+  test('test runLint() to lint source', () => {
+    const lintResult = runLint(`# Hello
 
 Some **importance**, and \`code\`.
 
@@ -23,7 +24,7 @@ Some **importance**, and \`code\`.
   });
 
   test('test lintAndFixInternal() to lint or fix markdown source', () => {
-    const res = lintAndFixInternal(`# Hello
+    const res = lintMarkdownInternal(`# Hello
 
 Some **importance**, and \`code\`.
 
@@ -39,9 +40,9 @@ Some **importance**, and \`code\`.
     expect(res.fixedResult?.result).toMatchSnapshot();
   });
 
-  test('test lintAndFix() to lint or fix markdown source', () => {
+  test('test lintMarkdown() to lint or fix markdown source', () => {
     const example = getExample('docs-for-all-rules');
-    const res = lintAndFix(example);
+    const res = lintMarkdown(example);
 
     expect(res.fixedResult?.result).toMatchSnapshot();
   });

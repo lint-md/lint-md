@@ -10,13 +10,13 @@ const fakeRule = {
 
 describe('test rule context', () => {
   test('test rule context creation', () => {
-    const ctx = createRuleManager();
+    const ctx = createRuleManager('');
     expect(ctx).toBeTruthy();
     expect(typeof ctx.createRuleContext(fakeRule as any).report).toStrictEqual('function');
   });
 
   test('test rule context report() call', () => {
-    const manager = createRuleManager();
+    const manager = createRuleManager('');
     manager.createRuleContext(fakeRule as any).report({
       message: 'message 1',
       loc: {

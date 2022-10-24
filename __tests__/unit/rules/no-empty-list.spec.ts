@@ -10,7 +10,7 @@ describe('test no-empty-list', () => {
     const md = '1. \n' +
       '2.';
     const { fixedResult, lintResult } = fixer(md);
-    expect(fixedResult?.result).toBe(md);
+    expect(fixedResult?.result.trim()).toStrictEqual('');
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
   });
 

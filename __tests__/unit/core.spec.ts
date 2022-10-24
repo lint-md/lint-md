@@ -1,8 +1,8 @@
-import { lintMarkdownInternal } from '../../src';
+import { lintMarkdown } from '../../src';
 import noEmptyCode from '../../src/rules/no-empty-code';
 import { getExample } from '../utils/test-utils';
 import { runLint } from '../../src/core/run-lint';
-import { lintMarkdown } from '../../src/core/lint-markdown';
+import { lintMarkdownInternal } from '../../src/core/lint-markdown';
 
 describe('test core methods for lint-markdown', () => {
   test('test runLint() to lint source', () => {

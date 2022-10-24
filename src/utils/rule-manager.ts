@@ -5,9 +5,9 @@ import { createFixer } from './fixer';
 /**
  * 初始化全局 rule 管理器
  *
- * @date 2021-12-24 22:57:11
+ * @param {string} appliedMarkdown 已经应用了规则的 markdown
  */
-export const createRuleManager = () => {
+export const createRuleManager = (appliedMarkdown: string) => {
   // 修复器
   const fixer = createFixer();
 
@@ -41,9 +41,16 @@ export const createRuleManager = () => {
     const { rule, options } = ruleConfig;
 
     // 上报方法，供选择器内部调用
-    const report = (option: Omit<ReportOption, 'name'>) => {
+    const report = (option: Omit<ReportOption, 'content' | 'name'>) => {
+      // TODO: 修复底层库的类型定义
+      const location = option.loc as any;
+
+      const markStart = Math.max(0, location.start.offset - 5);
+      const markEnd = Math.min(appliedMarkdown.length, location.end.offset + 5);
+
       allReportedData.push({
         ...option,
+        content: appliedMarkdown.slice(markStart, markEnd),
         name: rule.meta.name
       });
     };

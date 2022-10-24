@@ -18,7 +18,7 @@ export const lintMarkdown = (markdown: string, allRuleConfigs: LintMdRuleWithOpt
   const nodeQueue: NodeQueue[] = [];
 
   // 全局规则管理器
-  const ruleManager = createRuleManager();
+  const ruleManager = createRuleManager(markdown);
 
   // 初始化遍历器，对于每一个节点的进入和退出，都将其推入到上面的 nodeQueue 队列中，供后续处理
   const traverser = createTraverser({

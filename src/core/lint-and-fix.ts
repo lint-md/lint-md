@@ -84,9 +84,9 @@ export const lintAndFix = (markdown: string, rules: LintMdRulesConfig = {}, isFi
   const { fixedResult, lintResult } = lintAndFixInternal(markdown, internalRules, isFixMode);
 
   const reportDataWithSeverity = lintResult?.ruleManager.getReportData().map(item => {
-    const { loc, message, name } = item;
+    const { loc, message, name, content } = item;
     return {
-      loc, message, name,
+      loc, message, name, content,
       severity: registeredRules[name].severity
     };
   });

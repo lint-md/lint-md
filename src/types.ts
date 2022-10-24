@@ -26,6 +26,7 @@ export interface FixConfig {
 /** 上报信息配置 */
 export interface ReportOption {
   name: string;
+  content: string;
   message: string;
   loc: {
     start: MarkdownNodePosition;

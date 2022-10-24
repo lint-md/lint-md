@@ -29,7 +29,7 @@ export const lintMarkdownInternal = (markdown: string, rules: LintMdRuleWithOpti
  */
 export const lintMarkdown = (markdown: string, rules: LintMdRulesConfig = {}, isFixMode = true) => {
   // 获取内部 rules
-  const internalRuleConfig: Record<string, LintMdRule> = require(path.resolve(__dirname, '../rules'));
+  const internalRuleConfig: Record<string, LintMdRule> = require('../rules');
 
   // 基于用户配置覆盖默认配置
   const registeredRules = overrideDefaultRules(internalRuleConfig, rules);

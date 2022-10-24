@@ -1,6 +1,6 @@
 {
   "name": "@lint-md/core",
-  "version": "2.0.0-beta.6",
+  "version": "2.0.0-beta.7",
   "description": "Core of lint-md which used to lint your markdown file for Chinese.",
   "main": "lib/index.js",
   "module": "esm/index.js",
@@ -27,7 +27,7 @@
     "chinese"
   ],
   "dependencies": {
-    "@lint-md/parser": "^0.0.11",
+    "@lint-md/parser": "latest",
     "lodash": "^4.17.21",
     "remark-parse": "^9",
     "unified": "^9"

@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as Benchmark from 'benchmark';
 import { LintMdRuleWithOptions } from '../../src/types';
-import { lintMarkdownInternal } from '../../src';
+import { lintMarkdownInternal } from '../../src/core/lint-markdown';
 
 interface BenchMarkBetweenOptions {
   // 回调函数 1

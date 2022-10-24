@@ -1,5 +1,25 @@
-import { MarkdownLinkNode } from '@lint-md/parser';
-import { LintMdRule } from '../types';
+import { MarkdownLinkNode, revertMdAstNode } from '@lint-md/parser';
+import { LintMdRule, LintMdRuleContext } from '../types';
+
+const handleFixLinkNode = (context: LintMdRuleContext, node: MarkdownLinkNode) => {
+  if (node.url.trim() === '') {
+    node.url = 'https://example.com';
+    let newContent = revertMdAstNode(node);
+    if (newContent.endsWith('\n')) {
+      newContent = newContent.slice(0, -1);
+    }
+    context.report({
+      loc: node.position,
+      message: '[lint-md] 链接和图片地址不能为空',
+      fix: (fixer) => {
+        return fixer.replaceTextRange([
+          node.position.start.offset,
+          node.position.end.offset
+        ], newContent);
+      }
+    });
+  }
+};
 
 const noEmptyURL: LintMdRule = {
   meta: {
@@ -8,20 +28,10 @@ const noEmptyURL: LintMdRule = {
   create: (context) => {
     return {
       link: (node: MarkdownLinkNode) => {
-        if (node.url.trim() === '') {
-          context.report({
-            loc: node.position,
-            message: '[lint-md] 链接和图片地址不能为空'
-          });
-        }
+        handleFixLinkNode(context, node);
       },
       image: (node: MarkdownLinkNode) => {
-        if (node.url.trim() === '') {
-          context.report({
-            loc: node.position,
-            message: '[lint-md] 链接和图片地址不能为空'
-          });
-        }
+        handleFixLinkNode(context, node);
       }
     };
   }

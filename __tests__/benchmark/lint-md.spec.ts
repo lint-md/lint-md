@@ -1,25 +1,13 @@
 import { fix, lint } from '@lint-md/core';
-import { lintAndFixInternal } from '../../src/core/lint-and-fix';
-import noEmptyCode from '../../src/rules/no-empty-code';
-import { benchMarkBetween } from '../utils/test-utils';
+import { benchMarkBetween, getExample } from '../utils/test-utils';
+import { lintAndFix } from '../../lib/core/lint-and-fix';
 
-describe.skip('test benchmark with old version lint-md', () => {
+describe('test benchmark with old version lint-md', () => {
   test('test lint and fix', async () => {
-    const NO_EMPTY_CODE_DEMO = new Array(100).fill(`# Hello
-
-Some **importance**, and \`code\`.
-
-\`\`\`javascript
-
-\`\`\`
-`).join('\n');
+    const NO_EMPTY_CODE_DEMO = new Array(10).fill(getExample('docs-for-all-rules')).join('\n');
 
     const newLintMd = () => {
-      lintAndFixInternal(NO_EMPTY_CODE_DEMO, [
-        {
-          rule: noEmptyCode
-        }
-      ], true);
+      lintAndFix(NO_EMPTY_CODE_DEMO, {}, true);
     };
 
     const oldLintMd = () => {
@@ -32,7 +20,7 @@ Some **importance**, and \`code\`.
     };
 
     await benchMarkBetween({
-      magnification: 85,
+      magnification: 30,
       cb1: newLintMd,
       cb2: oldLintMd,
       check: true

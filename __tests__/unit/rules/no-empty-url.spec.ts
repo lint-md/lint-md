@@ -8,7 +8,8 @@ const fixer = createFixer([{
 describe('test no-empty-url', () => {
   test('fix applied (for link)', () => {
     const md = '参考资料：[JavaScript 高级程序设计]()';
-    const { lintResult } = fixer(md);
+    const { lintResult, fixedResult } = fixer(md);
+    expect(fixedResult?.result).toStrictEqual('参考资料：[JavaScript 高级程序设计](https://example.com)');
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
   });
 

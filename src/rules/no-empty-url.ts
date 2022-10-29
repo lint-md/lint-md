@@ -1,5 +1,6 @@
-import { MarkdownLinkNode, revertMdAstNode } from '@lint-md/parser';
-import { LintMdRule, LintMdRuleContext } from '../types';
+import type { MarkdownLinkNode } from '@lint-md/parser';
+import { revertMdAstNode } from '@lint-md/parser';
+import type { LintMdRule, LintMdRuleContext } from '../types';
 
 const handleFixLinkNode = (context: LintMdRuleContext, node: MarkdownLinkNode) => {
   if (node.url.trim() === '') {

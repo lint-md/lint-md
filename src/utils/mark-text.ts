@@ -1,6 +1,5 @@
 import { isChineseCharacter, isEnglishCharacter, isNumberCharacter } from './char-helper';
 
-
 /**
  * 将字符串抽象成标记字符，这对于中英文、标点相关的文本处理都有好处
  *
@@ -12,11 +11,14 @@ export const markText = (text: string) => {
   const res = text.split('').map((value) => {
     if (isNumberCharacter(value)) {
       return 'N';
-    } else if (isChineseCharacter(value)) {
+    }
+    else if (isChineseCharacter(value)) {
       return 'Z';
-    } else if (isEnglishCharacter(value)) {
+    }
+    else if (isEnglishCharacter(value)) {
       return 'A';
-    } else {
+    }
+    else {
       return '-';
     }
   });

@@ -1,6 +1,5 @@
-import { MarkdownTextNode } from '@lint-md/parser';
-import { LintMdRule } from '../types';
-
+import type { MarkdownTextNode } from '@lint-md/parser';
+import type { LintMdRule } from '../types';
 
 const SPECIAL_CHARACTERS = ['\b'];
 
@@ -13,7 +12,7 @@ const noSpecialCharacters: LintMdRule = {
       text: (node: MarkdownTextNode) => {
         const value = node.value;
 
-        SPECIAL_CHARACTERS.forEach(sc => {
+        SPECIAL_CHARACTERS.forEach((sc) => {
           const idx = value.indexOf(sc);
 
           if (idx !== -1) {

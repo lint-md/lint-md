@@ -1,4 +1,5 @@
-import { LintMdRule, LintMdRulesConfig, RegisteredRules, RULE_SEVERITY } from '../types';
+import type { LintMdRule, LintMdRulesConfig, RegisteredRules } from '../types';
+import { RULE_SEVERITY } from '../types';
 
 /**
  * 覆盖默认规则
@@ -27,26 +28,30 @@ export const overrideDefaultRules = (defaultRules: Record<string, LintMdRule>, r
     if (targetRule) {
       if (typeof ruleConfigValue === 'number') {
         targetRule.severity = ruleConfigValue;
-      } else {
+      }
+      else {
         if (ruleConfigValue.length === 2) {
           const [severity, options] = ruleConfigValue;
           targetRule.severity = severity;
           targetRule.options = options;
-        } else {
+        }
+        else {
           throw new Error(`[lint-md] 无效的规则配置 ${ruleName}`);
         }
       }
-    } else {
+    }
+    else {
       // 第三方规则，长度只能为 3
       if (Array.isArray(ruleConfigValue)) {
         if (ruleConfigValue.length === 3) {
           const [config, severity, options] = ruleConfigValue;
           registeredRules[ruleName] = {
-            severity: severity,
+            severity,
             rule: config,
-            options: options
+            options
           };
-        } else {
+        }
+        else {
           throw new Error(`[lint-md] 第三方规则 ${ruleName} 的配置长度必须为 3`);
         }
       }

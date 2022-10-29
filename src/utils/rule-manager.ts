@@ -1,5 +1,5 @@
 import { isFunction } from 'lodash';
-import { LintMdRuleWithOptions, ReportOption } from '../types';
+import type { LintMdRuleWithOptions, ReportOption } from '../types';
 import { createFixer } from './fixer';
 
 /**
@@ -14,7 +14,6 @@ export const createRuleManager = (appliedMarkdown: string) => {
   // 已经上报的数据
   const allReportedData: ReportOption[] = [];
 
-
   // 获取所有上报的数据
   const getReportData = () => {
     return allReportedData;
@@ -23,11 +22,11 @@ export const createRuleManager = (appliedMarkdown: string) => {
   // 获取所有的 fix
   const getAllFixes = () => {
     return allReportedData
-      .filter(item => {
+      .filter((item) => {
         return isFunction(item.fix);
       })
-      .map(item => {
-        // @ts-ignore
+      .map((item) => {
+        // @ts-expect-error
         const fix = item.fix(fixer);
         return {
           ...fix,
@@ -56,14 +55,14 @@ export const createRuleManager = (appliedMarkdown: string) => {
     };
 
     return {
-      report: report,
+      report,
       options: options || {}
     };
   };
 
   return {
-    getReportData: getReportData,
-    getAllFixes: getAllFixes,
-    createRuleContext: createRuleContext
+    getReportData,
+    getAllFixes,
+    createRuleContext
   };
 };

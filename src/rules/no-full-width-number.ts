@@ -1,5 +1,5 @@
-import { MarkdownNode } from '@lint-md/parser';
-import { LintMdRule } from '../types';
+import type { MarkdownNode } from '@lint-md/parser';
+import type { LintMdRule } from '../types';
 
 const FULL_WIDTH_NUMBER_REPLACEMENT_MAP = {
   '１': 1,
@@ -21,7 +21,7 @@ const FULL_WIDTH_NUMBER_REPLACEMENT_MAP = {
  */
 const findAllFullWidthNumbers = (s: string) => {
   const re = new RegExp('[０-９]+', 'g');
-  const r: { number: string, index: number }[] = [];
+  const r: { number: string; index: number }[] = [];
 
   // 循环找出所有的数字
   while (true) {
@@ -32,7 +32,8 @@ const findAllFullWidthNumbers = (s: string) => {
         number: matched[0],
         index: matched.index
       });
-    } else {
+    }
+    else {
       break;
     }
   }
@@ -50,7 +51,7 @@ const noFullWidthNumber: LintMdRule = {
       }) => {
         const text = node.value;
         const fullWidthNumbers = findAllFullWidthNumbers(text);
-        fullWidthNumbers.forEach(res => {
+        fullWidthNumbers.forEach((res) => {
           const { index, number } = res;
           const { line: startLine, column: startColumn, offset: startOffset } = node.position.start;
 
@@ -82,5 +83,4 @@ const noFullWidthNumber: LintMdRule = {
 };
 
 export default noFullWidthNumber;
-
 

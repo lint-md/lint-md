@@ -1,5 +1,5 @@
-import { MarkdownTextNode } from '@lint-md/parser';
-import { LintMdRule } from '../types';
+import type { MarkdownTextNode } from '@lint-md/parser';
+import type { LintMdRule } from '../types';
 import { markText } from '../utils/mark-text';
 
 const isMarkedTextBetweenChineseAndNumber = (value: string) => {

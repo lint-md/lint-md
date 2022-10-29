@@ -2,12 +2,11 @@
  * 给定一个 Markdown 节点，递归寻找所有文本节点
  * @author YuZhanglong <loveyzl1123@gmail.com>
  */
-import { MarkdownNode } from '@lint-md/parser';
+import type { MarkdownNode } from '@lint-md/parser';
 
 type MarkdownTextNode = MarkdownNode & {
   value?: string
-}
-
+};
 
 export const getTextNodes = (node: MarkdownTextNode) => {
   const textNodes: MarkdownTextNode[] = [];
@@ -24,7 +23,6 @@ export const getTextNodes = (node: MarkdownTextNode) => {
     }, []);
     textNodes.push(...childNodes);
   }
-
 
   return textNodes;
 };

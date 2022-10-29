@@ -1,6 +1,5 @@
-import { MarkdownCodeNode } from '@lint-md/parser';
-import { LintMdRule } from '../types';
-
+import type { MarkdownCodeNode } from '@lint-md/parser';
+import type { LintMdRule } from '../types';
 
 const noEmptyCode: LintMdRule = {
   meta: {

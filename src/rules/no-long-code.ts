@@ -1,5 +1,5 @@
-import { MarkdownCodeNode } from '@lint-md/parser';
-import { LintMdRule } from '../types';
+import type { MarkdownCodeNode } from '@lint-md/parser';
+import type { LintMdRule } from '../types';
 
 const noLongCode: LintMdRule = {
   meta: {
@@ -34,12 +34,11 @@ const noLongCode: LintMdRule = {
 
             context.report({
               loc: {
-                start: start,
-                end: end
+                start,
+                end
               },
               message: '[lint-md] 代码块不能有过长的代码'
             });
-
           }
         }
       }

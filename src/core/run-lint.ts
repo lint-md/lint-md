@@ -1,9 +1,8 @@
 import { parseMd } from '@lint-md/parser';
-import { LintMdRuleWithOptions, NodeQueue } from '../types';
+import type { LintMdRuleWithOptions, NodeQueue } from '../types';
 import { createEmitter } from '../utils/emitter';
 import { createTraverser } from '../utils/traverser';
 import { createRuleManager } from '../utils/rule-manager';
-
 
 /**
  * 基于各种 rules 对 Markdown 文本进行校验
@@ -25,12 +24,12 @@ export const runLint = (markdown: string, allRuleConfigs: LintMdRuleWithOptions[
     onEnter: (node) => {
       nodeQueue.push({
         isEntering: true,
-        node: node
+        node
       });
 
       nodeQueue.push({
         isEntering: false,
-        node: node
+        node
       });
     }
   });
@@ -57,12 +56,13 @@ export const runLint = (markdown: string, allRuleConfigs: LintMdRuleWithOptions[
       if (isEntering && node.type) {
         emitter.emit(node.type, node);
       }
-    } catch (e) {
+    }
+    catch (e) {
       console.log(e);
     }
   }
 
   return {
-    ruleManager: ruleManager
+    ruleManager
   };
 };

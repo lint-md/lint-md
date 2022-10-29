@@ -1,6 +1,5 @@
-import { MarkdownListItemNode } from '@lint-md/parser';
-import { LintMdRule } from '../types';
-
+import type { MarkdownListItemNode } from '@lint-md/parser';
+import type { LintMdRule } from '../types';
 
 const noEmptyList: LintMdRule = {
   meta: {

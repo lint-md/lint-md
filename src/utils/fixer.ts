@@ -1,4 +1,4 @@
-import { TextRange } from '../types';
+import type { TextRange } from '../types';
 
 /**
  * 初始化一个 fixer (修复器）
@@ -18,7 +18,7 @@ export const createFixer = () => {
   const insertTextAt = (index: number, text: string) => {
     return {
       range: [index, index],
-      text: text
+      text
     };
   };
 
@@ -44,7 +44,6 @@ export const createFixer = () => {
     return insertTextAt(range[0], text);
   };
 
-
   /**
    * 替换某个范围的文本
    *
@@ -54,8 +53,8 @@ export const createFixer = () => {
    */
   const replaceTextRange = (range: TextRange, text: string) => {
     return {
-      range: range,
-      text: text
+      range,
+      text
     };
   };
 
@@ -67,11 +66,10 @@ export const createFixer = () => {
    */
   const removeRange = (range: TextRange) => {
     return {
-      range: range,
+      range,
       text: ''
     };
   };
-
 
   return {
     insertTextAt,

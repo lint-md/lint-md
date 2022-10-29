@@ -1,5 +1,5 @@
-import { MarkdownCodeNode } from '@lint-md/parser';
-import { LintMdRule } from '../types';
+import type { MarkdownCodeNode } from '@lint-md/parser';
+import type { LintMdRule } from '../types';
 
 /**
  * 找到所有的 …
@@ -13,12 +13,13 @@ const findAllSingleEllipsis = (s: string) => {
 
     // 只要不是两个，都是不规范的
     if (matched && matched[0].length !== 2) {
-      // @ts-ignore
+      // @ts-expect-error
       r.push({
         index: matched.index,
         length: matched[0].length
       });
-    } else {
+    }
+    else {
       break;
     }
   }
@@ -36,18 +37,18 @@ const findAllDotEllipsis = (s: string) => {
     const matched = re.exec(s);
 
     if (matched) {
-      // @ts-ignore
+      // @ts-expect-error
       r.push({
         index: matched.index,
         length: matched[0].length
       });
-    } else {
+    }
+    else {
       break;
     }
   }
   return r;
 };
-
 
 const useStandardEllipsis: LintMdRule = {
   meta: {
@@ -65,7 +66,7 @@ const useStandardEllipsis: LintMdRule = {
           length: number
         }[] = findAllDotEllipsis(text).concat(findAllSingleEllipsis(text));
 
-        toFixList.forEach(item => {
+        toFixList.forEach((item) => {
           context.report({
             loc: {
               start: {

@@ -3,7 +3,7 @@ export const isNumberCharacter = (value: string) => {
 };
 
 export const isChineseCharacter = (value: string) => {
-  return /^[\u4e00-\u9fa5]$/.test(value);
+  return /^[\u4E00-\u9FA5]$/.test(value);
 };
 
 export const isEnglishCharacter = (value: string) => {

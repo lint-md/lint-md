@@ -1,4 +1,4 @@
-import { FixConfig } from '../types';
+import type { FixConfig } from '../types';
 
 /**
  * 基于多个 fix 来修复一个字符串，关于 fix 的数据结构请查看相关类型定义
@@ -38,7 +38,6 @@ export const applyFix = (content: string, fixes: FixConfig[]) => {
     result += fix.text;
     // 将当前索引指向 fix range 的末尾
     currentIndex = end;
-    return;
   };
 
   for (const fix of fixes) {
@@ -49,7 +48,7 @@ export const applyFix = (content: string, fixes: FixConfig[]) => {
   result += content.slice(Math.max(0, currentIndex));
 
   return {
-    result: result,
-    notAppliedFixes: notAppliedFixes
+    result,
+    notAppliedFixes
   };
 };

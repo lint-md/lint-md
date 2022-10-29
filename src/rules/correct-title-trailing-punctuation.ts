@@ -1,4 +1,4 @@
-import { LintMdRule } from '../types';
+import type { LintMdRule } from '../types';
 import { getTextNodes } from '../utils/get-text-nodes';
 
 const ALLOWED_PUNCTUATION = ['!', '?', '！', '？', '…'];

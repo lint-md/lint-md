@@ -9,7 +9,8 @@ export const createEmitter = () => {
   const on = (eventName, listener) => {
     if (listeners[eventName]) {
       listeners[eventName].push(listener);
-    } else {
+    }
+    else {
       listeners[eventName] = [listener];
     }
   };
@@ -25,8 +26,8 @@ export const createEmitter = () => {
   };
 
   return {
-    on: on,
-    emit: emit,
-    getEventNames: getEventNames
+    on,
+    emit,
+    getEventNames
   };
 };

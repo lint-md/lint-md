@@ -1,5 +1,5 @@
-import { MarkdownCodeNode } from '@lint-md/parser';
-import { LintMdRule } from '../types';
+import type { MarkdownCodeNode } from '@lint-md/parser';
+import type { LintMdRule } from '../types';
 
 const noSpaceInInlineCode: LintMdRule = {
   meta: {
@@ -15,12 +15,12 @@ const noSpaceInInlineCode: LintMdRule = {
             context.report({
               loc: node.position,
               message: '[lint-md] 行内代码内容，前后不能有空格，请删除行内代码中的前后空格',
-              fix: (fixer => {
+              fix: (fixer) => {
                 return fixer.replaceTextRange([
                   node.position.start.offset,
                   node.position.end.offset
                 ], `\`${trimmedText}\``);
-              })
+              }
             });
           }
         }

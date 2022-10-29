@@ -1,5 +1,5 @@
 import * as path from 'path';
-import {
+import type {
   LintMdRule,
   LintMdRuleWithOptions,
   LintMdRulesConfig
@@ -8,7 +8,6 @@ import { overrideDefaultRules } from '../utils/override-default-rules';
 import { runLint } from './run-lint';
 import { handleFixMode } from './handle-fix-mode';
 
-
 export const lintMarkdownInternal = (markdown: string, rules: LintMdRuleWithOptions[], isFixMode: boolean) => {
   if (!isFixMode) {
     const lintResult = runLint(markdown, rules);
@@ -16,11 +15,11 @@ export const lintMarkdownInternal = (markdown: string, rules: LintMdRuleWithOpti
       lintResult,
       fixedResult: null
     };
-  } else {
+  }
+  else {
     return handleFixMode(markdown, rules);
   }
 };
-
 
 /**
  * 核心方法，对某个 Markdown 文本进行 lint 或者 fix
@@ -47,14 +46,16 @@ export const lintMarkdown = (markdown: string, rules: LintMdRulesConfig = {}, is
 
   const { fixedResult, lintResult } = lintMarkdownInternal(markdown, internalRules, isFixMode);
 
-  const reportDataWithSeverity = lintResult?.ruleManager.getReportData().map(item => {
+  const reportDataWithSeverity = lintResult?.ruleManager.getReportData().map((item) => {
     const { loc, message, name, content } = item;
     return {
-      loc, message, name, content,
+      loc,
+      message,
+      name,
+      content,
       severity: registeredRules[name].severity
     };
   });
-
 
   return {
     lintResult: reportDataWithSeverity,

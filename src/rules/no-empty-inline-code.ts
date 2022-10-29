@@ -1,6 +1,5 @@
-import { MarkdownCodeNode } from '@lint-md/parser';
-import { LintMdRule } from '../types';
-
+import type { MarkdownCodeNode } from '@lint-md/parser';
+import type { LintMdRule } from '../types';
 
 const noEmptyInlineCode: LintMdRule = {
   meta: {
@@ -13,12 +12,12 @@ const noEmptyInlineCode: LintMdRule = {
           context.report({
             loc: node.position,
             message: '[lint-md] 行内代码块内容不能为空，请删除空的代码块，或者填充代码内容',
-            fix: (fixer => {
+            fix: (fixer) => {
               return fixer.removeRange([
                 node.position.start.offset,
                 node.position.end.offset
               ]);
-            })
+            }
           });
         }
       }

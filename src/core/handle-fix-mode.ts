@@ -1,4 +1,4 @@
-import { FixConfig, LintMdRuleWithOptions } from '../types';
+import type { FixConfig, LintMdRuleWithOptions } from '../types';
 import { MAX_LINT_AND_FIX_CALL_TIMES } from '../common/constant';
 import { applyFix } from '../utils/apply-fix';
 import { runLint } from './run-lint';
@@ -7,7 +7,7 @@ export const handleFixMode = (markdown: string, rules: LintMdRuleWithOptions[]) 
   let lintTimes = 0;
   let initialLintResult = {} as ReturnType<typeof runLint>;
 
-  let fixedResult: { result: string, notAppliedFixes: FixConfig[] } = {
+  let fixedResult: { result: string; notAppliedFixes: FixConfig[] } = {
     result: markdown,
     notAppliedFixes: []
   };

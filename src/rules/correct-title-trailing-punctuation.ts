@@ -1,8 +1,7 @@
 import type { LintMdRule } from '../types';
 import { getTextNodes } from '../utils/get-text-nodes';
 
-const ALLOWED_PUNCTUATION = ['!', '?', '！', '？', '…'];
-const COMMON_PUNCTUATION = ['.', ',', ';', ':', '。', '，', '；', '：', '…', '~', '*', '`'];
+const FORBIDDEN_PUNCTUATIONS = ['.', ',', ';', ':', '。', '，', '；', '：', '~', '*', '`'];
 
 const correctTitleTrailingPunctuation: LintMdRule = {
   meta: {
@@ -13,21 +12,30 @@ const correctTitleTrailingPunctuation: LintMdRule = {
       heading: (node) => {
         const lastTextNode = getTextNodes(node).pop();
         if (lastTextNode) {
-          const val = lastTextNode.value.trim();
-          const lastChar = val[val.length - 1];
-          if (COMMON_PUNCTUATION.includes(lastChar)) {
-            if (!ALLOWED_PUNCTUATION.includes(lastChar)) {
-              context.report({
-                loc: node.position,
-                message: `标题末尾不允许出现不规范的标点符号 ${lastChar}`,
-                fix: (fixer) => {
-                  return fixer.replaceTextRange([
-                    lastTextNode.position.start.offset,
-                    lastTextNode.position.end.offset
-                  ], val.slice(0, -1));
-                }
-              });
+          const val: string = lastTextNode.value.trimEnd();
+
+          let endPos: number;
+
+          for (endPos = val.length - 1; endPos >= 0; endPos--) {
+            const currentCharacter = val[endPos];
+
+            if (!FORBIDDEN_PUNCTUATIONS.includes(currentCharacter)) {
+              // 当前字符是标点，且合法，退出循环
+              break;
             }
+          }
+
+          if (endPos < val.length - 1) {
+            context.report({
+              loc: node.position,
+              message: '标题末尾不允许出现不规范的标点符号',
+              fix: (fixer) => {
+                return fixer.replaceTextRange([
+                  lastTextNode.position.start.offset,
+                  lastTextNode.position.end.offset
+                ], val.slice(0, endPos + 1));
+              }
+            });
           }
         }
       }

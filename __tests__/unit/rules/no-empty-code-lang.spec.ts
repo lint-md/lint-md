@@ -7,9 +7,9 @@ const fixer = createFixer([{
 
 describe('test no-empty-code-lang', () => {
   test('no fix applied', () => {
-    const md = '```js\n' +
-      'const a = 1;\n' +
-      '```';
+    const md = '```js\n'
+      + 'const a = 1;\n'
+      + '```';
 
     const { fixedResult, lintResult } = fixer(md);
 
@@ -18,15 +18,15 @@ describe('test no-empty-code-lang', () => {
   });
 
   test('fix applied', () => {
-    const md = '```\n' +
-      'const b = 2;\n' +
-      '```';
+    const md = '```\n'
+      + 'const b = 2;\n'
+      + '```';
 
     const { fixedResult, lintResult } = fixer(md);
 
-    expect(fixedResult?.result).toBe('```plain\n' +
-      'const b = 2;\n' +
-      '```');
+    expect(fixedResult?.result).toBe('```plain\n'
+      + 'const b = 2;\n'
+      + '```');
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
   });
 });

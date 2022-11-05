@@ -28,6 +28,7 @@ export const lintMarkdownInternal = (markdown: string, rules: LintMdRuleWithOpti
  */
 export const lintMarkdown = (markdown: string, rules: LintMdRulesConfig = {}, isFixMode = true) => {
   // 获取内部 rules
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const internalRuleConfig: Record<string, LintMdRule> = require('../rules');
 
   // 基于用户配置覆盖默认配置

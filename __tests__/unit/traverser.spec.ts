@@ -1,4 +1,5 @@
-import { MarkdownNode, parseMd } from '@lint-md/parser';
+import type { MarkdownNode } from '@lint-md/parser';
+import { parseMd } from '@lint-md/parser';
 import { createTraverser } from '../../src/utils/traverser';
 
 describe('test node traverser', () => {
@@ -23,10 +24,10 @@ console.log('!');
 
   test('test onLeave in options should be called correctly', () => {
     const traverser = createTraverser({
-      onLeave: ((node, parent) => {
+      onLeave: (node, parent) => {
         nodeQueue.push(node);
         parentNodeQueue.push(parent);
-      })
+      }
     });
 
     traverser.traverse(ast, null);
@@ -60,10 +61,10 @@ console.log('!');
 
   test('test onEnter in options should be called correctly', () => {
     const traverser = createTraverser({
-      onEnter: ((node, parent) => {
+      onEnter: (node, parent) => {
         nodeQueue.push(node);
         parentNodeQueue.push(parent);
-      })
+      }
     });
 
     traverser.traverse(ast, null);
@@ -97,10 +98,10 @@ console.log('!');
 
   test('test invalid node', () => {
     const traverser = createTraverser({
-      onLeave: ((node, parent) => {
+      onLeave: (node, parent) => {
         nodeQueue.push(node);
         parentNodeQueue.push(parent);
-      })
+      }
     });
 
     traverser.traverse(undefined, undefined);

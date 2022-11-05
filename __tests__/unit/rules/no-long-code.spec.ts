@@ -1,7 +1,6 @@
 import { createFixer } from '../../utils/test-utils';
 import noLongCode from '../../../src/rules/no-long-code';
 
-
 describe('test no-long-code', () => {
   const fixer = createFixer([{
     rule: noLongCode,
@@ -37,13 +36,13 @@ describe('test no-long-code', () => {
     const options = lintResult.ruleManager.getReportData().pop();
 
     expect(options?.loc).toStrictEqual({
-      'end': {
-        'column': 114,
-        'line': 1
+      end: {
+        column: 114,
+        line: 1
       },
-      'start': {
-        'column': 1,
-        'line': 1
+      start: {
+        column: 1,
+        line: 1
       }
     });
   });
@@ -76,23 +75,23 @@ describe('test no-long-code', () => {
     expect(fixedResult?.result).toStrictEqual(md);
     const [r1, r2] = lintResult.ruleManager.getReportData();
     expect(r1.loc).toStrictEqual({
-      'end': {
-        'column': 55,
-        'line': 2
+      end: {
+        column: 55,
+        line: 2
       },
-      'start': {
-        'column': 1,
-        'line': 2
+      start: {
+        column: 1,
+        line: 2
       }
     });
     expect(r2.loc).toStrictEqual({
-      'end': {
-        'column': 55,
-        'line': 4
+      end: {
+        column: 55,
+        line: 4
       },
-      'start': {
-        'column': 1,
-        'line': 4
+      start: {
+        column: 1,
+        line: 4
       }
     });
   });

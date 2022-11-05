@@ -13,7 +13,6 @@ describe('test no-multiple-space-blockquote', () => {
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
   });
 
-
   test('fix applied (复杂孩子，大量空格)', () => {
     const md = '>    [1312313](13)';
     const { fixedResult, lintResult } = fixer(md);

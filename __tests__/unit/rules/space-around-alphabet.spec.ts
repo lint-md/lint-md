@@ -5,7 +5,7 @@ const fixer = createFixer([{
   rule: spaceAroundAlphabet
 }]);
 
-//language=markdown
+// language=markdown
 const markdownToCheck = `
 一般来说，浏览器侧的异常分为两种类型：
 - JavaScript错误，一般来自用户的代码。
@@ -15,7 +15,7 @@ const markdownToCheck = `
   - 通过创建实例的方式，例如new Image() 等代码来实现初始化。
 `;
 
-//language=markdown
+// language=markdown
 const fixedMarkdownToCheck = `
 一般来说，浏览器侧的异常分为两种类型：
 - JavaScript 错误，一般来自用户的代码。

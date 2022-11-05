@@ -58,6 +58,7 @@ export const runLint = (markdown: string, allRuleConfigs: LintMdRuleWithOptions[
       }
     }
     catch (e) {
+      // eslint-disable-next-line no-console
       console.log(e);
     }
   }

@@ -5,12 +5,12 @@ const fixer = createFixer([{
   rule: spaceAroundNumber
 }]);
 
-//language=markdown
+// language=markdown
 const markdownToCheck = `
 33你好世界520 测试测试32123123
 `;
 
-//language=markdown
+// language=markdown
 const fixedMarkdownToCheck = `
 33 你好世界 520 测试测试 32123123
 `;

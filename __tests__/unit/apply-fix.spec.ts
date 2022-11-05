@@ -1,4 +1,4 @@
-import { FixConfig } from 'src/types';
+import type { FixConfig } from '../../src/types';
 import { applyFix } from '../../src/utils/apply-fix';
 
 describe('test apply fix', () => {
@@ -54,21 +54,20 @@ describe('test apply fix', () => {
     expect(applyFix(content, fixes).result).toStrictEqual('你最不喜欢哪一门编程语言? Python、JavaScript 还是 TypeScript?');
     expect(applyFix(content, fixes).notAppliedFixes).toStrictEqual([
       {
-        'range': [
+        range: [
           1,
           3
         ],
-        'text': '不太喜欢'
+        text: '不太喜欢'
       },
       {
-        'range': [
+        range: [
           1,
           3
         ],
-        'text': '不怎么喜欢'
+        text: '不怎么喜欢'
       }
     ]);
-
   });
 
   test('test the fixes will be sorted by range', () => {
@@ -93,32 +92,32 @@ describe('test apply fix', () => {
     ];
     expect(fixes).toStrictEqual([
       {
-        'range': [
+        range: [
           25,
           35
         ],
-        'text': 'TypeScript'
+        text: 'TypeScript'
       },
       {
-        'range': [
+        range: [
           12,
           12
         ],
-        'text': '     '
+        text: '     '
       },
       {
-        'range': [
+        range: [
           0,
           0
         ],
-        'text': 'TIP: '
+        text: 'TIP: '
       },
       {
-        'range': [
+        range: [
           0,
           5
         ],
-        'text': 'world'
+        text: 'world'
       }
     ]);
     expect(applyFix(content, fixes).result).toStrictEqual('TIP: hello world!      Do you like TypeScript?');

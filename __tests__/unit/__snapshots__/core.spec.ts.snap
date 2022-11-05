@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`test core methods for lint-markdown test lintAndFixInternal() to lint or fix markdown source 1`] = `
+"# Hello
+
+Some **importance**, and \`code\`.
+
+"
+`;
+
 exports[`test core methods for lint-markdown test lintMarkdown() to lint or fix markdown source 1`] = `
 "# 标题后面不可以使用不规范的符号
 
@@ -53,7 +61,7 @@ console.log('hello world')
 # 超长代码
 
 \`\`\`typescript
-console.log(\\"very long long long long long long long long long long long long long long long long long sentence\\");
+console.log("very long long long long long long long long long long long long long long long long long sentence");
 \`\`\`
 
 # 块引用有多余的空格
@@ -75,7 +83,7 @@ right \`const a = 1\` 你好
 
 # 特殊字符
 
-hello world, before here has a \\\\b.
+hello world, before here has a \\b.
 
 # 中英文之间缺少空格
 
@@ -90,13 +98,5 @@ JavaScript 错误，一般来自用户的代码。
 # 使用标准省略号
 
 hello world……
-"
-`;
-
-exports[`test core methods for lint-markdown test lintAndFixInternal() to lint or fix markdown source 1`] = `
-"# Hello
-
-Some **importance**, and \`code\`.
-
 "
 `;

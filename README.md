@@ -11,7 +11,7 @@
 
 ## 安装
 
-> **npm i --save @lint-md/core**
+> **npm i @lint-md/core@0.2.2**
 
 ## API 调用
 

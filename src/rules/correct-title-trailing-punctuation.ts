@@ -19,7 +19,7 @@ const correctTitleTrailingPunctuation: LintMdRule = {
             if (!ALLOWED_PUNCTUATION.includes(lastChar)) {
               context.report({
                 loc: node.position,
-                message: `[lint-md] 标题末尾不允许出现不规范的标点符号 ${lastChar}`,
+                message: `标题末尾不允许出现不规范的标点符号 ${lastChar}`,
                 fix: (fixer) => {
                   return fixer.replaceTextRange([
                     lastTextNode.position.start.offset,

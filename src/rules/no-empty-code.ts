@@ -13,7 +13,7 @@ const noEmptyCode: LintMdRule = {
         if (!replacement) {
           context.report({
             loc: node.position,
-            message: '[lint-md] 代码块内容不能为空，请删除空的代码块，或者填充代码内容',
+            message: '代码块内容不能为空，请删除空的代码块，或者填充代码内容',
             fix: (fixer) => {
               return fixer.removeRange([
                 node.position.start.offset,

@@ -33,7 +33,7 @@ const spaceAroundNumber: LintMdRule = {
                   column: loc.start.column + i + 2
                 }
               },
-              message: '[lint-md] 中文与数字之间需要增加空格',
+              message: '中文与数字之间需要增加空格',
               fix: (fixer) => {
                 // 将第 loc.start.offset + i + 1 位置处的字符替换成空格
                 return fixer.insertTextAt(loc.start.offset + i + 1, ' ');

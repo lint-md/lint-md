@@ -20,7 +20,7 @@ const FULL_WIDTH_NUMBER_REPLACEMENT_MAP = {
  * @returns {Array}
  */
 const findAllFullWidthNumbers = (s: string) => {
-  const re = new RegExp('[０-９]+', 'g');
+  const re = /[０-９]+/g;
   const r: { number: string; index: number }[] = [];
 
   // 循环找出所有的数字
@@ -69,7 +69,7 @@ const noFullWidthNumber: LintMdRule = {
                 column: endPos
               }
             },
-            message: '[lint-md] 不能用全角数字，请使用半角数字',
+            message: '不能用全角数字，请使用半角数字',
             fix: (fixer) => {
               // １０００ => '1000'
               const replacement = number.split('').map(c => `${FULL_WIDTH_NUMBER_REPLACEMENT_MAP[c]}`).join('');

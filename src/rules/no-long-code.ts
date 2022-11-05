@@ -37,7 +37,7 @@ const noLongCode: LintMdRule = {
                 start,
                 end
               },
-              message: '[lint-md] 代码块不能有过长的代码'
+              message: '代码块不能有过长的代码'
             });
           }
         }

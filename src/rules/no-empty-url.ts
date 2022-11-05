@@ -11,7 +11,7 @@ const handleFixLinkNode = (context: LintMdRuleContext, node: MarkdownLinkNode) =
     }
     context.report({
       loc: node.position,
-      message: '[lint-md] 链接和图片地址不能为空',
+      message: '链接和图片地址不能为空',
       fix: (fixer) => {
         return fixer.replaceTextRange([
           node.position.start.offset,

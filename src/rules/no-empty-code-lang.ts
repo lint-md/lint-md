@@ -11,7 +11,7 @@ const noEmptyCodeLang: LintMdRule = {
         if (!node.lang) {
           context.report({
             loc: node.position,
-            message: '[lint-md] 代码语言不能为空，请在代码块语法上增加语言',
+            message: '代码语言不能为空，请在代码块语法上增加语言',
             fix: (fixer) => {
               return fixer.insertTextAfterRange([
                 node.position.start.offset,

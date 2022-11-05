@@ -18,7 +18,7 @@ const noSpecialCharacters: LintMdRule = {
           if (idx !== -1) {
             context.report({
               loc: node.position,
-              message: `[lint-md] 文本中不能包含特殊字符 '${sc}'，请删除或者替换`,
+              message: `文本中不能包含特殊字符 '${sc}'，请删除或者替换`,
               fix: (fixer) => {
                 return fixer.removeRange([
                   node.position.start.offset + idx,

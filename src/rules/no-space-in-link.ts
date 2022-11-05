@@ -27,7 +27,7 @@ const checkAndReportTextNode = (ctx: LintMdRuleContext, node: MarkdownTextNode, 
   if (finalTrimmedText !== null) {
     ctx.report({
       loc: node.position,
-      message: '[lint-md] 链接内容前后不能有空格，请删除链接中的前后空格',
+      message: '链接内容前后不能有空格，请删除链接中的前后空格',
       fix: (fixer) => {
         return fixer.replaceTextRange([
           node.position.start.offset,

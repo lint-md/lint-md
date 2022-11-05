@@ -78,7 +78,7 @@ const useStandardEllipsis: LintMdRule = {
                 column: column + item.index + item.length
               }
             },
-            message: '[lint-md] 请使用标准规范的省略号',
+            message: '请使用标准规范的省略号',
             fix: (fixer) => {
               // column 不是下标，需要 -1
               const startIndex = node.position.start.offset + (column - 1) + item.index;

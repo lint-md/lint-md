@@ -11,7 +11,7 @@ const noEmptyInlineCode: LintMdRule = {
         if (!node.value || !node.value.trim()) {
           context.report({
             loc: node.position,
-            message: '[lint-md] 行内代码块内容不能为空，请删除空的代码块，或者填充代码内容',
+            message: '行内代码块内容不能为空，请删除空的代码块，或者填充代码内容',
             fix: (fixer) => {
               return fixer.removeRange([
                 node.position.start.offset,

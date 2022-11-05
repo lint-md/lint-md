@@ -19,7 +19,7 @@ const noMultipleSpaceBlockquote: LintMdRule = {
 
             context.report({
               loc: node.position,
-              message: 'blockquote should not have multiple space',
+              message: '块引用只允许有一个空格',
               fix: (fixer) => {
                 return fixer.replaceTextRange(
                   [fixStartRange, fixEndRange],

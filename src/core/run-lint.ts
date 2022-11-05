@@ -38,7 +38,12 @@ export const runLint = (markdown: string, allRuleConfigs: LintMdRuleWithOptions[
 
   // 遍历所有的 rules，并拿到它们的选择器，为每一个选择器订阅相关事件
   for (const { rule, options } of allRuleConfigs) {
-    const ruleContext = ruleManager.createRuleContext({ rule, options });
+    const ruleContext = ruleManager.createRuleContext(
+      { rule, options },
+      {
+        ast,
+        markdown
+      });
     const ruleSelectors = rule.create(ruleContext);
     for (const selector of Object.keys(ruleSelectors)) {
       emitter.on(selector, ruleSelectors[selector]);

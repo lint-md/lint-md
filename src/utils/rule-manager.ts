@@ -36,7 +36,7 @@ export const createRuleManager = (appliedMarkdown: string) => {
   };
 
   // 初始化一个 rule context
-  const createRuleContext = (ruleConfig: LintMdRuleWithOptions) => {
+  const createRuleContext = (ruleConfig: LintMdRuleWithOptions, data?: any) => {
     const { rule, options } = ruleConfig;
 
     // 上报方法，供选择器内部调用
@@ -56,7 +56,8 @@ export const createRuleManager = (appliedMarkdown: string) => {
 
     return {
       report,
-      options: options || {}
+      options: options || {},
+      ...data
     };
   };
 

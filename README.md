@@ -1,62 +1,76 @@
-# lint-md
+# lint-md 2.0 Beta
 
-> 用于检查中文 Markdown 编写格式规范的核心模块，基于 AST 开发。
-> 
-> Library used to lint your Markdown file for Chinese.
+> ⚠️提示：你现在看到的是 2.0 的 Beta
+> 版本，预计十一月发布正式版，如果要查看稳定版本请切换到 **[stable](https://github.com/lint-md/lint-md/tree/stable)** 分支。
+
+lint-md 是检查中文 Markdown 编写格式的工具，让你的文档更加优雅规范。
 
 [![Build Status](https://travis-ci.org/hustcc/lint-md.svg?branch=master)](https://travis-ci.org/hustcc/lint-md)
-[![Coverage Status](https://coveralls.io/repos/github/hustcc/lint-md/badge.svg?branch=master)](https://coveralls.io/github/hustcc/lint-md)
-[![npm](https://img.shields.io/npm/v/lint-md.svg)](https://www.npmjs.com/package/lint-md)
-[![npm](https://img.shields.io/npm/dm/lint-md.svg)](https://www.npmjs.com/package/lint-md)
+[![npm](https://img.shields.io/npm/v/@lint-md/core.svg)](https://www.npmjs.com/package/lint-md)
+[![npm](https://img.shields.io/npm/dm/@lint-md/core.svg)](https://www.npmjs.com/package/@lint-md/core)
 
-## 安装
+## 快速开始
 
-> **npm i @lint-md/core@0.2.2**
+我们提供了两种使用的方式，命令行和 Node.js API，前者适合单独使用（推荐），后者适合更加定制化的 Lint 需求。
 
-## API 调用
+### 使用命令行（CLI）
 
-```js
-import { lint, fix, getDescription } from '@lint-md/core';
+安装依赖
 
-// get the markdown 's style errors
-const errors = lint(markdown, rules);
-
-// get the error type description
-const describe = getDescription('rule-type', 'en_US');
-
-// fix the markdown
-const fixed = fix(markdown);
+```shell
+npm install -g @lint-md/cli@beta
 ```
 
-- **lint**：通过 API 方式来校验 Markdown 文本；
-- **fix**：通过 API 方式来修复文本；
-- **getDescription**：获取错误类型的文本描述，包含多语言；
-- **version**：获得模块的版本号；
+命令示例
 
-## 检查类型
+```shell
+# 校验当前目录下的 test.md 文件
+lint-md test.md
+
+# 校验当前目录下的 test.md 文件，并修复之
+lint-md test.md --fix
+
+# 校验 examples 目录下所有的 Markdown 文件，并修复之
+lint-md examples/**/* --fix
+
+# 校验 examples 目录下所有的 Markdown 文件，指定 config.json 为配置文件
+lint-md examples/**/* --config=config.json
+
+# 校验 examples 目录下所有的 Markdown 文件，仅存在 warning 时程序正常退出（warning 不会阻断 CI）
+lint-md examples/**/* --suppress-warnings
+
+# 校验 examples 目录下所有的 Markdown 文件，并开启多线程模式（8 个线程）
+lint-md examples/**/* --threads=8
+```
+
+API 如下所示：
+
+```shell
+Options:
+  -v, --version                  output the version number（查看当前版本）
+  -c, --config [configure-file]  use the configure file, default .lintmdrc（使用配置文件，默认为 .lintmdrc）
+  -f, --fix                      fix the errors automatically（开启修复模式）
+  -d, --dev                      open dev mode（开启开发者模式）
+  -t, --threads [thread-count]   The number of threads. The default is based on the number of available CPUs.（执行 Lint / Fix 的线程数，默认为 1）
+  -s, --suppress-warnings        suppress all warnings, that means warnings will not block CI（抑制所有警告，这意味着警告不会阻止 CI）
+  -h, --help                     display help for command（查看帮助）
+```
+
+### 使用 Node.js API
+
+TODO
+
+## 规则一览
 
 > 检查规则来源于 [chinese-document-style-guide](https://github.com/ruanyf/document-style-guide).
 
-| 规则 | 详细描述 | 解决办法 | 配置选项 | 自动修复 |
-| ------ | ------ | ------ | ----- | ----- |
-| space-round-alphabet | 中文与英文之间需要增加空格 | 对应提示的位置增加空格 | | √ |
-| space-round-number | 中文与数字之间需要增加空格 | 对应提示的位置增加空格 | | √ |
-| no-empty-code-lang | 代码语言不能为空 | 在代码块语法上增加语言 | | √ |
-| no-empty-delete | delete 块内容不能为空 | 删除空的 delete 文本块 | | √ |
-| no-empty-url | 链接和图片地址不能为空 | 填写完整的 url，或者不使用链接和图片语法 | | √ |
-| no-empty-list | list 内容不能为空 | list 语法中，填写内容 | | √ |
-| no-empty-code | 代码块内容不能为空 | 删除空的代码块，或者填充代码内容 | | √ |
-| no-empty-inlinecode | 行内代码块内容不能为空 | 删除空的代码块，或者填充代码内容 | | √ |
-| no-empty-blockquote | blockquote 内容不能为空 | 删除空的 blockquote，或者填充内容 | | √ |
-| no-special-characters | 文本中不能有特殊字符 | 可能是复制出来的特殊字符，删除特殊字符即可 | | √ |
-| use-standard-ellipsis | 使用标准规范的省略号 | 使用标准规范的省略号‘……’ / ‘...’ | | √ |
-| no-fullwidth-number | 不能用全角数字 | 注意输入法切换为半角输入 | | √ |
-| no-space-in-emphasis | emphasis 内容前后不能有空格 | 删除 emphasis 内容中的前后空格即可 | | √ |
-| no-space-in-link | link 内容前后不能有空格 | 删除 link 内容中的前后空格即可 | | √ |
-| no-multiple-space-blockquote | blockquote 语法不能包含有多个空格 | 删除 blockquote 内容中多余的空格 | | √ |
-| no-trailing-punctuation | 标题不能以标点符号结尾 | 删除标题最后的标点符号 | | √ |
-| no-space-in-inlinecode | 行内代码内容，前后不能有空格 | 删除行内代码中的前后空格 | | √ |
-| no-long-code | 代码块不能有过长的代码 | 对展示代码做格式上的修改 | `length`, `exclude` （见下文说明） | x |
+### space-around-alphabet
+
+中文与英文之间需要增加空格
+
+**正确**
+
+对应提示的位置增加空格
 
 ### 配置选项
 
@@ -67,10 +81,9 @@ const fixed = fix(markdown);
 
 ### Pull Request
 
-> 目前仅仅检查了比较通用的类型，**欢迎 pull request**，在 `rules` 中增加自己的规则，开发约束：
+> 目前仅仅检查了比较通用的类型，**欢迎 Pull Request**，在 `rules` 中增加自己的规则，开发约束：
 
 - 规则主要针对于中文 Markdown 的编写规范
-- 使用类 babel plugin 的方式来进行规则检查，一个插件对应一个规则
 - 规则名称对应和插件文件名保持一致
 - 先提 issue 进行讨论
 - [AST 工具](https://astexplorer.net/)，使用其中的 Markdown AST 辅助开发插件
@@ -93,18 +106,11 @@ const errors = lint(markdown, rules);
 
 通过 rules 来配置规则。`key` 对应规则的名称。如果 `value` 是一个数字，那么表示规则的等级：
 
-- **0**：ignore 忽略不检查该规则
-- **1**：warning 警告，但不阻断 CI
-- **2**：error 错误，且阻断 CI
+- **0**：off 忽略，不检查该规则
+- **1**：warning 警告，但不阻断 CI（ExitCode = 0）
+- **2**：error 错误，且阻断 CI（ExitCode = 1）
 
 如果 `value` 是一个数组，那么第一个是数字，表示该规则的等级；第二个为规则可接受的配置信息。
-
-## 其他相关
-
-- [lint-md-cli](https://github.com/lint-md/cli)：lint-md 模块的 CLI 工具，方便用于 CI 集成。
-- [VS Code 插件](https://marketplace.visualstudio.com/items?itemName=ZhixiangZhang.mdlint#review-details)：在 VS Code 中使用
-  lint-md 工具。
-- [语雀 lint 服务](https://github.com/hustcc/yuque-lint)：利用语雀的 WebHook 自动校验提交的文档格式并做提醒。
 
 ## License
 

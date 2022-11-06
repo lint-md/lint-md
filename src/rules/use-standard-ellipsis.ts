@@ -81,7 +81,7 @@ const useStandardEllipsis: LintMdRule = {
             message: '请使用标准规范的省略号',
             fix: (fixer) => {
               // column 不是下标，需要 -1
-              const startIndex = node.position.start.offset + (column - 1) + item.index;
+              const startIndex = node.position.start.offset + item.index;
               return fixer.replaceTextRange([startIndex, startIndex + item.length], '……');
             }
           });

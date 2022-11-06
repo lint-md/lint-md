@@ -1,20 +1,19 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as Benchmark from 'benchmark';
-import { LintMdRuleWithOptions } from '../../src/types';
+import type { LintMdRuleWithOptions } from '../../src/types';
 import { lintMarkdownInternal } from '../../src/core/lint-markdown';
 
 interface BenchMarkBetweenOptions {
   // 回调函数 1
-  cb1: () => void;
+  cb1: () => void
   // 回调函数 2
-  cb2: () => void;
+  cb2: () => void
   // 期望的倍率，默认为 1
-  magnification?: number;
+  magnification?: number
   // 执行断言
-  check?: boolean;
+  check?: boolean
 }
-
 
 /**
  * benchMark 两个回调函数, 并为倍率进行断言
@@ -61,7 +60,6 @@ export const createFixer = (ruleConfigs: LintMdRuleWithOptions[]) => {
     return lintMarkdownInternal(md, ruleConfigs, true);
   };
 };
-
 
 export const getExample = (name: string) => {
   const file = path.resolve(__dirname, '../examples', `${name}.md`);

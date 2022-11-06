@@ -5,6 +5,7 @@ import type {
   LintMdRulesConfig
 } from '../types';
 import { overrideDefaultRules } from '../utils/override-default-rules';
+import { RULE_SEVERITY } from '../types';
 import { runLint } from './run-lint';
 import { handleFixMode } from './handle-fix-mode';
 
@@ -37,13 +38,18 @@ export const lintMarkdown = (markdown: string, rules: LintMdRulesConfig = {}, is
   const registeredRuleEntries = Object.entries(registeredRules);
 
   // 最终的 rules
-  const internalRules = registeredRuleEntries.map((options) => {
-    const value = options[1];
-    return {
-      rule: value.rule,
-      options: value.options
-    };
-  });
+  const internalRules = registeredRuleEntries
+    .filter((item) => {
+      // 过滤掉 severity 为 0 的规则，提高性能
+      return item[1].severity !== RULE_SEVERITY.OFF;
+    })
+    .map((options) => {
+      const value = options[1];
+      return {
+        rule: value.rule,
+        options: value.options
+      };
+    });
 
   const { fixedResult, lintResult } = lintMarkdownInternal(markdown, internalRules, isFixMode);
 

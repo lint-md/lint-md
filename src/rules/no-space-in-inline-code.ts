@@ -33,7 +33,7 @@ const noSpaceInInlineCode: LintMdRule = {
         }
         else {
           const internalContent = result.slice(1, -1);
-          if (internalContent.trim() !== result) {
+          if (internalContent.trim() !== internalContent) {
             runReport(context, node, internalContent.trim(), 'short');
           }
         }

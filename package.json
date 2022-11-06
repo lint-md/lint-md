@@ -1,6 +1,6 @@
 {
   "name": "@lint-md/core",
-  "version": "2.0.0-beta.13",
+  "version": "2.0.0-beta.14",
   "description": "Core of lint-md which used to lint your markdown file for Chinese.",
   "main": "lib/index.js",
   "module": "esm/index.js",
@@ -13,7 +13,8 @@
     "lib:cjs": "tsc -p tsconfig.json --target ESNext --module commonjs --outDir lib",
     "lib:esm": "tsc -p tsconfig.json --target ESNext --module ESNext --outDir esm",
     "build": "rm -rf lib esm && run-p lib:*",
-    "clean": "rimraf lib esm"
+    "clean": "rimraf lib esm",
+    "release": "npm publish"
   },
   "files": [
     "esm",
@@ -66,6 +67,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lint-md.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   },
   "homepage": "https://github.com/lint-md#readme"
 }

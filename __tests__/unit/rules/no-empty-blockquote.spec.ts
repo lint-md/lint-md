@@ -1,5 +1,5 @@
 import { createFixer } from '../../utils/test-utils';
-import noEmptyBlockquote from '../../../src/rules/no-empty-blockquote';
+import { noEmptyBlockquote } from '../../../src/rules';
 
 const fixer = createFixer([{
   rule: noEmptyBlockquote

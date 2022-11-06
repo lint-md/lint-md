@@ -1,7 +1,7 @@
 import type { MarkdownTextNode } from '@lint-md/parser';
 import type { LintMdRule } from '../types';
 
-const SPECIAL_CHARACTERS = ['\b'];
+const SPECIAL_CHARACTERS = ['', ' '];
 
 const noSpecialCharacters: LintMdRule = {
   meta: {

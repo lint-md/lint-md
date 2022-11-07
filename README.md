@@ -44,7 +44,7 @@ lint-md examples/**/* --threads=8
 
 #### 配置文件
 
-默认情况下重新会读取根目录下的 `.lintmdrc` JSON 文件（如果有的话），下面是一个案例，表示将 `no-empty-code` 这条规则的等级设置为 warning，同时为 `no-empty-code` 这条规则配置了自定义的选项：
+默认情况下重新会读取根目录下的 `.lintmdrc` JSON 文件（如果有的话），下面是一个案例，表示将 `no-empty-code` 这条规则的等级设置为 warning，同时为 `no-long-code` 这条规则配置了自定义的选项：
 
 ```json
 {
@@ -121,7 +121,7 @@ TODO
 - 规则主要针对于中文 Markdown 的编写规范
 - 规则名称对应和插件文件名保持一致
 - 先提 [issue](https://github.com/lint-md/lint-md/issues) 进行讨论
-- 开发 rule 时可以使用[AST 工具](https://astexplorer.net/) 来辅助开发
+- 开发 rule 时可以使用 [AST 工具](https://astexplorer.net/) 来辅助开发
 
 
 ## License

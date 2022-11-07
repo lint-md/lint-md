@@ -1,17 +1,16 @@
-# lint-md 2.0 Beta
+# Lint Markdown 2.0 Beta
 
-> ⚠️提示：你现在看到的是 2.0 的 Beta
-> 版本，预计十一月发布正式版，如果要查看稳定版本请切换到 **[stable](https://github.com/lint-md/lint-md/tree/stable)** 分支。
+> ⚠️ 提示：你现在看到的是 2.0 的 Beta 版本，预计十一月发布正式版，如果要查看稳定版本请切换到 **[stable](https://github.com/lint-md/lint-md/tree/stable)** 分支。
 
-lint-md 是检查中文 Markdown 编写格式的工具，让你的文档更加优雅规范。
+Lint Markdown 是检查中文 Markdown 编写格式的工具，让你的文档更加优雅规范。
 
-[![Build Status](https://travis-ci.org/hustcc/lint-md.svg?branch=master)](https://travis-ci.org/hustcc/lint-md)
+[![build](https://github.com/lint-md/lint-md/actions/workflows/build.yml/badge.svg)](https://github.com/lint-md/lint-md/actions/workflows/build.yml)
 [![npm](https://img.shields.io/npm/v/@lint-md/core.svg)](https://www.npmjs.com/package/lint-md)
 [![npm](https://img.shields.io/npm/dm/@lint-md/core.svg)](https://www.npmjs.com/package/@lint-md/core)
 
 ## 快速开始
 
-我们提供了两种使用的方式，命令行和 Node.js API，前者适合单独使用（推荐），后者适合更加定制化的 Lint 需求。
+我们提供了两种使用的方式，命令行和 Node.js API，前者适合大部分用户使用（推荐），后者适合更加定制化的 Lint 需求。
 
 ### 使用命令行（CLI）
 
@@ -60,19 +59,31 @@ Options:
 
 TODO
 
-## 规则一览
+## 规则概述
 
 > 检查规则来源于 [chinese-document-style-guide](https://github.com/ruanyf/document-style-guide).
 
-### space-around-alphabet
 
-中文与英文之间需要增加空格
+| 规则                                | 详细描述                      | 解决办法                | 可自动修复     |
+|------------------------------------|------------------------------|------------------------|------------|
+| space-around-alphabet              | 中文与英文之间需要增加空格        | 对应提示的位置增加空格   | ✅    |
+| space-around-number                | 中文与数字之间需要增加空格        | 对应提示的位置增加空格   | ✅    | 
+| no-empty-code-lang                 | 代码语言不能为空                | 在代码块语法上增加语言     | ✅    |
+| no-empty-url                       | 链接和图片地址不能为空            | 填写完整的 url，或者不使用链接和图片语法 | ✅    | 
+| no-empty-list                      | list 内容不能为空               | 删除空的 list 或者补充内容   | ✅    | 
+| no-empty-code                      | 代码块内容不能为空               | 删除空的代码块，或者填充代码内容   | ✅    | 
+| no-empty-inline-code                | 行内代码块内容不能为空            | 删除空的行内代码块，或者填充代码内容     | ✅    | 
+| no-empty-blockquote                | 引用块内容不能为空               | 删除空的引用块，或者填充内容 | ✅    |
+| no-special-characters              | 文本中不能有特殊字符             | 可能是复制出来的特殊字符，删除特殊字符即可  | ✅    |
+| use-standard-ellipsis              | 使用标准规范的省略号             | 使用标准规范的省略号‘……’ / ‘...’ | ✅    | 
+| no-fullwidth-number                | 不能用全角数字                  | 注意输入法切换为半角输入           | ✅    |
+| no-space-in-link                   | 链接前后不能有空格            | 删除链接内容的前后空格     | ✅    |
+| no-multiple-space-blockquote       | 引用块头部和内容间只能有一个空格    | 删除多余的空格 | ✅    |
+| correct-title-trailing-punctuation | 标题末尾只能使用合适的标点符号（允许问号、叹号、省略号） | 删除标题最后不合法的标点符号   | ✅    |
+| no-space-in-inline-code            | 行内代码内容前后不能有空格        | 删除行内代码中的前后空格          | ✅    |
+| no-long-code                       | 代码块不能有过长的代码（代码长度可配置，见下文）  | 对展示代码做格式上的修改        | x    |
 
-**正确**
-
-对应提示的位置增加空格
-
-### 配置选项
+**规则配置**
 
 `no-long-code` 接受两个可配置参数：
 

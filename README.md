@@ -14,13 +14,13 @@ Lint Markdown 是检查中文 Markdown 编写格式的工具，让你的文档�
 
 ### 使用命令行（CLI）
 
-安装依赖
+#### 安装依赖
 
 ```shell
 npm install -g @lint-md/cli@beta
 ```
 
-命令示例
+#### 命令示例
 
 ```shell
 # 校验当前目录下的 test.md 文件
@@ -32,7 +32,7 @@ lint-md test.md --fix
 # 校验 examples 目录下所有的 Markdown 文件，并修复之
 lint-md examples/**/* --fix
 
-# 校验 examples 目录下所有的 Markdown 文件，指定 config.json 为配置文件
+# 校验 examples 目录下所有的 Markdown 文件，指定 config.json 为配置文件（配置文件语法见下文）
 lint-md examples/**/* --config=config.json
 
 # 校验 examples 目录下所有的 Markdown 文件，仅存在 warning 时程序正常退出（warning 不会阻断 CI）
@@ -42,7 +42,31 @@ lint-md examples/**/* --suppress-warnings
 lint-md examples/**/* --threads=8
 ```
 
-API 如下所示：
+#### 配置文件
+
+默认情况下重新会读取根目录下的 `.lintmdrc` JSON 文件（如果有的话），下面是一个案例，表示将 `no-empty-code` 这条规则的等级设置为 warning，同时为 `no-empty-code` 这条规则配置了自定义的选项：
+
+```json
+{
+  "no-empty-code": 1,
+  "no-long-code": [2, {
+    "length": 100,
+    "exclude": ["dot"]
+  }]
+}
+```
+
+其中 `key` 为对应规则的名称，`value` 是一个数字或者对象。
+
+如果是一个数字，那么表示规则的等级：
+
+- **0**：忽略（off），不检查该规则
+- **1**：警告（warning），仅出现警告，程序正常退出，不会阻断 CI
+- **2**：错误（error），出现错误，程序异常退出，会阻断 CI
+
+如果是一个数组，那么数组的第一项为数字，表示该规则的等级；第二个为规则的配置参数。
+
+#### API 一览
 
 ```shell
 Options:
@@ -83,45 +107,22 @@ TODO
 | no-space-in-inline-code            | 行内代码内容前后不能有空格        | 删除行内代码中的前后空格          | ✅    |
 | no-long-code                       | 代码块不能有过长的代码（代码长度可配置，见下文）  | 对展示代码做格式上的修改        | x    |
 
-**规则配置**
+**可配置的规则**
 
 `no-long-code` 接受两个可配置参数：
 
 + `length`: 每行代码接受的最大长度，数字，默认值为 `100`
 + `exclude`: 可以配置部分代码类型不做长度检查，字符串数组，默认值为 `[]`
 
-### Pull Request
+### 贡献代码
 
-> 目前仅仅检查了比较通用的类型，**欢迎 Pull Request**，在 `rules` 中增加自己的规则，开发约束：
+> 目前仅仅检查了比较通用的类型，**欢迎 Pull Request**，在 `rules` 中增加自己的规则，注意：
 
 - 规则主要针对于中文 Markdown 的编写规范
 - 规则名称对应和插件文件名保持一致
-- 先提 issue 进行讨论
-- [AST 工具](https://astexplorer.net/)，使用其中的 Markdown AST 辅助开发插件
+- 先提 [issue](https://github.com/lint-md/lint-md/issues) 进行讨论
+- 开发 rule 时可以使用[AST 工具](https://astexplorer.net/) 来辅助开发
 
-## Rules 配置
-
-默认所有的规则都是 `error` 类型，看一个 rules 规则配置的示例：
-
-```js
-const rules = {
-  "no-empty-code": 1,
-  "no-long-code": [2, {
-    "length": 100,
-    "exclude": ["dot"]
-  }]
-};
-
-const errors = lint(markdown, rules);
-```
-
-通过 rules 来配置规则。`key` 对应规则的名称。如果 `value` 是一个数字，那么表示规则的等级：
-
-- **0**：off 忽略，不检查该规则
-- **1**：warning 警告，但不阻断 CI（ExitCode = 0）
-- **2**：error 错误，且阻断 CI（ExitCode = 1）
-
-如果 `value` 是一个数组，那么第一个是数字，表示该规则的等级；第二个为规则可接受的配置信息。
 
 ## License
 

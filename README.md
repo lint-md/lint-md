@@ -1,10 +1,9 @@
 # Lint Markdown 2.0 Beta
 
-> ⚠️ 提示：你现在看到的是 2.0 的 Beta 版本，预计十一月发布正式版，如果要查看稳定版本请切换到 **[stable](https://github.com/lint-md/lint-md/tree/stable)** 分支。
+> ⚠️ 提示：你现在看到的是 2.0 的 Beta 版本，近期会发布正式版，如果要查看稳定版本请切换到 **[stable](https://github.com/lint-md/lint-md/tree/stable)** 分支。
 
 Lint Markdown 是检查中文 Markdown 编写格式的工具，让你的文档更加优雅规范。
 
-[![build](https://github.com/lint-md/lint-md/actions/workflows/build.yml/badge.svg)](https://github.com/lint-md/lint-md/actions/workflows/build.yml)
 [![npm](https://img.shields.io/npm/v/@lint-md/core.svg)](https://www.npmjs.com/package/lint-md)
 [![npm](https://img.shields.io/npm/dm/@lint-md/core.svg)](https://www.npmjs.com/package/@lint-md/core)
 
@@ -38,7 +37,10 @@ lint-md examples/**/* --config=config.json
 # 校验 examples 目录下所有的 Markdown 文件，仅存在 warning 时程序正常退出（warning 不会阻断 CI）
 lint-md examples/**/* --suppress-warnings
 
-# 校验 examples 目录下所有的 Markdown 文件，并开启多线程模式（8 个线程）
+# 校验 examples 目录下所有的 Markdown 文件，并开启多线程模式（线程数 === CPU 核心数）
+lint-md examples/**/* --threads
+
+# 校验 examples 目录下所有的 Markdown 文件，并开启多线程模式（线程数 === 8）
 lint-md examples/**/* --threads=8
 ```
 
@@ -74,7 +76,7 @@ Options:
   -c, --config [configure-file]  use the configure file, default .lintmdrc（使用配置文件，默认为 .lintmdrc）
   -f, --fix                      fix the errors automatically（开启修复模式）
   -d, --dev                      open dev mode（开启开发者模式）
-  -t, --threads [thread-count]   The number of threads. The default is based on the number of available CPUs.（执行 Lint / Fix 的线程数，默认为 1）
+  -t, --threads [thread-count]   The number of threads. The default is based on the number of available CPUs.（执行 Lint / Fix 的线程数，默认为 CPU 核心数）
   -s, --suppress-warnings        suppress all warnings, that means warnings will not block CI（抑制所有警告，这意味着警告不会阻止 CI）
   -h, --help                     display help for command（查看帮助）
 ```

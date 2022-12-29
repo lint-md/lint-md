@@ -20,7 +20,7 @@ Some **importance**, and \`code\`.
 
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
     const res = lintResult.ruleManager.getReportData().pop();
-    expect(res?.message).toStrictEqual('[lint-md] 代码块内容不能为空，请删除空的代码块，或者填充代码内容');
+    expect(res?.message).toStrictEqual('代码块内容不能为空，请删除空的代码块，或者填充代码内容');
   });
 
   test('test lintAndFixInternal() to lint or fix markdown source', () => {

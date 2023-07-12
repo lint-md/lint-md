@@ -1,6 +1,6 @@
 {
   "name": "@lint-md/core",
-  "version": "2.0.0-beta.18",
+  "version": "2.0.0",
   "description": "Core of lint-md which used to lint your markdown file for Chinese.",
   "main": "lib/index.js",
   "module": "esm/index.js",

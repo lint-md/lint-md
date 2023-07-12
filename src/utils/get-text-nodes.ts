@@ -10,9 +10,10 @@ type MarkdownTextNode = MarkdownNode & {
 
 export const getTextNodes = (node: MarkdownTextNode) => {
   const textNodes: MarkdownTextNode[] = [];
+  const textOnlyNode = ['text', 'inlineCode'];
 
   // 有 value 字段被认为是 textNode，结束递归
-  if (node.type === 'text') {
+  if (textOnlyNode.includes(node.type)) {
     textNodes.push(node);
     return textNodes;
   }

@@ -1,11 +1,23 @@
-# Lint Markdown 2.0 Beta
+# Lint Markdown 2.0
 
-> ⚠️ 提示：你现在看到的是 2.0 的 Beta 版本，近期会发布正式版，如果要查看稳定版本请切换到 **[stable](https://github.com/lint-md/lint-md/tree/stable)** 分支。
+> ⚠️ 提示：你现在看到的是 2.0 版本，如果要查看 1.x 版本请切换到 **[stable](https://github.com/lint-md/lint-md/tree/stable)** 分支。
 
 Lint Markdown 是检查中文 Markdown 编写格式的工具，让你的文档更加优雅规范。
 
 [![npm](https://img.shields.io/npm/v/@lint-md/core.svg)](https://www.npmjs.com/package/lint-md)
 [![npm](https://img.shields.io/npm/dm/@lint-md/core.svg)](https://www.npmjs.com/package/@lint-md/core)
+
+## 新版特点
+
+重构文本修复算法，fix 能力性能提升上百倍。
+
+底层 Markdown 解析库 remark 迁移至最新版。
+
+支持多线程 lint & fix。
+
+体验更好的命令行输出提示。
+
+项目架构完全重构，代码质量大幅提升，更方便 contribute 😄。
 
 ## 快速开始
 
@@ -16,7 +28,7 @@ Lint Markdown 是检查中文 Markdown 编写格式的工具，让你的文档�
 #### 安装依赖
 
 ```shell
-npm install -g @lint-md/cli@beta
+npm install -g @lint-md/cli
 ```
 
 #### 命令示例

@@ -27,7 +27,7 @@ describe('test no-space-in-link', () => {
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
   });
 
-  test('fix issue', () => {
+  test('fix issue #98', () => {
     const md = 'only recalculate with [`hotReload` enabled](../../config/theme/basic.md#hotreload)';
     const { fixedResult, lintResult } = fixer(md);
     expect(fixedResult?.result).toStrictEqual('only recalculate with [`hotReload` enabled](../../config/theme/basic.md#hotreload)');

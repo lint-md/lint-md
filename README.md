@@ -1,6 +1,6 @@
 # Lint Markdown 2.0
 
-> ⚠️ 提示：你现在看到的是 2.0 版本，如果要查看 1.x 版本请切换到 **[stable](https://github.com/lint-md/lint-md/tree/stable)** 分支。
+> ⚠️ 提示：你现在看到的是 2.0 版本，如果要查看 1.x 版本请切换到 **[1.x](https://github.com/lint-md/lint-md/tree/1.x)** 分支。
 
 Lint Markdown 是检查中文 Markdown 编写格式的工具，让你的文档更加优雅规范。
 

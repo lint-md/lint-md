@@ -4,7 +4,7 @@
 
 Lint Markdown 是检查中文 Markdown 编写格式的工具，让你的文档更加优雅规范。
 
-[![npm](https://img.shields.io/npm/v/@lint-md/core.svg)](https://www.npmjs.com/package/lint-md)
+[![npm](https://img.shields.io/npm/v/@lint-md/core.svg)](https://www.npmjs.com/package/@lint-md/core)
 [![npm](https://img.shields.io/npm/dm/@lint-md/core.svg)](https://www.npmjs.com/package/@lint-md/core)
 
 ## 新版特点

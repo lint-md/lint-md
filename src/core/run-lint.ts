@@ -16,6 +16,8 @@ export const runLint = (markdown: string, allRuleConfigs: LintMdRuleWithOptions[
   // 全局规则管理器
   const ruleManager = createRuleManager(markdown);
 
+  const emitter = createEmitter();
+
   // 初始化遍历器，遍历时直接发射事件
   const traverser = createTraverser({
     onEnter: (node) => {
@@ -30,8 +32,6 @@ export const runLint = (markdown: string, allRuleConfigs: LintMdRuleWithOptions[
       }
     }
   });
-
-  const emitter = createEmitter();
 
   // 遍历所有的 rules，并拿到它们的选择器，为每一个选择器订阅相关事件
   for (const { rule, options } of allRuleConfigs) {

@@ -28,8 +28,7 @@
     "chinese"
   ],
   "dependencies": {
-    "@lint-md/parser": "~0.0.14",
-    "lodash": "^4.17.21"
+    "@lint-md/parser": "~0.0.14"
   },
   "devDependencies": {
     "@attachments/eslint-config": "^0.3.3",
@@ -37,7 +36,6 @@
     "@types/benchmark": "^2.1.2",
     "@types/glob": "^8.0.0",
     "@types/jest": "^29.2.0",
-    "@types/lodash": "^4.14.186",
     "@types/node": "^18.11.7",
     "benchmark": "^2.1.4",
     "eslint": "^8.26.0",

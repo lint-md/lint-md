@@ -1,4 +1,3 @@
-import { isFunction } from 'lodash';
 import type { LintMdRuleWithOptions, ReportOption } from '../types';
 import { createFixer } from './fixer';
 
@@ -23,7 +22,7 @@ export const createRuleManager = (appliedMarkdown: string) => {
   const getAllFixes = () => {
     return allReportedData
       .filter((item) => {
-        return isFunction(item.fix);
+        return typeof item.fix === 'function';
       })
       .map((item) => {
         // @ts-expect-error

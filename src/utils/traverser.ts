@@ -1,7 +1,8 @@
-import { noop } from 'lodash';
 import type { MarkdownNode } from '@lint-md/parser';
 import type { TraverserOptions } from '../types';
 import { isNode } from './common';
+
+const noop = () => {};
 
 /**
  * 初始化遍历器

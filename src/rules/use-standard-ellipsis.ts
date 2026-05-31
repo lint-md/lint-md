@@ -5,22 +5,17 @@ import type { LintMdRule } from '../types';
  * 找到所有的 …
  */
 const findAllSingleEllipsis = (s: string) => {
-  const r = [];
+  const r: { index: number; length: number }[] = [];
   const re = /…+/g; // 使用正则匹配
+  let matched: RegExpExecArray | null;
 
-  while (true) {
-    const matched = re.exec(s);
-
+  while ((matched = re.exec(s)) !== null) {
     // 只要不是两个，都是不规范的
-    if (matched && matched[0].length !== 2) {
-      // @ts-expect-error
+    if (matched[0].length !== 2) {
       r.push({
         index: matched.index,
         length: matched[0].length
       });
-    }
-    else {
-      break;
     }
   }
   return r;
@@ -30,22 +25,15 @@ const findAllSingleEllipsis = (s: string) => {
  * 找到所有的 . 组成的省略号
  */
 const findAllDotEllipsis = (s: string) => {
-  const r = [];
+  const r: { index: number; length: number }[] = [];
   const re = /\.{4,}/g; // 使用正则匹配
+  let matched: RegExpExecArray | null;
 
-  while (true) {
-    const matched = re.exec(s);
-
-    if (matched) {
-      // @ts-expect-error
-      r.push({
-        index: matched.index,
-        length: matched[0].length
-      });
-    }
-    else {
-      break;
-    }
+  while ((matched = re.exec(s)) !== null) {
+    r.push({
+      index: matched.index,
+      length: matched[0].length
+    });
   }
   return r;
 };

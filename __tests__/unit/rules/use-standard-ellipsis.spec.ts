@@ -20,6 +20,13 @@ describe('test use-standard-ellipsis', () => {
     expect(fixedResult?.result).toStrictEqual('hello world……');
   });
 
+  test('report invalid ellipsis after valid ellipsis', () => {
+    const md = '前言……他说…';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(fixedResult?.result).toStrictEqual('前言……他说……');
+  });
+
   test('fix long md', () => {
     const md = `
 1. hello world....

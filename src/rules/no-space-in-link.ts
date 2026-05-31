@@ -3,7 +3,7 @@ import type { LintMdRule, LintMdRuleContext } from '../types';
 import { getTextNodes } from '../utils/get-text-nodes';
 
 const checkAndReportTextNode = (ctx: LintMdRuleContext, node: MarkdownTextNode, pos: 'between' | 'start-only' | 'end-only') => {
-  if (!node && node.type !== 'text') {
+  if (!node || node.type !== 'text') {
     return;
   }
 

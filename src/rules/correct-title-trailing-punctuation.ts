@@ -10,7 +10,9 @@ const correctTitleTrailingPunctuation: LintMdRule = {
   create: (context) => {
     return {
       heading: (node) => {
-        const lastTextNode = getTextNodes(node).pop();
+        const lastTextNode = getTextNodes(node)
+          .filter((item) => item.type !== 'inlineCode')
+          .pop();
         if (lastTextNode) {
           const val: string = lastTextNode.value.trimEnd();
 

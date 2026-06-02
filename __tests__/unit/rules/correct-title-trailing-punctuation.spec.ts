@@ -51,4 +51,18 @@ describe('test correct-title-trailing-punctuation', () => {
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
     expect(fixedResult?.result).toStrictEqual('# 这是一个错误标题`code`');
   });
+
+  test('still report trailing punctuation in link text before trailing inline code', () => {
+    const md = '# foo [bar~](x) `code`';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(fixedResult?.result).toStrictEqual('# foo [bar](x) `code`');
+  });
+
+  test('still report trailing punctuation in strong text before trailing inline code', () => {
+    const md = '# foo **bar~** `code`';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(fixedResult?.result).toStrictEqual('# foo **bar** `code`');
+  });
 });

@@ -98,7 +98,3 @@ export enum RULE_SEVERITY {
   WARN = 1,
   ERROR = 2
 }
-
-/** 注册的规则 */
-export type RegisteredRules = Record<string, LintMdRuleWithOptions & { severity: number }>;
-

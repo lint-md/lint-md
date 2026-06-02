@@ -46,4 +46,16 @@ Some **importance**, and \`code\`.
 
     expect(res.fixedResult?.result).toMatchSnapshot();
   });
+
+  test('test lintMarkdown() should not leak rule config between calls', () => {
+    const markdown = '# Hello\n\n```js\n\n```';
+
+    const warningRes = lintMarkdown(markdown, {
+      'no-empty-code': 1
+    }, false);
+    expect(warningRes.lintResult?.[0].severity).toStrictEqual(1);
+
+    const defaultRes = lintMarkdown(markdown, {}, false);
+    expect(defaultRes.lintResult?.[0].severity).toStrictEqual(2);
+  });
 });

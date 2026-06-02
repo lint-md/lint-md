@@ -33,4 +33,18 @@ describe('test no-space-in-inline-code', () => {
     expect(fixedResult?.result).toStrictEqual('``` `` ` `` ```');
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
   });
+
+  test('no report for inline code containing tilde without spaces', () => {
+    const md = '- explain `~` symbol';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(fixedResult?.result).toStrictEqual(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
+  });
+
+  test('fix applied for inline code with tilde and spaces', () => {
+    const md = '- explain `  ~  ` symbol';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(fixedResult?.result).toStrictEqual('- explain `~` symbol');
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+  });
 });

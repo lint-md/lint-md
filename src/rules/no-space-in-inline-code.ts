@@ -1,7 +1,26 @@
 import type { MarkdownCodeNode } from '@lint-md/parser';
 import type { LintMdRule, LintMdRuleContext } from '../types';
 
-const runReport = (ctx: LintMdRuleContext, node: MarkdownCodeNode, value: string, type: 'long' | 'short') => {
+const getFenceLength = (raw: string) => {
+  const match = raw.match(/^`+/);
+  return match?.[0].length || 1;
+};
+
+const getSerializedInlineCode = (content: string, preferredFenceLength: number) => {
+  const backtickRuns: string[] = content.match(/`+/g) || [];
+  const maxBacktickRunLength = backtickRuns.reduce((max, item) => {
+    return Math.max(max, item.length);
+  }, 0);
+
+  const fenceLength = Math.max(preferredFenceLength, maxBacktickRunLength + 1, 1);
+  const fence = '`'.repeat(fenceLength);
+  const requiresPadding = content.startsWith('`')
+    || content.endsWith('`');
+
+  return `${fence}${requiresPadding ? ` ${content} ` : content}${fence}`;
+};
+
+const runReport = (ctx: LintMdRuleContext, node: MarkdownCodeNode, value: string, fenceLength: number) => {
   ctx.report({
     loc: node.position,
     message: '行内代码内容，前后不能有空格，请删除行内代码中的前后空格',
@@ -9,7 +28,7 @@ const runReport = (ctx: LintMdRuleContext, node: MarkdownCodeNode, value: string
       return fixer.replaceTextRange([
         node.position.start.offset,
         node.position.end.offset
-      ], type === 'long' ? `\`\`\`${value}\`\`\`` : `\`${value}\``);
+      ], getSerializedInlineCode(value, fenceLength));
     }
   });
 };
@@ -23,19 +42,11 @@ const noSpaceInInlineCode: LintMdRule = {
       inlineCode: (node: MarkdownCodeNode) => {
         const { position } = node;
 
-        // 由于 parser 的问题，这里需要从 md 直接获取文本
-        const result = context.markdown.slice(position.start.offset, position.end.offset);
-        if (result.startsWith('```')) {
-          const internalContent = result.slice(3, -3);
-          if (internalContent.trim() !== internalContent) {
-            runReport(context, node, internalContent.trim(), 'long');
-          }
-        }
-        else {
-          const internalContent = result.slice(1, -1);
-          if (internalContent.trim() !== internalContent) {
-            runReport(context, node, internalContent.trim(), 'short');
-          }
+        const raw = context.markdown.slice(position.start.offset, position.end.offset);
+        const trimmedContent = node.value.trim();
+
+        if (trimmedContent !== node.value) {
+          runReport(context, node, trimmedContent, getFenceLength(raw));
         }
       }
     };

@@ -1,6 +1,7 @@
 # 🧹 lint-md/core
 
-> 让中文 Markdown 写作更规范、更一致。
+lint-md/core 是 lint-md 体系中的规则引擎核心，专注解决中文 Markdown 在团队协作中的一致性问题。
+它基于 AST 执行规则检查与自动修复，适用于文档、博客、知识库等长期维护场景。
 
 [![npm version](https://img.shields.io/npm/v/@lint-md/core.svg)](https://www.npmjs.com/package/@lint-md/core)
 [![npm downloads](https://img.shields.io/npm/dm/@lint-md/core.svg)](https://www.npmjs.com/package/@lint-md/core)
@@ -15,13 +16,13 @@
 
 ## 🚀 快速使用
 
-### API 文档
-
-当前对外仅提供 **1 个核心 API**：`lintMarkdown`。
+从 API 到结果处理，核心只需要一个方法即可完成 lint/fix。当前对外仅提供 **1 个核心 API**：`lintMarkdown`。
 
 ```ts
 lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: boolean)
 ```
+
+参数说明：
 
 | 参数 | 说明 |
 | --- | --- |
@@ -29,12 +30,12 @@ lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: boolean)
 | `rules` | 规则配置，默认 `{}` |
 | `isFixMode` | 是否开启自动修复，默认 `true` |
 
-返回值：
+返回结果：
 
 - `lintResult`：命中规则后的诊断结果列表（含规则名、位置信息、消息、级别）
 - `fixedResult`：开启修复模式时返回修复后的文本，否则为 `null`
 
-### 最小示例
+下面是一个最小示例，可直接作为接入起点：
 
 ```ts
 import { lintMarkdown } from '@lint-md/core';
@@ -55,6 +56,8 @@ console.log(result.fixedResult);
 
 ## 📏 书写规则列表
 
+目前内置 16 个规则，覆盖大部分的中文规则。
+
 | 规则名 | 说明 | 可配置 | 可自动修复 |
 | --- | --- | --- | --- |
 | `space-around-alphabet` | 中文与英文之间需要空格 | 否 | 是 |
@@ -74,16 +77,18 @@ console.log(result.fixedResult);
 | `no-space-in-inline-code` | 行内代码内容前后不能有空格 | 否 | 是 |
 | `no-long-code` | 代码块行长度不能超过限制 | 是（`length`、`exclude`） | 否 |
 
+欢迎大家提交需求，或者提交 PR 新增规则。
+
 ## 🔌 生态封装
 
-lint-md 已提供以下生态封装：
+lint-md 提供了多个常用场景的官方封装，可按你的工程工具链直接接入：
 
-- [@lint-md/cli](https://github.com/lint-md/cli)
-- [@lint-md/prettier-plugin](https://github.com/lint-md/prettier-plugin)
-- [@lint-md/eslint-plugin](https://github.com/lint-md/eslint-plugin)
-- [@lint-md/vscode-plugin](https://github.com/lint-md/vscode-plugin)
+- [@lint-md/cli](https://github.com/lint-md/cli)：命令行批量检查与修复，适合本地和 CI。
+- [@lint-md/prettier-plugin](https://github.com/lint-md/prettier-plugin)：在 Prettier 流程中统一执行中文 Markdown 规范。
+- [@lint-md/eslint-plugin](https://github.com/lint-md/eslint-plugin)：将 Markdown 规则纳入 ESLint 规则体系。
+- [@lint-md/vscode-plugin](https://github.com/lint-md/vscode-plugin)：在 VSCode 中实时提示并辅助修复。
 
-欢迎提交新的生态封装（Issue / PR），我们会持续收录。
+也欢迎大家提交新的生态封装（Issue / PR），我们会持续收录。
 
 ## 📄 License
 

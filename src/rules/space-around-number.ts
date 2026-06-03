@@ -1,9 +1,22 @@
 import type { MarkdownTextNode } from '@lint-md/parser';
 import type { LintMdRule } from '../types';
-import { markText } from '../utils/mark-text';
+import { isChineseCharacter, isNumberCharacter } from '../utils/char-helper';
 
-const isMarkedTextBetweenChineseAndNumber = (value: string) => {
-  return value === 'ZN' || value === 'NZ';
+const isPercentSuffixOfNumber = (value: string, index: number) => {
+  return value[index] === '%' && index > 0 && isNumberCharacter(value[index - 1]);
+};
+
+const shouldInsertSpaceBetween = (value: string, index: number) => {
+  const currentCharacter = value[index];
+  const nextCharacter = value[index + 1];
+
+  if (!currentCharacter || !nextCharacter) {
+    return false;
+  }
+
+  return (isChineseCharacter(currentCharacter) && isNumberCharacter(nextCharacter))
+    || (isNumberCharacter(currentCharacter) && isChineseCharacter(nextCharacter))
+    || (isPercentSuffixOfNumber(value, index) && isChineseCharacter(nextCharacter));
 };
 
 const spaceAroundNumber: LintMdRule = {
@@ -14,11 +27,9 @@ const spaceAroundNumber: LintMdRule = {
     return {
       text: (node: MarkdownTextNode) => {
         const { value } = node;
-        const markedText = markText(value);
 
-        for (let i = 0; i < markedText.length - 1; i++) {
-          const checkStrFragment = markedText.slice(i, i + 2);
-          if (isMarkedTextBetweenChineseAndNumber(checkStrFragment)) {
+        for (let i = 0; i < value.length - 1; i++) {
+          if (shouldInsertSpaceBetween(value, i)) {
             // 最终定位
             const loc = node.position;
             // start 定位到英文字符串前中文字符的位置，end 定位到英文字符串后中文字符的位置

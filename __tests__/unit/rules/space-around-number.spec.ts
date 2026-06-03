@@ -21,4 +21,18 @@ describe('test space-around-number', () => {
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(3);
     expect(fixedResult?.result).toStrictEqual(fixedMarkdownToCheck);
   });
+
+  test('fix applied for percentage between chinese text', () => {
+    const md = '100%测试 测试100%';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(fixedResult?.result).toStrictEqual('100% 测试 测试 100%');
+  });
+
+  test('does not treat symbols as alphabet through this rule', () => {
+    const md = 'C#教程 中文#标签';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
+    expect(fixedResult?.result).toStrictEqual(md);
+  });
 });

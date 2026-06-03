@@ -38,6 +38,8 @@ console.log(result.lintResult);
 console.log(result.fixedResult);
 ```
 
+`no-long-code` 的 `exclude` 用于排除指定代码语言（如 `['dot', 'mermaid']`）的长度检查。
+
 ## 📏 书写规则列表
 
 | 规则名 | 说明 | 可配置 | 可自动修复 |

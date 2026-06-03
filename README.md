@@ -12,6 +12,7 @@ lint-md/core 是 lint-md 体系中的规则引擎核心，专注解决中文 Mar
 
 - **专注中文 Markdown 规范**：围绕中文写作场景设计规则与自动修复能力。
 - **规则可配置、可扩展**：支持按规则粒度配置等级与参数，也支持扩展规则。
+- **高性能处理能力**：基于仓库示例 `__tests__/examples/docs-for-all-rules.md`（覆盖内置规则场景）实测，`lintMarkdown`（fix 模式）处理 **10,000 篇**文档约 **38 秒**（约 **3.8ms/篇**，Node.js v24.16.0 / 4 vCPU 环境）。
 - **生态封装完善**：可接入 CLI、Prettier、ESLint、VSCode，也欢迎按业务场景继续封装。
 
 ## 🚀 快速使用

@@ -17,9 +17,22 @@
 
 ### API 文档
 
-- 核心入口：[`src/core/lint-markdown.ts`](./src/core/lint-markdown.ts)
-- 类型定义：[`src/types.ts`](./src/types.ts)
-- 内置规则导出：[`src/rules/index.ts`](./src/rules/index.ts)
+当前对外仅提供 **1 个核心 API**：`lintMarkdown`。
+
+```ts
+lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: boolean)
+```
+
+| 参数 | 说明 |
+| --- | --- |
+| `markdown` | 要检查的 Markdown 字符串 |
+| `rules` | 规则配置，默认 `{}` |
+| `isFixMode` | 是否开启自动修复，默认 `true` |
+
+返回值：
+
+- `lintResult`：命中规则后的诊断结果列表（含规则名、位置信息、消息、级别）
+- `fixedResult`：开启修复模式时返回修复后的文本，否则为 `null`
 
 ### 最小示例
 

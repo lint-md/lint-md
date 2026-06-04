@@ -14,3 +14,4 @@ export { default as spaceAroundNumber } from './space-around-number';
 export { default as useStandardEllipsis } from './use-standard-ellipsis';
 export { default as correctTitleTrailingPunctuation } from './correct-title-trailing-punctuation';
 export { default as noEmptyBlockquote } from './no-empty-blockquote';
+export { default as noHalfWidthPunctuation } from './no-half-width-punctuation';

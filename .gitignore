@@ -16,3 +16,5 @@ pnpm-lock.yaml
 # build files
 esm
 lib
+.codegraph/
+docs/

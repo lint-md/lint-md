@@ -35,9 +35,11 @@ const getParenthesisPairs = (value: string): [number, number][] => {
   return pairs;
 };
 
+const isWhitespace = (char: string) => char === ' ' || char === '\t';
+
 const hasOuterChinese = (value: string, openIdx: number, closeIdx: number): boolean => {
   let left = openIdx - 1;
-  while (left >= 0 && value[left] === ' ') {
+  while (left >= 0 && isWhitespace(value[left])) {
     left--;
   }
   if (left >= 0 && isChineseCharacter(value[left])) {
@@ -45,7 +47,7 @@ const hasOuterChinese = (value: string, openIdx: number, closeIdx: number): bool
   }
 
   let right = closeIdx + 1;
-  while (right < value.length && value[right] === ' ') {
+  while (right < value.length && isWhitespace(value[right])) {
     right++;
   }
   if (right < value.length && isChineseCharacter(value[right])) {
@@ -94,7 +96,7 @@ const noHalfWidthPunctuation: LintMdRule = {
 
           const isParenthesis = char === '(' || char === ')';
           const shouldConvert = isParenthesis
-            ? convertIndices.has(i)
+            ? convertIndices.has(i) || hasAdjacentChinese(value, i)
             : hasAdjacentChinese(value, i);
 
           if (shouldConvert) {

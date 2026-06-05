@@ -35,7 +35,7 @@ const getParenthesisPairs = (value: string): [number, number][] => {
   return pairs;
 };
 
-const isWhitespace = (char: string) => char === ' ' || char === '\t';
+const isWhitespace = (char: string) => char === ' ' || char === '\t' || char === '\u3000';
 
 const hasOuterChinese = (value: string, openIdx: number, closeIdx: number): boolean => {
   let left = openIdx - 1;

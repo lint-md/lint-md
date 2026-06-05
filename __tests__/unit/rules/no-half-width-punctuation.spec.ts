@@ -104,6 +104,13 @@ describe('test no-half-width-punctuation', () => {
     expect(fixedResult?.result).toStrictEqual('这是测试\u3000（test）');
   });
 
+  test('fix parenthesis with newline between Chinese and parenthesis', () => {
+    const md = '这是测试\n(test)';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(fixedResult?.result).toStrictEqual('这是测试\n（test）');
+  });
+
   test('no false positive for English parenthesis near English', () => {
     const md = 'Use function(test) here.';
     const { lintResult } = fixer(md);

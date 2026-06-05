@@ -35,11 +35,11 @@ const getParenthesisPairs = (value: string): [number, number][] => {
   return pairs;
 };
 
-const isWhitespace = (char: string) => char === ' ' || char === '\t' || char === '\u3000';
+const isHorizontalWhitespace = (char: string) => char === ' ' || char === '\t' || char === '\u3000';
 
 const hasOuterChinese = (value: string, openIdx: number, closeIdx: number): boolean => {
   let left = openIdx - 1;
-  while (left >= 0 && isWhitespace(value[left])) {
+  while (left >= 0 && isHorizontalWhitespace(value[left])) {
     left--;
   }
   if (left >= 0 && isChineseCharacter(value[left])) {
@@ -47,7 +47,7 @@ const hasOuterChinese = (value: string, openIdx: number, closeIdx: number): bool
   }
 
   let right = closeIdx + 1;
-  while (right < value.length && isWhitespace(value[right])) {
+  while (right < value.length && isHorizontalWhitespace(value[right])) {
     right++;
   }
   if (right < value.length && isChineseCharacter(value[right])) {

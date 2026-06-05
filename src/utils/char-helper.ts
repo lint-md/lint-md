@@ -1,5 +1,5 @@
 const NUMBER_RE = /^[0-9]$/;
-const CHINESE_RE = /^[\u4E00-\u9FA5]$/;
+const CHINESE_RE = /^\p{Script=Han}$/u;
 const ENGLISH_RE = /^[a-zA-Z]$/;
 
 export const isNumberCharacter = (value: string) => NUMBER_RE.test(value);

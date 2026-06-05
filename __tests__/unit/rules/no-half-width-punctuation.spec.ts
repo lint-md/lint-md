@@ -52,4 +52,27 @@ describe('test no-half-width-punctuation', () => {
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(3);
     expect(fixedResult?.result).toStrictEqual('你好，世界！这是测试。');
   });
+
+  test('fix half-width parentheses at end of sentence', () => {
+    const md = '这是一个测试(test)';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(fixedResult?.result).toStrictEqual('这是一个测试（test）');
+  });
+
+  test('fix half-width parentheses with spaces', () => {
+    const md = '这是一个测试 (test) 例子';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(fixedResult?.result).toStrictEqual('这是一个测试 （test） 例子');
+  });
+
+  test('report location is correct across newline', () => {
+    const md = '第一行,\n第二行.';
+    const { lintResult } = fixer(md);
+    const reports = lintResult.ruleManager.getReportData();
+    expect(reports).toHaveLength(2);
+    expect(reports[0]?.loc?.start).toStrictEqual({ line: 1, column: 4 });
+    expect(reports[1]?.loc?.start).toStrictEqual({ line: 2, column: 4 });
+  });
 });

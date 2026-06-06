@@ -98,7 +98,17 @@ lint-md 提供了多个常用场景的官方封装，可按你的工程工具链
 - [@lint-md/prettier-plugin](https://github.com/lint-md/prettier-plugin)：在 Prettier 流程中统一执行中文 Markdown 规范。
 - [@lint-md/eslint-plugin](https://github.com/lint-md/eslint-plugin)：将 Markdown 规则纳入 ESLint 规则体系。
 - [@lint-md/vscode-plugin](https://github.com/lint-md/vscode-plugin)：在 VSCode 中实时提示并辅助修复。
-- [@lint-md/ale](https://github.com/lint-md/ale)：ALE (Vim/Neovim) 适配器，在编辑 Markdown 时实时提示。
+- [@lint-md/ale](https://github.com/lint-md/ale)：ALE (Vim/Neovim) 适配器，安装后即可在编辑 Markdown 时实时提示。
+
+  ```bash
+  npm i -g @lint-md/ale
+  ```
+  然后将 [ALElinter handler](https://github.com/lint-md/lint-md/blob/master/packages/ale/ale_linter/markdown/lint_md.vim) 复制到 ALE linters 目录：
+  ```bash
+  cp packages/ale/ale_linter/markdown/lint_md.vim \
+     ~/.vim/pack/*/start/ale/ale_linters/markdown/
+  ```
+  handler 中包含解析回调，与 `formatForAle()` 的输出格式严格耦合，不再依赖格式假设。
 
 也欢迎大家提交新的生态封装（Issue / PR），我们会持续收录。
 

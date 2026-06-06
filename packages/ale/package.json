@@ -23,7 +23,7 @@
   "dependencies": {
     "@lint-md/core": "^2.0.0"
   },
-  "author": "",
+  "author": "hustcc",
   "license": "MIT",
   "repository": {
     "type": "git",

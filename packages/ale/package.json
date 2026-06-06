@@ -1,0 +1,32 @@
+{
+  "name": "@lint-md/ale",
+  "version": "1.0.0",
+  "description": "ALE (Vim/Neovim) adapter for lint-md — real-time Chinese markdown linting",
+  "bin": {
+    "lint-md-ale": "./bin/lint-md-ale.js"
+  },
+  "files": [
+    "bin"
+  ],
+  "keywords": [
+    "lint",
+    "markdown",
+    "lint-md",
+    "ale",
+    "vim",
+    "neovim",
+    "chinese"
+  ],
+  "dependencies": {
+    "@lint-md/core": "^2.0.0"
+  },
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lint-md/lint-md.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  }
+}

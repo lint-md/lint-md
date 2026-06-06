@@ -50,6 +50,20 @@ describe('formatForAle()', () => {
       expect(match).not.toBeNull();
       expect(match![4]).toBe('space-around-alphabet');
     });
+
+    test('stdin path (filePath = stdin) matches handler regex', () => {
+      const output = formatForAle([makeItem({ severity: 2 })], 'stdin');
+      const match = output.trim().match(handlerRegex);
+      expect(match).not.toBeNull();
+    });
+
+    test('filePath with spaces does NOT match handler regex (known limitation)', () => {
+      // When filePath contains spaces, \S+ only captures up to the first space.
+      // This is fine because the ALE handler always uses --stdin (filePath='stdin').
+      const output = formatForAle([makeItem({ severity: 2 })], '/tmp/my docs/test.md');
+      const match = output.trim().match(handlerRegex);
+      expect(match).toBeNull();
+    });
   });
 
   describe('output format', () => {

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const { formatForAle } = require('../src/format');
 
 function readStdin() {
   return new Promise((resolve, reject) => {
@@ -10,17 +11,6 @@ function readStdin() {
     process.stdin.on('end', () => resolve(chunks.join('')));
     process.stdin.on('error', reject);
   });
-}
-
-function mapSeverity(severity) {
-  switch (severity) {
-    case 2:
-      return 'E';
-    case 1:
-      return 'W';
-    default:
-      return 'I';
-  }
 }
 
 async function main() {
@@ -40,17 +30,11 @@ async function main() {
   const { lintMarkdown } = require('@lint-md/core');
   const { lintResult } = lintMarkdown(markdown, {}, false);
 
-  let hasError = false;
-  const lines = lintResult.map((item) => {
-    if (item.severity === 2) {
-      hasError = true;
-    }
-    const type = mapSeverity(item.severity);
-    return `${filePath}:${item.loc.start.line}:${item.loc.start.column}: ${type} ${item.name}: ${item.message}`;
-  });
+  const hasError = lintResult.some(item => item.severity === 2);
+  const output = formatForAle(lintResult, filePath);
 
-  if (lines.length) {
-    process.stdout.write(`${lines.join('\n')}\n`);
+  if (output) {
+    process.stdout.write(output);
   }
 
   process.exit(hasError ? 1 : 0);

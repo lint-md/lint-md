@@ -14,6 +14,44 @@ function makeItem(overrides = {}) {
 }
 
 describe('formatForAle()', () => {
+  describe('output format contract', () => {
+    // Must match the regex in ale_linter/markdown/lint_md.vim:
+    //   \v^\S+:(\d+):(\d+): ([EWI]) ([^:]+): (.+)$
+    const handlerRegex = /^\S+:(\d+):(\d+): ([EWI]) ([^:]+): (.+)$/;
+
+    test('each output line matches the VimL handler regex', () => {
+      const items = [
+        makeItem({ severity: 2, name: 'foo', message: 'bar' }),
+        makeItem({ severity: 1, name: 'baz', message: 'qux' }),
+        makeItem({ severity: 0, name: 'nop', message: 'abc: def' }),
+      ];
+      const lines = formatForAle(items, 'test.md').trim().split('\n');
+      for (const line of lines) {
+        expect(line).toMatch(handlerRegex);
+      }
+    });
+
+    test('handler regex extracts correct groups', () => {
+      const output = formatForAle([makeItem({ severity: 2, name: 'my-rule', message: 'something wrong' })], 'doc.md');
+      const match = output.trim().match(handlerRegex);
+      expect(match).not.toBeNull();
+      expect(match![1]).toBe('1'); // line
+      expect(match![2]).toBe('3'); // column
+      expect(match![3]).toBe('E'); // type
+      expect(match![4]).toBe('my-rule'); // rule name
+      expect(match![5]).toBe('something wrong'); // message
+    });
+
+    test('rule name containing colon would break the contract', () => {
+      // Rule names with ':' would split incorrectly in the VimL regex.
+      // Unlike messages, rule names come from lint-md internals and never contain ':'.
+      const output = formatForAle([makeItem({ name: 'space-around-alphabet', message: 'msg' })], 'f.md');
+      const match = output.trim().match(handlerRegex);
+      expect(match).not.toBeNull();
+      expect(match![4]).toBe('space-around-alphabet');
+    });
+  });
+
   describe('output format', () => {
     test('returns empty string for empty lint result', () => {
       expect(formatForAle([], 'test.md')).toBe('');

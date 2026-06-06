@@ -1,6 +1,8 @@
 " lint-md ALE linter definition
-" Install: copy this file to your ALE linters directory:
-"   cp ale_linter/markdown/lint_md.vim ~/.vim/pack/*/start/ale/ale_linters/markdown/
+" Install:
+"   npm i -g @lint-md/ale
+"   cp "$(npm root -g)/@lint-md/ale/ale_linter/markdown/lint_md.vim" \
+"      ~/.vim/plugged/ale/ale_linters/markdown/
 "
 " Output format (produced by formatForAle in src/format.js):
 "   <file>:<line>:<col>: <E|W|I> <rule>: <message>

@@ -31,6 +31,6 @@ endfunction
 call ale#linter#Define('markdown', {
 \   'name': 'lint-md',
 \   'executable': 'lint-md-ale',
-\   'command': '%e %s',
+\   'command': '%e --stdin',
 \   'callback': 's:HandleLintMd',
 \})

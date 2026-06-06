@@ -15,6 +15,9 @@ function mapSeverity(severity) {
  * 输出格式合同 (与 ale_linter/markdown/lint_md.vim 的解析正则有耦合)：
  *   <file>:<line>:<col>: <E|W|I> <rule-name>: <message>
  *
+ * filePath 约束：handler 使用 --stdin 模式（read_buffer=1），filePath 恒为 'stdin'，
+ * 不含空格。handler regex \S+ 在此假设下工作。若未来改为 file 模式且路径含空格，需同步改 handler。
+ *
  * 修改此格式时，必须同步更新 VimL handler 中的正则表达式。
  *
  * @param {Array}  lintResult - lintMarkdown() 返回的 lintResult

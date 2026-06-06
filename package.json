@@ -14,7 +14,8 @@
     "lib:esm": "tsc -p tsconfig.json --target ESNext --module ESNext --outDir esm",
     "build": "rm -rf lib esm && run-p lib:*",
     "clean": "rimraf lib esm",
-    "release": "npm publish"
+    "release": "npm publish",
+    "release:ale": "cd packages/ale && npm publish"
   },
   "files": [
     "esm",

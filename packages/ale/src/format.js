@@ -12,11 +12,14 @@ function mapSeverity(severity) {
 /**
  * 将 lintMarkdown() 返回的 lintResult 格式化为 ALE 兼容的输出字符串。
  *
- * ALE 解析格式: <file>:<line>:<col>: <type> <code>: <message>
+ * 输出格式合同 (与 ale_linter/markdown/lint_md.vim 的解析正则有耦合)：
+ *   <file>:<line>:<col>: <E|W|I> <rule-name>: <message>
+ *
+ * 修改此格式时，必须同步更新 VimL handler 中的正则表达式。
  *
  * @param {Array}  lintResult - lintMarkdown() 返回的 lintResult
  * @param {string} filePath   - 文件路径（或 stdin）
- * @returns {string} ALE 格式的错误信息，无错误时返回空字符串
+ * @returns {string} 格式化的诊断输出，无错误时返回空字符串
  */
 function formatForAle(lintResult, filePath) {
   const lines = lintResult.map((item) => {

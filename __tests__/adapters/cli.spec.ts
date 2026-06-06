@@ -23,6 +23,16 @@ describe('lint-md-ale CLI', () => {
   const markdownWithError = '中文English 123';
   const cleanMarkdown = '# Hello World\n\nThis is clean.\n';
 
+  describe('handler contract', () => {
+    const handlerPath = path.resolve(__dirname, '../../packages/ale/ale_linter/markdown/lint_md.vim');
+
+    test('VimL handler command uses --stdin for real-time buffer linting', () => {
+      const content = fs.readFileSync(handlerPath, 'utf8');
+      const commandLine = content.split('\n').find(line => line.includes('\'command\':'));
+      expect(commandLine).toContain('--stdin');
+    });
+  });
+
   describe('stdin input', () => {
     test('outputs ALE-formatted errors via stdin', () => {
       const { stdout } = lint({ stdin: markdownWithError });

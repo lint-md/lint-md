@@ -30,14 +30,14 @@ async function main() {
   const { lintMarkdown } = require('@lint-md/core');
   const { lintResult } = lintMarkdown(markdown, {}, false);
 
-  const hasError = lintResult.some(item => item.severity === 2);
+  const hasIssues = lintResult.length > 0;
   const output = formatForAle(lintResult, filePath);
 
   if (output) {
     process.stdout.write(output);
   }
 
-  process.exit(hasError ? 1 : 0);
+  process.exit(hasIssues ? 1 : 0);
 }
 
 main().catch((err) => {

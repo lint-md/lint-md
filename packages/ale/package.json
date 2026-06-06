@@ -7,6 +7,7 @@
     "lint-md-ale": "./bin/lint-md-ale.js"
   },
   "files": [
+    "ale_linter",
     "bin",
     "src"
   ],

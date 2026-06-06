@@ -2,11 +2,13 @@
   "name": "@lint-md/ale",
   "version": "1.0.0",
   "description": "ALE (Vim/Neovim) adapter for lint-md — real-time Chinese markdown linting",
+  "main": "src/format.js",
   "bin": {
     "lint-md-ale": "./bin/lint-md-ale.js"
   },
   "files": [
-    "bin"
+    "bin",
+    "src"
   ],
   "keywords": [
     "lint",

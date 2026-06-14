@@ -25,6 +25,14 @@ lint-md/core 是 lint-md 体系中的规则引擎核心，专注解决中文 Mar
 - **高性能处理能力**：4 vCPU 环境下，处理 1000 篇文档耗时 4s 内。
 - **生态封装完善**：可接入 CLI、Prettier、ESLint、VSCode，也欢迎按业务场景继续封装。
 
+## 🏗️ 架构原则
+
+core 遵循「纯引擎 + 薄适配器」设计：
+
+- **core 零 I/O**：只接受字符串入参，返回结构化数据，不读写文件、不直接输出到终端
+- **集成做 I/O**：CLI、编辑器插件等适配器只负责输入输出和格式转换，不包含规则逻辑
+- **标准诊断**：`LintDiagnostic` 统一诊断格式，core 提供格式转换器（`toALEOutput`），适配器无需自行实现映射
+
 ## 🚀 快速使用
 
 从 API 到结果处理，核心只需要一个方法即可完成 lint/fix。当前对外仅提供 **1 个核心 API**：`lintMarkdown`。
@@ -44,6 +52,7 @@ lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: boolean)
 返回结果：
 
 - `lintResult`：命中规则后的诊断结果列表（含规则名、位置信息、消息、级别）
+- `diagnostics`：标准诊断格式列表（`LintDiagnostic[]`），供编辑器集成直接消费
 - `fixedResult`：开启修复模式时返回修复后的文本，否则为 `null`
 
 下面是一个最小示例，可直接作为接入起点：
@@ -61,6 +70,16 @@ const result = lintMarkdown(markdown, {
 
 console.log(result.lintResult);
 console.log(result.fixedResult);
+```
+
+```ts
+// 使用标准诊断格式接入编辑器（如 Vim/Neovim ALE）
+import { lintMarkdown, toALEOutput } from '@lint-md/core';
+
+const result = lintMarkdown('中文English 123', {}, false);
+console.log(toALEOutput(result.diagnostics, 'test.md'));
+// test.md:1:3: E space-around-alphabet: 中英文之间需要添加空格
+// test.md:1:12: W space-around-number: 中文与数字之间需要添加空格
 ```
 
 `no-long-code` 的 `exclude` 用于排除指定代码语言（如 `['dot', 'mermaid']`）的长度检查。
@@ -98,8 +117,20 @@ lint-md 提供了多个常用场景的官方封装，可按你的工程工具链
 - [@lint-md/prettier-plugin](https://github.com/lint-md/prettier-plugin)：在 Prettier 流程中统一执行中文 Markdown 规范。
 - [@lint-md/eslint-plugin](https://github.com/lint-md/eslint-plugin)：将 Markdown 规则纳入 ESLint 规则体系。
 - [@lint-md/vscode-plugin](https://github.com/lint-md/vscode-plugin)：在 VSCode 中实时提示并辅助修复。
+- [@lint-md/ale](https://github.com/lint-md/ale)：在 Vim/Neovim 中通过 ALE 实时检查 Markdown。
 
 也欢迎大家提交新的生态封装（Issue / PR），我们会持续收录。
+
+### 开发新集成
+
+按照架构原则，新集成的开发步骤（以 ALE 为例）：
+
+1. 依赖 `@lint-md/core`
+2. 调用 `lintMarkdown()` 获取 `diagnostics`
+3. 使用 `toALEOutput()` 或自行转换格式
+4. 处理 stdin/file 输入 → 输出 → 退出码
+
+约 30 行代码即可完成一个新编辑器集成。
 
 ## 📄 License
 

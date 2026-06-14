@@ -1,9 +1,8 @@
-import * as path from 'path';
 import type {
-  LintMdRule,
   LintMdRuleWithOptions,
   LintMdRulesConfig
 } from '../types';
+import * as internalRuleConfig from '../rules';
 import { overrideDefaultRules } from '../utils/override-default-rules';
 import { RULE_SEVERITY } from '../types';
 import { runLint } from './run-lint';
@@ -28,10 +27,6 @@ export const lintMarkdownInternal = (markdown: string, rules: LintMdRuleWithOpti
  * @date 2021-12-14 17:16:12
  */
 export const lintMarkdown = (markdown: string, rules: LintMdRulesConfig = {}, isFixMode = true) => {
-  // 获取内部 rules
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const internalRuleConfig: Record<string, LintMdRule> = require('../rules');
-
   // 基于用户配置覆盖默认配置
   const registeredRules = overrideDefaultRules(internalRuleConfig, rules);
 

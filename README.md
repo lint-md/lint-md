@@ -67,7 +67,7 @@ console.log(result.fixedResult);
 
 ## 📏 书写规则列表
 
-目前内置 16 个规则，覆盖大部分的中文规则。
+目前内置 17 个规则，覆盖大部分的中文规则。
 
 | 规则名 | 说明 | 可配置 | 可修复 |
 | --- | --- | --- | --- |
@@ -87,6 +87,7 @@ console.log(result.fixedResult);
 | `correct-title-trailing-punctuation` | 标题末尾标点需合法 | 否 | 是 |
 | `no-space-in-inline-code` | 行内代码内容前后不能有空格 | 否 | 是 |
 | `no-long-code` | 代码块行长度不能超过限制 | 是 | 否 |
+| `no-half-width-punctuation` | 中文语境下应使用全角标点符号 | 否 | 是 |
 
 欢迎大家提交需求，或者提交 PR 新增规则。
 

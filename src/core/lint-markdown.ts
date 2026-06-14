@@ -64,8 +64,17 @@ export const lintMarkdown = (markdown: string, rules: LintMdRulesConfig = {}, is
     };
   });
 
+  const diagnostics = (reportDataWithSeverity ?? []).map((item) => ({
+    line: item.loc.start.line,
+    column: item.loc.start.column,
+    ruleId: item.name,
+    message: item.message,
+    severity: item.severity
+  }));
+
   return {
     lintResult: reportDataWithSeverity,
+    diagnostics,
     fixedResult
   };
 };

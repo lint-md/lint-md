@@ -102,3 +102,17 @@ export enum RULE_SEVERITY {
 /** 注册的规则 */
 export type RegisteredRules = Record<string, LintMdRuleWithOptions & { severity: number }>;
 
+/** 标准诊断格式，供各集成平台消费 */
+export interface LintDiagnostic {
+  /** 行号（1-indexed） */
+  line: number
+  /** 列号（1-indexed） */
+  column: number
+  /** 规则名 */
+  ruleId: string
+  /** 诊断消息 */
+  message: string
+  /** 严重级别 */
+  severity: RULE_SEVERITY
+}
+

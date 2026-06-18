@@ -37,10 +37,8 @@ export const runLint = (markdown: string, allRuleConfigs: LintMdRuleWithOptions[
   for (const { rule, options } of allRuleConfigs) {
     const ruleContext = ruleManager.createRuleContext(
       { rule, options },
-      {
-        ast,
-        markdown
-      });
+      { ast, markdown }
+    );
     const ruleSelectors = rule.create(ruleContext);
     for (const selector of Object.keys(ruleSelectors)) {
       emitter.on(selector, ruleSelectors[selector]);

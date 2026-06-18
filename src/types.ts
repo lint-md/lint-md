@@ -1,6 +1,10 @@
 import type { MarkdownNode, MarkdownNodePosition } from '@lint-md/parser';
 import type { createFixer } from './utils/fixer';
-import type { createRuleManager } from './utils/rule-manager';
+
+/** 扩展 @lint-md/parser 的节点位置，补充运行时实际存在的 offset 字段 */
+export interface MarkdownPosition extends MarkdownNodePosition {
+  offset?: number
+}
 
 /** 文本范围信息 */
 export type TextRange = number[];
@@ -20,7 +24,7 @@ export interface FixConfig {
   /**
    * 本次修复的额外信息
    */
-  data?: any
+  data?: Record<string, unknown>
 }
 
 /** 上报信息配置 */
@@ -29,14 +33,19 @@ export interface ReportOption {
   content: string
   message: string
   loc: {
-    start: MarkdownNodePosition
-    end: MarkdownNodePosition
+    start: MarkdownPosition
+    end: MarkdownPosition
   }
   fix?: (fixer: ReturnType<typeof createFixer>) => FixConfig
 }
 
 /** rules 上下文 */
-export type LintMdRuleContext = ReturnType<ReturnType<typeof createRuleManager>['createRuleContext']>;
+export interface LintMdRuleContext {
+  report: (option: Omit<ReportOption, 'content' | 'name'>) => void
+  options: Record<string, any>
+  ast: MarkdownNode
+  markdown: string
+}
 
 /** rule */
 export interface LintMdRule {

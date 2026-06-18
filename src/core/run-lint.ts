@@ -26,8 +26,9 @@ export const runLint = (markdown: string, allRuleConfigs: LintMdRuleWithOptions[
           emitter.emit(node.type, node);
         }
         catch (e) {
-          // eslint-disable-next-line no-console
-          console.log(e);
+          if (e instanceof Error) {
+            console.error(`[lint-md] rule execution error on node type="${node.type}": ${e.message}`);
+          }
         }
       }
     }

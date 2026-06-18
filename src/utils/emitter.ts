@@ -1,12 +1,14 @@
+type Listener = (...args: any[]) => void;
+
 /**
  * 初始化一个发布订阅监听器
  *
  * @date 2021-12-05 15:50:56
  */
 export const createEmitter = () => {
-  const listeners: Record<string, any> = {};
+  const listeners: Record<string, Listener[]> = {};
 
-  const on = (eventName, listener) => {
+  const on = (eventName: string, listener: Listener) => {
     if (listeners[eventName]) {
       listeners[eventName].push(listener);
     }
@@ -15,7 +17,7 @@ export const createEmitter = () => {
     }
   };
 
-  const emit = (eventName, ...args: any[]) => {
+  const emit = (eventName: string, ...args: any[]) => {
     if (listeners[eventName]) {
       listeners[eventName].forEach(listener => listener(...args));
     }

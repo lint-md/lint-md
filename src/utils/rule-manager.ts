@@ -1,4 +1,4 @@
-import type { LintMdRuleWithOptions, ReportOption } from '../types';
+import type { LintMdRuleContext, LintMdRuleWithOptions, ReportOption } from '../types';
 import { createFixer } from './fixer';
 
 /**
@@ -20,31 +20,29 @@ export const createRuleManager = (appliedMarkdown: string) => {
 
   // 获取所有的 fix
   const getAllFixes = () => {
-    return allReportedData
-      .filter((item) => {
-        return typeof item.fix === 'function';
-      })
-      .map((item) => {
-        // @ts-expect-error
+    return allReportedData.flatMap((item) => {
+      if (typeof item.fix === 'function') {
         const fix = item.fix(fixer);
-        return {
-          ...fix,
-          targetRule: item.name
-        };
-      });
+        return [{ ...fix, targetRule: item.name }];
+      }
+      return [];
+    });
   };
 
   // 初始化一个 rule context
-  const createRuleContext = (ruleConfig: LintMdRuleWithOptions, data?: any) => {
+  const createRuleContext = (
+    ruleConfig: LintMdRuleWithOptions,
+    extra: Pick<LintMdRuleContext, 'ast' | 'markdown'>
+  ): LintMdRuleContext => {
     const { rule, options } = ruleConfig;
+    const { ast, markdown } = extra;
 
     // 上报方法，供选择器内部调用
     const report = (option: Omit<ReportOption, 'content' | 'name'>) => {
-      // TODO: 修复底层库的类型定义
-      const location = option.loc as any;
-
-      const markStart = Math.max(0, location.start.offset - 5);
-      const markEnd = Math.min(appliedMarkdown.length, location.end.offset + 5);
+      const startOffset = option.loc.start.offset ?? 0;
+      const endOffset = option.loc.end.offset ?? appliedMarkdown.length;
+      const markStart = Math.max(0, startOffset - 5);
+      const markEnd = Math.min(appliedMarkdown.length, endOffset + 5);
 
       allReportedData.push({
         ...option,
@@ -56,7 +54,8 @@ export const createRuleManager = (appliedMarkdown: string) => {
     return {
       report,
       options: options || {},
-      ...data
+      ast,
+      markdown
     };
   };
 

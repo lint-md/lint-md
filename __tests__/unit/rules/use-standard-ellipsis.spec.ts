@@ -39,4 +39,21 @@ describe('test use-standard-ellipsis', () => {
 2. hello world……
     `);
   });
+
+  test('reports correct line for match on second line', () => {
+    const md = '第一行\n第二行....';
+    const { lintResult } = fixer(md);
+    const reports = lintResult.ruleManager.getReportData();
+    expect(reports.length).toStrictEqual(1);
+    expect(reports[0].loc.start.line).toStrictEqual(2);
+    expect(reports[0].loc.start.column).toStrictEqual(4);
+  });
+
+  test('reports correct line for match on third line', () => {
+    const md = '第一行\n第二行\n第三行………';
+    const { lintResult } = fixer(md);
+    const reports = lintResult.ruleManager.getReportData();
+    expect(reports.length).toStrictEqual(1);
+    expect(reports[0].loc.start.line).toStrictEqual(3);
+  });
 });

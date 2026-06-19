@@ -121,6 +121,12 @@ export class TextScanner {
 
     let matched = re.exec(this._value);
     while (matched !== null) {
+      // 防止零长度匹配导致死循环（如 /\b/g、/^/gm）
+      if (matched[0].length === 0) {
+        re.lastIndex++;
+        matched = re.exec(this._value);
+        continue;
+      }
       results.push(this.toMatch(matched.index, matched[0].length));
       matched = re.exec(this._value);
     }
@@ -134,6 +140,10 @@ export class TextScanner {
    * const matches = scanner.findAllOccurrences('×')
    */
   findAllOccurrences(searchStr: string): TextMatch[] {
+    if (searchStr.length === 0) {
+      return [];
+    }
+
     const results: TextMatch[] = [];
     let startIndex = 0;
 

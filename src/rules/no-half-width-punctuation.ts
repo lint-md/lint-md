@@ -25,7 +25,8 @@ const getParenthesisPairs = (value: string): [number, number][] => {
   for (let i = 0; i < value.length; i++) {
     if (value[i] === '(') {
       stack.push(i);
-    } else if (value[i] === ')') {
+    }
+    else if (value[i] === ')') {
       const openIndex = stack.pop();
       if (openIndex !== undefined) {
         pairs.push([openIndex, i]);

@@ -22,12 +22,16 @@ const FULL_WIDTH_NUMBER_REPLACEMENT_MAP = {
 const findAllFullWidthNumbers = (s: string) => {
   const re = /[０-９]+/g;
   const r: { number: string; index: number }[] = [];
-  for (const matched of s.matchAll(re)) {
+
+  let matched = re.exec(s);
+  while (matched !== null) {
     r.push({
       number: matched[0],
-      index: matched.index!
+      index: matched.index
     });
+    matched = re.exec(s);
   }
+
   return r;
 };
 

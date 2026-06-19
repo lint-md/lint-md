@@ -7,14 +7,18 @@ import type { LintMdRule } from '../types';
 const findAllSingleEllipsis = (s: string) => {
   const r: { index: number; length: number }[] = [];
   const re = /…+/g;
-  for (const matched of s.matchAll(re)) {
+
+  let matched = re.exec(s);
+  while (matched !== null) {
     if (matched[0].length !== 2) {
       r.push({
-        index: matched.index!,
+        index: matched.index,
         length: matched[0].length
       });
     }
+    matched = re.exec(s);
   }
+
   return r;
 };
 
@@ -24,12 +28,16 @@ const findAllSingleEllipsis = (s: string) => {
 const findAllDotEllipsis = (s: string) => {
   const r: { index: number; length: number }[] = [];
   const re = /\.{4,}/g;
-  for (const matched of s.matchAll(re)) {
+
+  let matched = re.exec(s);
+  while (matched !== null) {
     r.push({
-      index: matched.index!,
+      index: matched.index,
       length: matched[0].length
     });
+    matched = re.exec(s);
   }
+
   return r;
 };
 

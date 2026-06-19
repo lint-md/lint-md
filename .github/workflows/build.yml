@@ -20,28 +20,3 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Coverage summary
-        run: |
-          node - <<'NODE' >> "$GITHUB_STEP_SUMMARY"
-          const fs = require('fs');
-          const path = 'coverage/coverage-summary.json';
-
-          if (!fs.existsSync(path)) {
-            console.log('## Coverage');
-            console.log('');
-            console.log('No coverage summary found.');
-            process.exit(0);
-          }
-
-          const s = JSON.parse(fs.readFileSync(path, 'utf8')).total;
-
-          console.log('## Coverage');
-          console.log('');
-          console.log('| Metric | Covered | Total | % |');
-          console.log('| --- | ---: | ---: | ---: |');
-          for (const key of ['lines', 'statements', 'functions', 'branches']) {
-            const v = s[key];
-            console.log(`| ${key} | ${v.covered} | ${v.total} | ${v.pct}% |`);
-          }
-          NODE
-

@@ -56,20 +56,39 @@ export class TextScanner {
   }
 
   /**
+   * 计算文本内某个 index 对应的文档位置
+   */
+  private positionAt(index: number): CharPosition {
+    let line = this._startLine;
+    let column = this._startColumn;
+
+    for (let i = 0; i < index; i++) {
+      if (this._value[i] === '\n') {
+        line++;
+        column = 1;
+      }
+      else {
+        column++;
+      }
+    }
+
+    return {
+      line,
+      column,
+      offset: this._startOffset + index
+    };
+  }
+
+  /**
    * 将文本内相对 index + length 转换为绝对位置信息
    */
   toMatch(index: number, length: number): TextMatch {
-    // 计算起始位置
-    const startLine = this._startLine;
-    const startColumn = this._startColumn + index;
-    const startOffset = this._startOffset + index;
+    const start = this.positionAt(index);
 
-    // 计算结束位置：需要遍历中间的换行符
-    let endLine = startLine;
-    let endColumn = startColumn;
+    let endLine = start.line;
+    let endColumn = start.column;
     for (let i = 0; i < length; i++) {
-      const char = this._value[index + i];
-      if (char === '\n') {
+      if (this._value[index + i] === '\n') {
         endLine++;
         endColumn = 1;
       }
@@ -82,10 +101,10 @@ export class TextScanner {
       index,
       length,
       loc: {
-        start: { line: startLine, column: startColumn },
+        start: { line: start.line, column: start.column },
         end: { line: endLine, column: endColumn }
       },
-      absoluteRange: [startOffset, startOffset + length]
+      absoluteRange: [start.offset, start.offset + length]
     };
   }
 

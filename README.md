@@ -17,7 +17,7 @@ lint-md/core 是 lint-md 体系中的规则引擎核心，专注解决中文 Mar
 [![npm version](https://img.shields.io/npm/v/@lint-md/core.svg)](https://www.npmjs.com/package/@lint-md/core)
 [![npm downloads](https://img.shields.io/npm/dm/@lint-md/core.svg)](https://www.npmjs.com/package/@lint-md/core)
 [![license](https://img.shields.io/github/license/lint-md/lint-md)](https://github.com/lint-md/lint-md/blob/master/LICENSE)
-[![codecov](https://codecov.io/gh/lint-md/lint-md/branch/master/graph/badge.svg)](https://codecov.io/gh/lint-md/lint-md)
+[![build](https://github.com/lint-md/lint-md/actions/workflows/build.yml/badge.svg)](https://github.com/lint-md/lint-md/actions/workflows/build.yml)
 
 ## ✨ 特性
 

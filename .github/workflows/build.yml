@@ -20,7 +20,3 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v7.0.0
-        with:
-          directory: coverage

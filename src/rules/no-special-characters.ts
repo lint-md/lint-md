@@ -1,7 +1,9 @@
 import type { MarkdownTextNode } from '@lint-md/parser';
 import type { LintMdRule } from '../types';
+import { TextScanner } from '../utils/text-scanner';
 
-const SPECIAL_CHARACTERS = ['', ' '];
+// U+0008 (backspace) and U+200A (hair space)
+const SPECIAL_CHARACTERS = ['\u0008', '\u200A'];
 
 const noSpecialCharacters: LintMdRule = {
   meta: {
@@ -10,32 +12,18 @@ const noSpecialCharacters: LintMdRule = {
   create: (context) => {
     return {
       text: (node: MarkdownTextNode) => {
-        const value = node.value;
+        const scanner = new TextScanner(node as any);
 
         SPECIAL_CHARACTERS.forEach((sc) => {
-          const idx = value.indexOf(sc);
+          const matches = scanner.findAllOccurrences(sc);
 
-          if (idx !== -1) {
+          matches.forEach((m) => {
             context.report({
-              loc: {
-                start: {
-                  line: node.position.start.line,
-                  column: node.position.start.column + idx
-                },
-                end: {
-                  line: node.position.start.line,
-                  column: node.position.start.column + idx + 1
-                }
-              },
+              loc: m.loc,
               message: '文本中不能包含特殊字符，请删除或者替换',
-              fix: (fixer) => {
-                return fixer.removeRange([
-                  node.position.start.offset + idx,
-                  node.position.start.offset + idx + 1
-                ]);
-              }
+              fix: fixer => fixer.removeRange(m.absoluteRange)
             });
-          }
+          });
         });
       }
     };

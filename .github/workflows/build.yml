@@ -9,14 +9,34 @@ permissions:
   contents: read
 
 jobs:
-  unit-test:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
     steps:
       - uses: actions/checkout@v6.0.2
 
-      - name: Install modules
-        run: npm install
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
 
-      - name: Run tests
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
         run: npm test
 
+      - name: Build
+        run: npm run build
+
+      - name: Package contract check
+        run: npm pack --dry-run

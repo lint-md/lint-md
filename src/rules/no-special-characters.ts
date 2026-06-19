@@ -12,7 +12,7 @@ const noSpecialCharacters: LintMdRule = {
   create: (context) => {
     return {
       text: (node: MarkdownTextNode) => {
-        const scanner = new TextScanner(node as any);
+        const scanner = new TextScanner(node);
 
         SPECIAL_CHARACTERS.forEach((sc) => {
           const matches = scanner.findAllOccurrences(sc);

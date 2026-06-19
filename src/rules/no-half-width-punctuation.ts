@@ -1,3 +1,4 @@
+import type { MarkdownTextNode } from '@lint-md/parser';
 import type { LintMdRule } from '../types';
 import { isChineseCharacter } from '../utils/char-helper';
 import { TextScanner } from '../utils/text-scanner';
@@ -65,8 +66,8 @@ const noHalfWidthPunctuation: LintMdRule = {
   },
   create: (context) => {
     return {
-      text: (node) => {
-        const scanner = new TextScanner(node as any);
+      text: (node: MarkdownTextNode) => {
+        const scanner = new TextScanner(node);
         const { value } = scanner;
 
         // 预处理：找出需要转换的括号对

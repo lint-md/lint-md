@@ -9,7 +9,7 @@ const useStandardEllipsis: LintMdRule = {
   create: (context) => {
     return {
       text: (node: MarkdownCodeNode) => {
-        const scanner = new TextScanner(node as any);
+        const scanner = new TextScanner(node);
 
         // 找到所有的 . 组成的省略号
         const dotMatches = scanner.findAllMatches(/\.{4,}/g);
@@ -18,7 +18,9 @@ const useStandardEllipsis: LintMdRule = {
         const singleMatches = scanner.findAllMatches(/…+/g)
           .filter(m => m.length !== 2);
 
-        const allMatches = dotMatches.concat(singleMatches);
+        const allMatches = dotMatches
+          .concat(singleMatches)
+          .sort((a, b) => a.index - b.index);
 
         allMatches.forEach((m) => {
           context.report({

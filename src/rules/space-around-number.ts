@@ -27,7 +27,7 @@ const spaceAroundNumber: LintMdRule = {
   create: (context) => {
     return {
       text: (node: MarkdownTextNode) => {
-        const scanner = new TextScanner(node as any);
+        const scanner = new TextScanner(node);
         const { value } = scanner;
 
         scanner.forEachChar((char, i, pos) => {

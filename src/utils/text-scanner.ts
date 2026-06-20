@@ -82,7 +82,7 @@ export class TextScanner {
   /**
    * 将文本内相对 index + length 转换为绝对位置信息
    */
-  toMatch(index: number, length: number): TextMatch {
+  matchAt(index: number, length: number): TextMatch {
     const start = this.positionAt(index);
 
     let endLine = start.line;
@@ -127,7 +127,7 @@ export class TextScanner {
         matched = re.exec(this._value);
         continue;
       }
-      results.push(this.toMatch(matched.index, matched[0].length));
+      results.push(this.matchAt(matched.index, matched[0].length));
       matched = re.exec(this._value);
     }
     return results;
@@ -151,7 +151,7 @@ export class TextScanner {
       const idx = this._value.indexOf(searchStr, startIndex);
       if (idx === -1)
         break;
-      results.push(this.toMatch(idx, searchStr.length));
+      results.push(this.matchAt(idx, searchStr.length));
       startIndex = idx + 1;
     }
     return results;

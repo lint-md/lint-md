@@ -11,5 +11,4 @@ coverage
 # build files
 esm
 lib
-docs/
 .codegraph/

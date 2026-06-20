@@ -57,6 +57,8 @@ export class TextScanner {
 
   /**
    * 计算文本内某个 index 对应的文档位置
+   *
+   * Text nodes are typically small; a simple linear scan is clearer than caching.
    */
   private positionAt(index: number): CharPosition {
     let line = this._startLine;
@@ -152,6 +154,7 @@ export class TextScanner {
       if (idx === -1)
         break;
       results.push(this.matchAt(idx, searchStr.length));
+      // Advance by 1 to allow overlapping occurrences
       startIndex = idx + 1;
     }
     return results;

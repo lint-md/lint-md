@@ -134,6 +134,27 @@ lint-md 提供了多个常用场景的官方封装，可按你的工程工具链
 
 约 30 行代码即可完成一个新编辑器集成。
 
+## 🛠️ 开发
+
+```bash
+# 安装依赖
+npm install
+
+# 运行测试
+npm test
+
+# 代码检查
+npm run lint
+
+# 类型检查
+npm run typecheck
+
+# 构建
+npm run build
+```
+
+发布前会自动执行完整校验（lint → typecheck → build → test）。
+
 ## 📄 License
 
 [MIT](./LICENSE) © [hustcc](https://github.com/hustcc)

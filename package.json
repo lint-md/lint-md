@@ -10,10 +10,13 @@
   ],
   "scripts": {
     "test": "jest --no-cache",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit",
     "lib:cjs": "tsc -p tsconfig.json --target ESNext --module commonjs --outDir lib",
     "lib:esm": "tsc -p tsconfig.json --target ESNext --module ESNext --outDir esm",
     "build": "rm -rf lib esm && run-p lib:*",
     "clean": "rimraf lib esm",
+    "prepublishOnly": "npm run lint && npm run typecheck && npm run build && npm test",
     "release": "npm publish"
   },
   "files": [

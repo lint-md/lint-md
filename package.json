@@ -29,6 +29,9 @@
     "lint-md",
     "chinese"
   ],
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@lint-md/parser": "~0.1.1"
   },
@@ -38,7 +41,7 @@
     "@types/benchmark": "^2.1.2",
     "@types/glob": "^8.0.0",
     "@types/jest": "^29.2.0",
-    "@types/node": "^18.11.7",
+    "@types/node": "^20.0.0",
     "benchmark": "^2.1.4",
     "eslint": "^8.26.0",
     "glob": "^8.0.3",

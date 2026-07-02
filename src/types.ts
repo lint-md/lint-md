@@ -8,10 +8,21 @@ export interface MarkdownPosition {
   offset?: number
 }
 
+/** 带 offset 的节点位置（用于 fix 操作） */
+export interface MarkdownOffsetPosition extends MarkdownPosition {
+  offset: number
+}
+
 /** 位置范围 */
 export interface MarkdownLocation {
   start: MarkdownPosition
   end: MarkdownPosition
+}
+
+/** 带 offset 的位置范围（用于 fix 操作） */
+export interface MarkdownOffsetLocation extends MarkdownLocation {
+  start: MarkdownOffsetPosition
+  end: MarkdownOffsetPosition
 }
 
 /** 文本范围信息 */

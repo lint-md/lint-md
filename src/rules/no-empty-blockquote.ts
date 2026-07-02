@@ -1,6 +1,6 @@
 import type { MarkdownNode } from '@lint-md/parser';
 import type { LintMdRule } from '../types';
-import { getNodePosition } from '../utils/common';
+import { getNodeOffsetPosition } from '../utils/common';
 
 const noEmptyBlockquote: LintMdRule = {
   meta: {
@@ -10,7 +10,7 @@ const noEmptyBlockquote: LintMdRule = {
     return {
       blockquote: (node: MarkdownNode) => {
         const blockquoteNode = node as MarkdownNode & { children?: unknown[] };
-        const loc = getNodePosition(node);
+        const loc = getNodeOffsetPosition(node);
         if (!loc)
           return;
 
@@ -18,8 +18,8 @@ const noEmptyBlockquote: LintMdRule = {
           context.report({
             fix(fixer) {
               return fixer.removeRange([
-                loc.start.offset!,
-                loc.end.offset!
+                loc.start.offset,
+                loc.end.offset
               ]);
             },
             loc,

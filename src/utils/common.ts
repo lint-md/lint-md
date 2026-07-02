@@ -1,5 +1,5 @@
 import type { MarkdownNode } from '@lint-md/parser';
-import type { MarkdownLocation, MarkdownPosition } from '../types';
+import type { MarkdownLocation, MarkdownOffsetLocation, MarkdownPosition } from '../types';
 
 /**
  * 判断是否为一个合法的 ast 节点
@@ -46,4 +46,15 @@ export const getNodeStart = (node: MarkdownNode): MarkdownPosition => {
 export const getNodeEnd = (node: MarkdownNode): MarkdownPosition => {
   const loc = getNodePosition(node);
   return loc?.end ?? { line: 0, column: 0 };
+};
+
+/**
+ * 获取节点的 offset 位置（用于 fix 操作，确保 offset 存在）
+ */
+export const getNodeOffsetPosition = (node: MarkdownNode): MarkdownOffsetLocation | null => {
+  const loc = getNodePosition(node);
+  if (!loc || typeof loc.start.offset !== 'number' || typeof loc.end.offset !== 'number') {
+    return null;
+  }
+  return loc as MarkdownOffsetLocation;
 };

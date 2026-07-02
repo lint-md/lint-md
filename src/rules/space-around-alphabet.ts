@@ -1,7 +1,7 @@
 import type { MarkdownTextNode } from '@lint-md/parser';
 import type { LintMdRule } from '../types';
 import { markText } from '../utils/mark-text';
-import { getNodePosition } from '../utils/common';
+import { getNodeOffsetPosition } from '../utils/common';
 
 const isMarkedTextBetweenChineseAndEnglish = (value: string) => {
   return value === 'ZA' || value === 'AZ';
@@ -14,7 +14,7 @@ const spaceAroundAlphabet: LintMdRule = {
   create: (context) => {
     return {
       text: (node: MarkdownTextNode) => {
-        const loc = getNodePosition(node);
+        const loc = getNodeOffsetPosition(node);
         if (!loc)
           return;
 
@@ -49,8 +49,8 @@ const spaceAroundAlphabet: LintMdRule = {
             fix: (fixer) => {
               // 将第 loc.start.offset + i + 1 位置处的字符替换成空格
               return fixer.replaceTextRange([
-                loc.start.offset!,
-                loc.end.offset!
+                loc.start.offset,
+                loc.end.offset
               ], newContent);
             }
           });

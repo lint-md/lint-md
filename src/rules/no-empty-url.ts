@@ -1,10 +1,10 @@
 import type { MarkdownLinkNode } from '@lint-md/parser';
 import { revertMdAstNode } from '@lint-md/parser';
 import type { LintMdRule, LintMdRuleContext } from '../types';
-import { getNodePosition } from '../utils/common';
+import { getNodeOffsetPosition } from '../utils/common';
 
 const handleFixLinkNode = (context: LintMdRuleContext, node: MarkdownLinkNode) => {
-  const loc = getNodePosition(node);
+  const loc = getNodeOffsetPosition(node);
   if (!loc)
     return;
 
@@ -20,8 +20,8 @@ const handleFixLinkNode = (context: LintMdRuleContext, node: MarkdownLinkNode) =
       message: '链接和图片地址不能为空',
       fix: (fixer) => {
         return fixer.replaceTextRange([
-          loc.start.offset!,
-          loc.end.offset!
+          loc.start.offset,
+          loc.end.offset
         ], newContent);
       }
     });

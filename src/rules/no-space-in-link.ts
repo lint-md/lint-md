@@ -1,7 +1,7 @@
 import type { MarkdownNode } from '@lint-md/parser';
 import type { LintMdRule, LintMdRuleContext } from '../types';
 import { getTextNodes } from '../utils/get-text-nodes';
-import { getNodePosition } from '../utils/common';
+import { getNodeOffsetPosition } from '../utils/common';
 
 type TextLikeNode = MarkdownNode & { value?: string };
 
@@ -10,7 +10,7 @@ const checkAndReportTextNode = (ctx: LintMdRuleContext, node: TextLikeNode, pos:
     return;
   }
 
-  const loc = getNodePosition(node);
+  const loc = getNodeOffsetPosition(node);
   if (!loc)
     return;
 
@@ -39,8 +39,8 @@ const checkAndReportTextNode = (ctx: LintMdRuleContext, node: TextLikeNode, pos:
       message: '链接内容前后不能有空格，请删除链接中的前后空格',
       fix: (fixer) => {
         return fixer.replaceTextRange([
-          loc.start.offset!,
-          loc.end.offset!
+          loc.start.offset,
+          loc.end.offset
         ], finalTrimmedText as string);
       }
     });

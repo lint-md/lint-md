@@ -1,6 +1,6 @@
 import type { LintMdRule } from '../types';
 import { getTextNodes } from '../utils/get-text-nodes';
-import { getNodePosition } from '../utils/common';
+import { getNodeOffsetPosition, getNodePosition } from '../utils/common';
 
 const FORBIDDEN_PUNCTUATIONS = ['.', ',', ';', ':', '。', '，', '；', '：', '~', '*', '`'];
 
@@ -21,7 +21,7 @@ const correctTitleTrailingPunctuation: LintMdRule = {
           .find(item => (item.value ?? '').trimEnd().length > 0);
         if (lastTextNode) {
           const val: string = (lastTextNode.value ?? '').trimEnd();
-          const lastTextNodeLoc = getNodePosition(lastTextNode);
+          const lastTextNodeLoc = getNodeOffsetPosition(lastTextNode);
           if (!lastTextNodeLoc)
             return;
 
@@ -42,8 +42,8 @@ const correctTitleTrailingPunctuation: LintMdRule = {
               message: '标题末尾不允许出现不规范的标点符号',
               fix: (fixer) => {
                 return fixer.replaceTextRange([
-                  lastTextNodeLoc.start.offset!,
-                  lastTextNodeLoc.end.offset!
+                  lastTextNodeLoc.start.offset,
+                  lastTextNodeLoc.end.offset
                 ], val.slice(0, endPos + 1));
               }
             });

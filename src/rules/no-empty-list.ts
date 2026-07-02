@@ -1,6 +1,6 @@
 import type { MarkdownListItemNode } from '@lint-md/parser';
 import type { LintMdRule } from '../types';
-import { getNodePosition } from '../utils/common';
+import { getNodeOffsetPosition } from '../utils/common';
 
 const noEmptyList: LintMdRule = {
   meta: {
@@ -9,7 +9,7 @@ const noEmptyList: LintMdRule = {
   create: (context) => {
     return {
       listItem: (node: MarkdownListItemNode) => {
-        const loc = getNodePosition(node);
+        const loc = getNodeOffsetPosition(node);
         if (!loc)
           return;
 
@@ -19,8 +19,8 @@ const noEmptyList: LintMdRule = {
             message: '列表项不能为空，请删除空的列表项，或者填充内容',
             fix: (fixer) => {
               return fixer.removeRange([
-                loc.start.offset!,
-                loc.end.offset!
+                loc.start.offset,
+                loc.end.offset
               ]);
             }
           });

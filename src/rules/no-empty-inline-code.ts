@@ -1,6 +1,6 @@
 import type { MarkdownCodeNode } from '@lint-md/parser';
 import type { LintMdRule } from '../types';
-import { getNodePosition } from '../utils/common';
+import { getNodeOffsetPosition } from '../utils/common';
 
 const noEmptyInlineCode: LintMdRule = {
   meta: {
@@ -9,7 +9,7 @@ const noEmptyInlineCode: LintMdRule = {
   create: (context) => {
     return {
       inlineCode: (node: MarkdownCodeNode) => {
-        const loc = getNodePosition(node);
+        const loc = getNodeOffsetPosition(node);
         if (!loc)
           return;
 
@@ -19,8 +19,8 @@ const noEmptyInlineCode: LintMdRule = {
             message: '行内代码块内容不能为空，请删除空的代码块，或者填充代码内容',
             fix: (fixer) => {
               return fixer.removeRange([
-                loc.start.offset!,
-                loc.end.offset!
+                loc.start.offset,
+                loc.end.offset
               ]);
             }
           });

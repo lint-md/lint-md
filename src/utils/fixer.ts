@@ -1,5 +1,12 @@
 import type { TextRange } from '../types';
 
+const assertValidRange = (range: TextRange): [number, number] => {
+  if (range.length !== 2 || typeof range[0] !== 'number' || typeof range[1] !== 'number') {
+    throw new Error(`[lint-md] fix range must be [number, number], got: ${JSON.stringify(range)}`);
+  }
+  return [range[0], range[1]];
+};
+
 /**
  * 初始化一个 fixer (修复器）
  * fixer 有很多 fix 方法，每一个 fix 方法被调用则会对一个字符串进行 fix
@@ -30,7 +37,8 @@ export const createFixer = () => {
    * @param text 文本内容
    */
   const insertTextAfterRange = (range: TextRange, text: string) => {
-    return insertTextAt(range[1], text);
+    const [, end] = assertValidRange(range);
+    return insertTextAt(end, text);
   };
 
   /**
@@ -41,7 +49,8 @@ export const createFixer = () => {
    * @param text 文本内容
    */
   const insertTextBeforeRange = (range: TextRange, text: string) => {
-    return insertTextAt(range[0], text);
+    const [start] = assertValidRange(range);
+    return insertTextAt(start, text);
   };
 
   /**
@@ -53,7 +62,7 @@ export const createFixer = () => {
    */
   const replaceTextRange = (range: TextRange, text: string) => {
     return {
-      range,
+      range: assertValidRange(range),
       text
     };
   };
@@ -66,7 +75,7 @@ export const createFixer = () => {
    */
   const removeRange = (range: TextRange) => {
     return {
-      range,
+      range: assertValidRange(range),
       text: ''
     };
   };

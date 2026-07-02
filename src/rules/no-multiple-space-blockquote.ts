@@ -1,6 +1,6 @@
 import type { MarkdownNode } from '@lint-md/parser';
 import type { LintMdRule } from '../types';
-import { getNodePosition } from '../utils/common';
+import { getNodeOffsetPosition, getNodePosition } from '../utils/common';
 
 const noMultipleSpaceBlockquote: LintMdRule = {
   meta: {
@@ -9,7 +9,7 @@ const noMultipleSpaceBlockquote: LintMdRule = {
   create: (context) => {
     return {
       blockquote: (node: MarkdownNode) => {
-        const loc = getNodePosition(node);
+        const loc = getNodeOffsetPosition(node);
         if (!loc)
           return;
 
@@ -24,8 +24,8 @@ const noMultipleSpaceBlockquote: LintMdRule = {
           const blockQuoteFirstChildColumn = firstChildLoc.start.column;
           const deltaColumn = blockQuoteFirstChildColumn - blockQuoteColumn;
           if (deltaColumn !== 2) {
-            const fixStartRange = loc.start.offset! + 1;
-            const fixEndRange = deltaColumn > 0 ? loc.start.offset! + deltaColumn : fixStartRange + 1;
+            const fixStartRange = loc.start.offset + 1;
+            const fixEndRange = deltaColumn > 0 ? loc.start.offset + deltaColumn : fixStartRange + 1;
 
             context.report({
               loc,

@@ -19,4 +19,13 @@ describe('test no-empty-code', () => {
     expect(fixedResult?.result).toBe(' - right\n\n你好\n');
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
   });
+
+  test('fix convergence (fix 后再 lint 无报告)', () => {
+    const md = '```js\n\n```\n\n```\n\n```';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(fixedResult?.notAppliedFixes).toStrictEqual([]);
+    const recheck = fixer(fixedResult?.result || '');
+    expect(recheck.lintResult.ruleManager.getReportData().length).toStrictEqual(0);
+  });
 });

@@ -65,4 +65,38 @@ describe('test correct-title-trailing-punctuation', () => {
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
     expect(fixedResult?.result).toStrictEqual('# foo **bar** `code`');
   });
+
+  test('fix applied (标题以 strong 结尾)', () => {
+    const md = '# 这是一个**重要标题**';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
+    expect(fixedResult?.result).toStrictEqual(md);
+  });
+
+  test('fix applied (标题以 link 结尾)', () => {
+    const md = '# 查看[文档]()';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
+    expect(fixedResult?.result).toStrictEqual(md);
+  });
+
+  test('fix applied (多级标题混合场景)', () => {
+    const md = `# 一级标题。
+
+## 二级标题~
+
+### 三级标题
+
+#### 四级标题，`;
+    const fixedMd = `# 一级标题
+
+## 二级标题
+
+### 三级标题
+
+#### 四级标题`;
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(3);
+    expect(fixedResult?.result).toStrictEqual(fixedMd);
+  });
 });

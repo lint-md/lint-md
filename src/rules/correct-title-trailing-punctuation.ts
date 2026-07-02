@@ -1,4 +1,4 @@
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedTextNode } from '../types';
 import { getTextNodes } from '../utils/get-text-nodes';
 
 const FORBIDDEN_PUNCTUATIONS = ['.', ',', ';', ':', '。', '，', '；', '：', '~', '*', '`'];
@@ -11,7 +11,7 @@ const correctTitleTrailingPunctuation: LintMdRule = {
     return {
       heading: (node) => {
         const lastTextNode = getTextNodes(node)
-          .filter(item => item.type !== 'inlineCode')
+          .filter((item): item is PositionedTextNode => item.type !== 'inlineCode')
           .reverse()
           .find(item => item.value.trimEnd().length > 0);
         if (lastTextNode) {

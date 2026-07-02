@@ -1,10 +1,10 @@
-import type { MarkdownNode } from '@lint-md/parser';
 import { parseMd } from '@lint-md/parser';
+import type { PositionedMarkdownNode } from '../../src/types';
 import { createTraverser } from '../../src/utils/traverser';
 
 describe('test node traverser', () => {
-  let nodeQueue: MarkdownNode[] = [];
-  let parentNodeQueue: MarkdownNode[] = [];
+  let nodeQueue: PositionedMarkdownNode[] = [];
+  let parentNodeQueue: (PositionedMarkdownNode | null)[] = [];
 
   const DEMO_MARKDOWN = `# Hello
 
@@ -104,7 +104,7 @@ console.log('!');
       }
     });
 
-    traverser.traverse(undefined, undefined);
+    traverser.traverse(null, null);
     expect(nodeQueue.length).toStrictEqual(0);
     expect(parentNodeQueue.length).toStrictEqual(0);
   });

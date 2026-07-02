@@ -1,4 +1,4 @@
-import type { MarkdownNode } from '@lint-md/parser';
+import type { PositionedMarkdownNode } from '@lint-md/parser';
 import type { TraverserOptions } from '../types';
 import { isNode } from './common';
 
@@ -12,18 +12,19 @@ const noop = () => {};
 export const createTraverser = (options: TraverserOptions) => {
   const { onLeave = noop, onEnter = noop } = options;
 
-  const traverse = (node: MarkdownNode, parent: MarkdownNode | null) => {
+  const traverse = (node: PositionedMarkdownNode | null, parent: PositionedMarkdownNode | null) => {
     if (!isNode(node)) {
       return;
     }
 
     onEnter(node, parent);
 
-    const children = node?.children || [];
+    const children = 'children' in node && Array.isArray((node as { children?: unknown }).children)
+      ? (node as { children: PositionedMarkdownNode[] }).children
+      : [];
 
-    // 递归处理各个子节点
     for (const child of children) {
-      traverse(child as MarkdownNode, node);
+      traverse(child, node);
     }
 
     onLeave(node, parent);

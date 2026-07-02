@@ -1,5 +1,4 @@
-import type { MarkdownTextNode } from '@lint-md/parser';
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedTextNode } from '../types';
 import { markText } from '../utils/mark-text';
 
 const isMarkedTextBetweenChineseAndEnglish = (value: string) => {
@@ -12,7 +11,7 @@ const spaceAroundAlphabet: LintMdRule = {
   },
   create: (context) => {
     return {
-      text: (node: MarkdownTextNode) => {
+      text: (node: PositionedTextNode) => {
         const { value } = node;
         const markedText = markText(value);
 
@@ -23,10 +22,6 @@ const spaceAroundAlphabet: LintMdRule = {
           if (isMarkedTextBetweenChineseAndEnglish(checkStrFragment)) {
             boundaries.push(i);
           }
-
-          // // 最终定位
-          // const loc = node.position;
-          // // start 定位到英文字符串前中文字符的位置，end 定位到英文字符串后中文字符的位置
         }
         if (boundaries.length > 0) {
           let pos = 0;

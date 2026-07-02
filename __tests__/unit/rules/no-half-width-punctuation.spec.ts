@@ -72,8 +72,8 @@ describe('test no-half-width-punctuation', () => {
     const { lintResult } = fixer(md);
     const reports = lintResult.ruleManager.getReportData();
     expect(reports).toHaveLength(2);
-    expect(reports[0]?.loc?.start).toStrictEqual({ line: 1, column: 4 });
-    expect(reports[1]?.loc?.start).toStrictEqual({ line: 2, column: 4 });
+    expect(reports[0]?.loc?.start).toEqual(expect.objectContaining({ line: 1, column: 4 }));
+    expect(reports[1]?.loc?.start).toEqual(expect.objectContaining({ line: 2, column: 4 }));
   });
 
   test('fix unmatched opening parenthesis adjacent to Chinese', () => {

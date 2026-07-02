@@ -1,4 +1,4 @@
-import type { MarkdownNode } from '@lint-md/parser';
+import type { MarkdownTextNode } from './get-text-nodes';
 
 /** 文本匹配结果，包含相对位置和绝对位置 */
 export interface TextMatch {
@@ -8,8 +8,8 @@ export interface TextMatch {
   length: number
   /** 文档内绝对位置 */
   loc: {
-    start: { line: number; column: number }
-    end: { line: number; column: number }
+    start: { line: number; column: number; offset: number }
+    end: { line: number; column: number; offset: number }
   }
   /** 文档内绝对 offset 范围 */
   absoluteRange: [number, number]
@@ -32,17 +32,17 @@ export interface CharPosition {
  */
 export class TextScanner {
   private readonly _value: string;
-  private readonly _node: MarkdownNode;
+  private readonly _node: MarkdownTextNode;
   private readonly _startLine: number;
   private readonly _startColumn: number;
   private readonly _startOffset: number;
 
-  constructor(node: MarkdownNode & { value: string }) {
+  constructor(node: MarkdownTextNode) {
     this._node = node;
     this._value = node.value;
     this._startLine = node.position.start.line;
     this._startColumn = node.position.start.column;
-    this._startOffset = node.position.start.offset ?? 0;
+    this._startOffset = node.position.start.offset;
   }
 
   /** 文本内容 */
@@ -51,7 +51,7 @@ export class TextScanner {
   }
 
   /** 原始节点 */
-  get node(): MarkdownNode {
+  get node(): MarkdownTextNode {
     return this._node;
   }
 
@@ -99,14 +99,16 @@ export class TextScanner {
       }
     }
 
+    const endOffset = start.offset + length;
+
     return {
       index,
       length,
       loc: {
-        start: { line: start.line, column: start.column },
-        end: { line: endLine, column: endColumn }
+        start: { line: start.line, column: start.column, offset: start.offset },
+        end: { line: endLine, column: endColumn, offset: endOffset }
       },
-      absoluteRange: [start.offset, start.offset + length]
+      absoluteRange: [start.offset, endOffset]
     };
   }
 

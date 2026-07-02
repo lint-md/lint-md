@@ -1,5 +1,4 @@
-import type { MarkdownTextNode } from '@lint-md/parser';
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedTextNode } from '../types';
 import { isChineseCharacter, isNumberCharacter } from '../utils/char-helper';
 import { TextScanner } from '../utils/text-scanner';
 
@@ -26,7 +25,7 @@ const spaceAroundNumber: LintMdRule = {
   },
   create: (context) => {
     return {
-      text: (node: MarkdownTextNode) => {
+      text: (node: PositionedTextNode) => {
         const scanner = new TextScanner(node);
         const { value } = scanner;
 
@@ -34,8 +33,8 @@ const spaceAroundNumber: LintMdRule = {
           if (i < value.length - 1 && shouldInsertSpaceBetween(value, i)) {
             context.report({
               loc: {
-                start: { line: pos.line, column: pos.column },
-                end: { line: pos.line, column: pos.column + 2 }
+                start: { line: pos.line, column: pos.column, offset: pos.offset },
+                end: { line: pos.line, column: pos.column + 2, offset: pos.offset + 2 }
               },
               message: '中文与数字之间需要增加空格',
               fix: fixer => fixer.insertTextAt(pos.offset + 1, ' ')

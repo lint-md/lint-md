@@ -39,6 +39,7 @@ export const createRuleManager = (appliedMarkdown: string) => {
 
     // 上报方法，供选择器内部调用
     const report = (option: Omit<ReportOption, 'content' | 'name'>) => {
+      // offset 在 ReportOption 中是可选的（合成 loc 没有真实 offset），这里兜底
       const startOffset = option.loc.start.offset ?? 0;
       const endOffset = option.loc.end.offset ?? appliedMarkdown.length;
       const markStart = Math.max(0, startOffset - 5);

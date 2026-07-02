@@ -1,10 +1,37 @@
-import type { MarkdownNode, MarkdownNodePosition } from '@lint-md/parser';
+import type {
+  ParsedPoint,
+  PositionedMarkdownNode as ParserPositionedMarkdownNode,
+  PositionedMarkdownRoot as ParserPositionedMarkdownRoot
+} from '@lint-md/parser';
 import type { createFixer } from './utils/fixer';
 
-/** 扩展 @lint-md/parser 的节点位置，补充运行时实际存在的 offset 字段 */
-export interface MarkdownPosition extends MarkdownNodePosition {
+export type PositionedMarkdownNode = ParserPositionedMarkdownNode;
+export type PositionedMarkdownRoot = ParserPositionedMarkdownRoot;
+
+/** 节点单个位置点（line / column / offset 全部必填 number） */
+export type MarkdownPosition = ParsedPoint;
+
+/** 上报位置点（line / column 必填，offset 可选） */
+export interface ReportPosition {
+  line: number
+  column: number
   offset?: number
 }
+
+/**
+ * 各种具体节点类型的 positioned 版本。
+ *
+ * 用 `Extract` 从 positioned 联合里按 `type` 字面量精确提取，比用 `Positioned<Code>`
+ * 等直接包装更准确：例如 `inlineCode` 不是 `Code`，`image` 没有 `children`，
+ * 不能复用 `Code` / `Link` 的 positioned 包装。
+ */
+export type PositionedCodeNode = Extract<PositionedMarkdownNode, { type: 'code' }>;
+export type PositionedInlineCodeNode = Extract<PositionedMarkdownNode, { type: 'inlineCode' }>;
+export type PositionedLinkNode = Extract<PositionedMarkdownNode, { type: 'link' }>;
+export type PositionedImageNode = Extract<PositionedMarkdownNode, { type: 'image' }>;
+export type PositionedListItemNode = Extract<PositionedMarkdownNode, { type: 'listItem' }>;
+export type PositionedTextNode = Extract<PositionedMarkdownNode, { type: 'text' }>;
+export type PositionedBlockquoteNode = Extract<PositionedMarkdownNode, { type: 'blockquote' }>;
 
 /** 文本范围信息 */
 export type TextRange = number[];
@@ -32,9 +59,14 @@ export interface ReportOption {
   name: string
   content: string
   message: string
+  /**
+   * 诊断位置。`offset` 字段对规则作者可选：
+   * - 来自节点 `node.position`（如 `parseMd` 输出）的报告，offset 必填
+   * - 规则侧合成的位置（如多行超长代码的某一行）可省略，由 rule-manager 兜底
+   */
   loc: {
-    start: MarkdownPosition
-    end: MarkdownPosition
+    start: ReportPosition
+    end: ReportPosition
   }
   fix?: (fixer: ReturnType<typeof createFixer>) => FixConfig
 }
@@ -43,16 +75,19 @@ export interface ReportOption {
 export interface LintMdRuleContext {
   report: (option: Omit<ReportOption, 'content' | 'name'>) => void
   options: Record<string, any>
-  ast: MarkdownNode
+  ast: PositionedMarkdownRoot
   markdown: string
 }
+
+/** rule 选择器签名：emitter 已按 node.type 分发，selector 形参可以用 positioned 具体节点类型 */
+export type RuleSelector = (node: PositionedMarkdownNode) => void;
 
 /** rule */
 export interface LintMdRule {
   /**
    * 选择器初始化回调
    */
-  create: (context: LintMdRuleContext) => Record<string, (node: MarkdownNode) => void>
+  create: (context: LintMdRuleContext) => Record<string, RuleSelector>
 
   /**
    * rule 的一些基本信息，后续有需要再补充
@@ -64,7 +99,7 @@ export interface LintMdRule {
 
 /** 节点队列 */
 export interface NodeQueue {
-  node: MarkdownNode
+  node: PositionedMarkdownNode
   isEntering: boolean
 }
 
@@ -73,12 +108,12 @@ export interface TraverserOptions {
   /**
    * 在节点进入时做些什么
    */
-  onEnter?: (node: MarkdownNode, parent: MarkdownNode) => void
+  onEnter?: (node: PositionedMarkdownNode, parent: PositionedMarkdownNode | null) => void
 
   /**
    * 在节点退出时做些什么
    */
-  onLeave?: (node: MarkdownNode, parent: MarkdownNode) => void
+  onLeave?: (node: PositionedMarkdownNode, parent: PositionedMarkdownNode | null) => void
 }
 
 export interface LintMdRuleWithOptions {
@@ -124,4 +159,3 @@ export interface LintDiagnostic {
   /** 严重级别 */
   severity: RULE_SEVERITY
 }
-

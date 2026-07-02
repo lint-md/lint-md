@@ -2,27 +2,34 @@
  * 给定一个 Markdown 节点，递归寻找所有文本节点
  * @author YuZhanglong <loveyzl1123@gmail.com>
  */
-import type { MarkdownNode } from '@lint-md/parser';
+import type { PositionedMarkdownNode } from '@lint-md/parser';
 
-type MarkdownTextNode = MarkdownNode & {
-  value?: string
+export type MarkdownTextNode = PositionedMarkdownNode & {
+  value: string
 };
 
-export const getTextNodes = (node: MarkdownTextNode) => {
-  const textNodes: MarkdownTextNode[] = [];
-  const textOnlyNode = ['text', 'inlineCode'];
+const TEXT_NODE_TYPES = new Set(['text', 'inlineCode']);
 
-  // 有 value 字段被认为是 textNode，结束递归
-  if (textOnlyNode.includes(node.type)) {
-    textNodes.push(node);
+const hasChildren = (node: PositionedMarkdownNode): node is PositionedMarkdownNode & { children: PositionedMarkdownNode[] } => {
+  return 'children' in node && Array.isArray((node as { children?: unknown }).children);
+};
+
+export const getTextNodes = (node: PositionedMarkdownNode) => {
+  const textNodes: MarkdownTextNode[] = [];
+
+  // text / inlineCode 自带 value，结束递归
+  if (TEXT_NODE_TYPES.has(node.type)) {
+    const value = (node as { value?: string }).value;
+    if (typeof value === 'string') {
+      textNodes.push(node as MarkdownTextNode);
+    }
     return textNodes;
   }
 
-  if (node.children) {
-    const childNodes = node.children.reduce((prev, current) => {
-      return prev.concat(getTextNodes(current as MarkdownTextNode));
-    }, []);
-    textNodes.push(...childNodes);
+  if (hasChildren(node)) {
+    for (const child of node.children) {
+      textNodes.push(...getTextNodes(child));
+    }
   }
 
   return textNodes;

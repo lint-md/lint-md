@@ -1,5 +1,4 @@
-import type { MarkdownCodeNode } from '@lint-md/parser';
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedCodeNode } from '../types';
 
 const noLongCode: LintMdRule = {
   meta: {
@@ -7,7 +6,7 @@ const noLongCode: LintMdRule = {
   },
   create: (context) => {
     return {
-      code: (node: MarkdownCodeNode) => {
+      code: (node: PositionedCodeNode) => {
         const { length: maxLength, exclude = [] } = context.options;
         // 选项中设置的排除语言不考虑
         if (exclude.includes(node.lang)) {

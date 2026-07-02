@@ -1,5 +1,4 @@
-import type { MarkdownCodeNode } from '@lint-md/parser';
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedInlineCodeNode } from '../types';
 
 const noEmptyInlineCode: LintMdRule = {
   meta: {
@@ -7,7 +6,7 @@ const noEmptyInlineCode: LintMdRule = {
   },
   create: (context) => {
     return {
-      inlineCode: (node: MarkdownCodeNode) => {
+      inlineCode: (node: PositionedInlineCodeNode) => {
         if (!node.value || !node.value.trim()) {
           context.report({
             loc: node.position,

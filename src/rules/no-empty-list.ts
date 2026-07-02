@@ -1,5 +1,4 @@
-import type { MarkdownListItemNode } from '@lint-md/parser';
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedListItemNode } from '../types';
 
 const noEmptyList: LintMdRule = {
   meta: {
@@ -7,7 +6,7 @@ const noEmptyList: LintMdRule = {
   },
   create: (context) => {
     return {
-      listItem: (node: MarkdownListItemNode) => {
+      listItem: (node: PositionedListItemNode) => {
         if (!node.children.length) {
           context.report({
             loc: node.position,

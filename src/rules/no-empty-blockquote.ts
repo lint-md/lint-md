@@ -1,5 +1,4 @@
-import type { MarkdownNode } from '@lint-md/parser';
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedBlockquoteNode } from '../types';
 
 const noEmptyBlockquote: LintMdRule = {
   meta: {
@@ -7,7 +6,7 @@ const noEmptyBlockquote: LintMdRule = {
   },
   create: (context) => {
     return {
-      blockquote: (node: MarkdownNode) => {
+      blockquote: (node: PositionedBlockquoteNode) => {
         if (!node.children || node.children.length === 0) {
           context.report({
             fix(fixer) {

@@ -1,5 +1,4 @@
-import type { MarkdownCodeNode } from '@lint-md/parser';
-import type { LintMdRule, LintMdRuleContext } from '../types';
+import type { LintMdRule, LintMdRuleContext, PositionedInlineCodeNode } from '../types';
 
 const getSerializedInlineCode = (content: string, preferredFenceLength: number) => {
   const backtickRuns: string[] = content.match(/`+/g) || [];
@@ -15,7 +14,7 @@ const getSerializedInlineCode = (content: string, preferredFenceLength: number) 
   return `${fence}${requiresPadding ? ` ${content} ` : content}${fence}`;
 };
 
-const runReport = (ctx: LintMdRuleContext, node: MarkdownCodeNode, value: string, fenceLength: number) => {
+const runReport = (ctx: LintMdRuleContext, node: PositionedInlineCodeNode, value: string, fenceLength: number) => {
   ctx.report({
     loc: node.position,
     message: '行内代码内容，前后不能有空格，请删除行内代码中的前后空格',
@@ -39,7 +38,7 @@ const noSpaceInInlineCode: LintMdRule = {
   },
   create: (context) => {
     return {
-      inlineCode: (node: MarkdownCodeNode) => {
+      inlineCode: (node: PositionedInlineCodeNode) => {
         const { position } = node;
 
         const raw = context.markdown.slice(position.start.offset, position.end.offset);

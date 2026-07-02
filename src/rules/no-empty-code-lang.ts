@@ -1,5 +1,4 @@
-import type { MarkdownCodeNode } from '@lint-md/parser';
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedCodeNode } from '../types';
 
 const noEmptyCodeLang: LintMdRule = {
   meta: {
@@ -7,7 +6,7 @@ const noEmptyCodeLang: LintMdRule = {
   },
   create: (context) => {
     return {
-      code: (node: MarkdownCodeNode) => {
+      code: (node: PositionedCodeNode) => {
         if (!node.lang) {
           context.report({
             loc: node.position,

@@ -1,5 +1,4 @@
-import type { MarkdownNode } from '@lint-md/parser';
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedTextNode } from '../types';
 import { TextScanner } from '../utils/text-scanner';
 
 const FULL_WIDTH_NUMBER_REPLACEMENT_MAP: Record<string, string> = {
@@ -21,7 +20,7 @@ const noFullWidthNumber: LintMdRule = {
   },
   create: (context) => {
     return {
-      text: (node: MarkdownNode & { value: string }) => {
+      text: (node: PositionedTextNode) => {
         const scanner = new TextScanner(node);
         const matches = scanner.findAllMatches(/[０-９]+/g);
 

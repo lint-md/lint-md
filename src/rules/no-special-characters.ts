@@ -1,5 +1,4 @@
-import type { MarkdownTextNode } from '@lint-md/parser';
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedTextNode } from '../types';
 import { TextScanner } from '../utils/text-scanner';
 
 // U+0008 (backspace) and U+200A (hair space)
@@ -11,7 +10,7 @@ const noSpecialCharacters: LintMdRule = {
   },
   create: (context) => {
     return {
-      text: (node: MarkdownTextNode) => {
+      text: (node: PositionedTextNode) => {
         const scanner = new TextScanner(node);
 
         SPECIAL_CHARACTERS.forEach((sc) => {

@@ -1,4 +1,4 @@
-import type { MarkdownNode } from '@lint-md/parser';
+import type { PositionedMarkdownRoot } from '../../src/types';
 import { createRuleManager } from '../../src/utils/rule-manager';
 
 const fakeRule = {
@@ -9,7 +9,7 @@ const fakeRule = {
   }
 };
 
-const fakeAst = { type: 'root', children: [] } as unknown as MarkdownNode;
+const fakeAst = { type: 'root', children: [] } as unknown as PositionedMarkdownRoot;
 
 describe('test rule context', () => {
   test('test rule context creation', () => {

@@ -1,5 +1,4 @@
-import type { MarkdownCodeNode } from '@lint-md/parser';
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedTextNode } from '../types';
 import { TextScanner } from '../utils/text-scanner';
 
 const useStandardEllipsis: LintMdRule = {
@@ -8,7 +7,7 @@ const useStandardEllipsis: LintMdRule = {
   },
   create: (context) => {
     return {
-      text: (node: MarkdownCodeNode) => {
+      text: (node: PositionedTextNode) => {
         const scanner = new TextScanner(node);
 
         // 找到所有的 . 组成的省略号

@@ -1,5 +1,4 @@
-import type { MarkdownCodeNode } from '@lint-md/parser';
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedBlockquoteNode } from '../types';
 
 const noMultipleSpaceBlockquote: LintMdRule = {
   meta: {
@@ -7,7 +6,7 @@ const noMultipleSpaceBlockquote: LintMdRule = {
   },
   create: (context) => {
     return {
-      blockquote: (node: MarkdownCodeNode) => {
+      blockquote: (node: PositionedBlockquoteNode) => {
         const blockQuoteColumn = node.position.start.column;
         const firstChild = node.children[0];
         if (firstChild) {

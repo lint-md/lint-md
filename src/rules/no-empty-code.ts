@@ -1,5 +1,4 @@
-import type { MarkdownCodeNode } from '@lint-md/parser';
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedCodeNode } from '../types';
 
 const noEmptyCode: LintMdRule = {
   meta: {
@@ -7,7 +6,7 @@ const noEmptyCode: LintMdRule = {
   },
   create: (context) => {
     return {
-      code: (node: MarkdownCodeNode) => {
+      code: (node: PositionedCodeNode) => {
         // 把所有的不可见字符全部换掉，如果剩下没有任何字符说明是空代码块
         const replacement = node.value.replace(/\s/g, '');
         if (!replacement) {

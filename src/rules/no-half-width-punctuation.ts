@@ -1,5 +1,4 @@
-import type { MarkdownTextNode } from '@lint-md/parser';
-import type { LintMdRule } from '../types';
+import type { LintMdRule, PositionedTextNode } from '../types';
 import { isChineseCharacter } from '../utils/char-helper';
 import { TextScanner } from '../utils/text-scanner';
 
@@ -66,7 +65,7 @@ const noHalfWidthPunctuation: LintMdRule = {
   },
   create: (context) => {
     return {
-      text: (node: MarkdownTextNode) => {
+      text: (node: PositionedTextNode) => {
         const scanner = new TextScanner(node);
         const { value } = scanner;
 
@@ -95,8 +94,8 @@ const noHalfWidthPunctuation: LintMdRule = {
           if (shouldConvert) {
             context.report({
               loc: {
-                start: { line: pos.line, column: pos.column },
-                end: { line: pos.line, column: pos.column + 1 }
+                start: { line: pos.line, column: pos.column, offset: pos.offset },
+                end: { line: pos.line, column: pos.column + 1, offset: pos.offset + 1 }
               },
               message: `不应在中文中使用半角标点"${char}"，请使用全角"${fullChar}"`,
               fix: fixer => fixer.replaceTextRange([pos.offset, pos.offset + 1], fullChar)

@@ -1,10 +1,4 @@
 import { lintMarkdown } from '../../src';
-import noEmptyCode from '../../src/rules/no-empty-code';
-import noEmptyInlineCode from '../../src/rules/no-empty-inline-code';
-import noEmptyURL from '../../src/rules/no-empty-url';
-import noSpaceInInlineCode from '../../src/rules/no-space-in-inline-code';
-import spaceAroundAlphabet from '../../src/rules/space-around-alphabet';
-import correctTitleTrailingPunctuation from '../../src/rules/correct-title-trailing-punctuation';
 
 describe('parser 0.1.1 fix mode regression tests', () => {
   test('no-empty-code: fix convergence', () => {

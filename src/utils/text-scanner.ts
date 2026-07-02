@@ -1,4 +1,5 @@
 import type { MarkdownNode } from '@lint-md/parser';
+import { getNodePosition } from './common';
 
 /** 文本匹配结果，包含相对位置和绝对位置 */
 export interface TextMatch {
@@ -40,9 +41,10 @@ export class TextScanner {
   constructor(node: MarkdownNode & { value: string }) {
     this._node = node;
     this._value = node.value;
-    this._startLine = node.position.start.line;
-    this._startColumn = node.position.start.column;
-    this._startOffset = node.position.start.offset ?? 0;
+    const loc = getNodePosition(node);
+    this._startLine = loc?.start.line ?? 0;
+    this._startColumn = loc?.start.column ?? 0;
+    this._startOffset = loc?.start.offset ?? 0;
   }
 
   /** 文本内容 */

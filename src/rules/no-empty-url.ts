@@ -1,21 +1,27 @@
 import type { MarkdownLinkNode } from '@lint-md/parser';
 import { revertMdAstNode } from '@lint-md/parser';
 import type { LintMdRule, LintMdRuleContext } from '../types';
+import { getNodePosition } from '../utils/common';
 
 const handleFixLinkNode = (context: LintMdRuleContext, node: MarkdownLinkNode) => {
+  const loc = getNodePosition(node);
+  if (!loc)
+    return;
+
   if (node.url.trim() === '') {
     node.url = 'https://example.com';
-    let newContent = revertMdAstNode(node);
+    const rootNode = { type: 'root' as const, children: [node] };
+    let newContent = revertMdAstNode(rootNode);
     if (newContent.endsWith('\n')) {
       newContent = newContent.slice(0, -1);
     }
     context.report({
-      loc: node.position,
+      loc,
       message: '链接和图片地址不能为空',
       fix: (fixer) => {
         return fixer.replaceTextRange([
-          node.position.start.offset,
-          node.position.end.offset
+          loc.start.offset!,
+          loc.end.offset!
         ], newContent);
       }
     });

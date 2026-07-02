@@ -1,5 +1,6 @@
 import type { MarkdownNode } from '@lint-md/parser';
 import type { LintMdRule } from '../types';
+import { getNodePosition } from '../utils/common';
 
 const noEmptyBlockquote: LintMdRule = {
   meta: {
@@ -8,15 +9,20 @@ const noEmptyBlockquote: LintMdRule = {
   create: (context) => {
     return {
       blockquote: (node: MarkdownNode) => {
-        if (!node.children || node.children.length === 0) {
+        const blockquoteNode = node as MarkdownNode & { children?: unknown[] };
+        const loc = getNodePosition(node);
+        if (!loc)
+          return;
+
+        if (!blockquoteNode.children || blockquoteNode.children.length === 0) {
           context.report({
             fix(fixer) {
               return fixer.removeRange([
-                node.position.start.offset,
-                node.position.end.offset
+                loc.start.offset!,
+                loc.end.offset!
               ]);
             },
-            loc: node.position,
+            loc,
             message: '引用块内容不能为空'
           });
         }

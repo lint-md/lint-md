@@ -1,5 +1,6 @@
-import type { MarkdownCodeNode } from '@lint-md/parser';
+import type { MarkdownNode } from '@lint-md/parser';
 import type { LintMdRule } from '../types';
+import { getNodePosition } from '../utils/common';
 
 const noMultipleSpaceBlockquote: LintMdRule = {
   meta: {
@@ -7,18 +8,27 @@ const noMultipleSpaceBlockquote: LintMdRule = {
   },
   create: (context) => {
     return {
-      blockquote: (node: MarkdownCodeNode) => {
-        const blockQuoteColumn = node.position.start.column;
-        const firstChild = node.children[0];
+      blockquote: (node: MarkdownNode) => {
+        const loc = getNodePosition(node);
+        if (!loc)
+          return;
+
+        const blockquoteNode = node as MarkdownNode & { children?: Array<{ position?: { start?: { column?: number } } }> };
+        const blockQuoteColumn = loc.start.column;
+        const firstChild = blockquoteNode.children?.[0];
         if (firstChild) {
-          const blockQuoteFirstChildColumn = firstChild.position.start.column;
+          const firstChildLoc = getNodePosition(firstChild as MarkdownNode);
+          if (!firstChildLoc)
+            return;
+
+          const blockQuoteFirstChildColumn = firstChildLoc.start.column;
           const deltaColumn = blockQuoteFirstChildColumn - blockQuoteColumn;
           if (deltaColumn !== 2) {
-            const fixStartRange = node.position.start.offset + 1;
-            const fixEndRange = deltaColumn > 0 ? node.position.start.offset + deltaColumn : fixStartRange + 1;
+            const fixStartRange = loc.start.offset! + 1;
+            const fixEndRange = deltaColumn > 0 ? loc.start.offset! + deltaColumn : fixStartRange + 1;
 
             context.report({
-              loc: node.position,
+              loc,
               message: '块引用只允许有一个空格',
               fix: (fixer) => {
                 return fixer.replaceTextRange(

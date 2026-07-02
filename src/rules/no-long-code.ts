@@ -1,5 +1,6 @@
 import type { MarkdownCodeNode } from '@lint-md/parser';
 import type { LintMdRule } from '../types';
+import { getNodePosition } from '../utils/common';
 
 const noLongCode: LintMdRule = {
   meta: {
@@ -8,6 +9,10 @@ const noLongCode: LintMdRule = {
   create: (context) => {
     return {
       code: (node: MarkdownCodeNode) => {
+        const loc = getNodePosition(node);
+        if (!loc)
+          return;
+
         const { length: maxLength, exclude = [] } = context.options;
         // 选项中设置的排除语言不考虑
         if (exclude.includes(node.lang)) {
@@ -18,7 +23,7 @@ const noLongCode: LintMdRule = {
         for (let i = 0; i < codeArray.length; i++) {
           // 第 i 行超出限制
           if (codeArray[i].length > maxLength) {
-            const firstLineInCodeArea = node.position.start.line;
+            const firstLineInCodeArea = loc.start.line;
             // code 代码块包括开头的三个点，所以三点处为第 firstLineInCodeArea 行，则 lint 问题出现在第 1 + i 行
             // 列数则从第一列开始
             const start = {

@@ -1,9 +1,17 @@
-import type { MarkdownNode, MarkdownNodePosition } from '@lint-md/parser';
+import type { MarkdownNode } from '@lint-md/parser';
 import type { createFixer } from './utils/fixer';
 
-/** 扩展 @lint-md/parser 的节点位置，补充运行时实际存在的 offset 字段 */
-export interface MarkdownPosition extends MarkdownNodePosition {
+/** 节点位置 */
+export interface MarkdownPosition {
+  line: number
+  column: number
   offset?: number
+}
+
+/** 位置范围 */
+export interface MarkdownLocation {
+  start: MarkdownPosition
+  end: MarkdownPosition
 }
 
 /** 文本范围信息 */
@@ -32,10 +40,7 @@ export interface ReportOption {
   name: string
   content: string
   message: string
-  loc: {
-    start: MarkdownPosition
-    end: MarkdownPosition
-  }
+  loc: MarkdownLocation
   fix?: (fixer: ReturnType<typeof createFixer>) => FixConfig
 }
 
@@ -73,12 +78,12 @@ export interface TraverserOptions {
   /**
    * 在节点进入时做些什么
    */
-  onEnter?: (node: MarkdownNode, parent: MarkdownNode) => void
+  onEnter?: (node: MarkdownNode, parent: MarkdownNode | null) => void
 
   /**
    * 在节点退出时做些什么
    */
-  onLeave?: (node: MarkdownNode, parent: MarkdownNode) => void
+  onLeave?: (node: MarkdownNode, parent: MarkdownNode | null) => void
 }
 
 export interface LintMdRuleWithOptions {

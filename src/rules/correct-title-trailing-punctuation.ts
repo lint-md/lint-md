@@ -1,5 +1,6 @@
 import type { LintMdRule } from '../types';
 import { getTextNodes } from '../utils/get-text-nodes';
+import { getNodePosition } from '../utils/common';
 
 const FORBIDDEN_PUNCTUATIONS = ['.', ',', ';', ':', '。', '，', '；', '：', '~', '*', '`'];
 
@@ -10,12 +11,19 @@ const correctTitleTrailingPunctuation: LintMdRule = {
   create: (context) => {
     return {
       heading: (node) => {
+        const loc = getNodePosition(node);
+        if (!loc)
+          return;
+
         const lastTextNode = getTextNodes(node)
           .filter(item => item.type !== 'inlineCode')
           .reverse()
-          .find(item => item.value.trimEnd().length > 0);
+          .find(item => (item.value ?? '').trimEnd().length > 0);
         if (lastTextNode) {
-          const val: string = lastTextNode.value.trimEnd();
+          const val: string = (lastTextNode.value ?? '').trimEnd();
+          const lastTextNodeLoc = getNodePosition(lastTextNode);
+          if (!lastTextNodeLoc)
+            return;
 
           let endPos: number;
 
@@ -30,12 +38,12 @@ const correctTitleTrailingPunctuation: LintMdRule = {
 
           if (endPos < val.length - 1) {
             context.report({
-              loc: node.position,
+              loc,
               message: '标题末尾不允许出现不规范的标点符号',
               fix: (fixer) => {
                 return fixer.replaceTextRange([
-                  lastTextNode.position.start.offset,
-                  lastTextNode.position.end.offset
+                  lastTextNodeLoc.start.offset!,
+                  lastTextNodeLoc.end.offset!
                 ], val.slice(0, endPos + 1));
               }
             });

@@ -1,37 +1,46 @@
-import type { MarkdownTextNode } from '@lint-md/parser';
+import type { MarkdownNode } from '@lint-md/parser';
 import type { LintMdRule, LintMdRuleContext } from '../types';
 import { getTextNodes } from '../utils/get-text-nodes';
+import { getNodePosition } from '../utils/common';
 
-const checkAndReportTextNode = (ctx: LintMdRuleContext, node: MarkdownTextNode, pos: 'between' | 'start-only' | 'end-only') => {
+type TextLikeNode = MarkdownNode & { value?: string };
+
+const checkAndReportTextNode = (ctx: LintMdRuleContext, node: TextLikeNode, pos: 'between' | 'start-only' | 'end-only') => {
   if (!node || node.type !== 'text') {
     return;
   }
 
+  const loc = getNodePosition(node);
+  if (!loc)
+    return;
+
+  const nodeValue = node.value ?? '';
+
   let finalTrimmedText: string | null = null;
   if (pos === 'between') {
-    if (node.value.trim() !== node.value) {
-      finalTrimmedText = node.value.trim();
+    if (nodeValue.trim() !== nodeValue) {
+      finalTrimmedText = nodeValue.trim();
     }
   }
   else if (pos === 'start-only') {
-    if (node.value.trimStart() !== node.value) {
-      finalTrimmedText = node.value.trimStart();
+    if (nodeValue.trimStart() !== nodeValue) {
+      finalTrimmedText = nodeValue.trimStart();
     }
   }
   else {
-    if (node.value.trimEnd() !== node.value) {
-      finalTrimmedText = node.value.trimEnd();
+    if (nodeValue.trimEnd() !== nodeValue) {
+      finalTrimmedText = nodeValue.trimEnd();
     }
   }
 
   if (finalTrimmedText !== null) {
     ctx.report({
-      loc: node.position,
+      loc,
       message: '链接内容前后不能有空格，请删除链接中的前后空格',
       fix: (fixer) => {
         return fixer.replaceTextRange([
-          node.position.start.offset,
-          node.position.end.offset
+          loc.start.offset!,
+          loc.end.offset!
         ], finalTrimmedText as string);
       }
     });

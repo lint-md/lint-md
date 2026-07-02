@@ -19,7 +19,8 @@ export const createTraverser = (options: TraverserOptions) => {
 
     onEnter(node, parent);
 
-    const children = node?.children || [];
+    const nodeWithChildren = node as MarkdownNode & { children?: MarkdownNode[] };
+    const children = nodeWithChildren?.children || [];
 
     // 递归处理各个子节点
     for (const child of children) {

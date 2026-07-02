@@ -4,7 +4,7 @@ import { createTraverser } from '../../src/utils/traverser';
 
 describe('test node traverser', () => {
   let nodeQueue: MarkdownNode[] = [];
-  let parentNodeQueue: MarkdownNode[] = [];
+  let parentNodeQueue: (MarkdownNode | null)[] = [];
 
   const DEMO_MARKDOWN = `# Hello
 
@@ -104,7 +104,7 @@ console.log('!');
       }
     });
 
-    traverser.traverse(undefined, undefined);
+    traverser.traverse(undefined as unknown as MarkdownNode, null);
     expect(nodeQueue.length).toStrictEqual(0);
     expect(parentNodeQueue.length).toStrictEqual(0);
   });

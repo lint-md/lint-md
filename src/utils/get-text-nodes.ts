@@ -6,6 +6,7 @@ import type { MarkdownNode } from '@lint-md/parser';
 
 type MarkdownTextNode = MarkdownNode & {
   value?: string
+  children?: MarkdownNode[]
 };
 
 export const getTextNodes = (node: MarkdownTextNode) => {
@@ -21,7 +22,7 @@ export const getTextNodes = (node: MarkdownTextNode) => {
   if (node.children) {
     const childNodes = node.children.reduce((prev, current) => {
       return prev.concat(getTextNodes(current as MarkdownTextNode));
-    }, []);
+    }, [] as MarkdownTextNode[]);
     textNodes.push(...childNodes);
   }
 

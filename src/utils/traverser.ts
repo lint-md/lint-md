@@ -12,7 +12,7 @@ const noop = () => {};
 export const createTraverser = (options: TraverserOptions) => {
   const { onLeave = noop, onEnter = noop } = options;
 
-  const traverse = (node: MarkdownNode, parent: MarkdownNode | null) => {
+  const traverse = (node: MarkdownNode | null | undefined, parent: MarkdownNode | null) => {
     if (!isNode(node)) {
       return;
     }

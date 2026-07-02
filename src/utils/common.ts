@@ -35,17 +35,17 @@ export const getNodePosition = (node: MarkdownNode): MarkdownLocation | null => 
 /**
  * 获取节点的起始位置
  */
-export const getNodeStart = (node: MarkdownNode): MarkdownPosition => {
+export const getNodeStart = (node: MarkdownNode): MarkdownPosition | null => {
   const loc = getNodePosition(node);
-  return loc?.start ?? { line: 0, column: 0 };
+  return loc?.start ?? null;
 };
 
 /**
  * 获取节点的结束位置
  */
-export const getNodeEnd = (node: MarkdownNode): MarkdownPosition => {
+export const getNodeEnd = (node: MarkdownNode): MarkdownPosition | null => {
   const loc = getNodePosition(node);
-  return loc?.end ?? { line: 0, column: 0 };
+  return loc?.end ?? null;
 };
 
 /**

@@ -104,7 +104,7 @@ console.log('!');
       }
     });
 
-    traverser.traverse(undefined as unknown as MarkdownNode, null);
+    traverser.traverse(undefined, null);
     expect(nodeQueue.length).toStrictEqual(0);
     expect(parentNodeQueue.length).toStrictEqual(0);
   });

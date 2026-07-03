@@ -71,5 +71,8 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
-  "homepage": "https://github.com/lint-md#readme"
+  "homepage": "https://github.com/lint-md#readme",
+  "engines": {
+    "node": ">=20"
+  }
 }

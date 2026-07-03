@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.1.2](https://github.com/lint-md/lint-md/compare/v2.1.1...v2.1.2) - 2026-07-03
+
+### Chore
+
+- bump @lint-md/parser to ~0.1.2 (#159)
+
 ## [2.1.1](https://github.com/lint-md/lint-md/compare/v2.0.0...v2.1.1) - 2026-06-30
 
 ### Features

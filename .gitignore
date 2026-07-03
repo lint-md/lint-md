@@ -12,3 +12,6 @@ coverage
 esm
 lib
 .codegraph/
+
+# lockfile
+package-lock.json

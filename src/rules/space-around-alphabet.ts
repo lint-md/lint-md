@@ -1,8 +1,9 @@
 import type { LintMdRule, PositionedTextNode } from '../types';
-import { markText } from '../utils/mark-text';
+import { isChineseCharacter, isEnglishCharacter } from '../utils/char-helper';
 
-const isMarkedTextBetweenChineseAndEnglish = (value: string) => {
-  return value === 'ZA' || value === 'AZ';
+const isChineseEnglishBoundary = (a: string, b: string): boolean => {
+  return (isChineseCharacter(a) && isEnglishCharacter(b))
+    || (isEnglishCharacter(a) && isChineseCharacter(b));
 };
 
 const spaceAroundAlphabet: LintMdRule = {
@@ -13,16 +14,14 @@ const spaceAroundAlphabet: LintMdRule = {
     return {
       text: (node: PositionedTextNode) => {
         const { value } = node;
-        const markedText = markText(value);
 
         const boundaries: number[] = [];
-
-        for (let i = 0; i < markedText.length - 1; i++) {
-          const checkStrFragment = markedText.slice(i, i + 2);
-          if (isMarkedTextBetweenChineseAndEnglish(checkStrFragment)) {
+        for (let i = 0; i < value.length - 1; i++) {
+          if (isChineseEnglishBoundary(value[i], value[i + 1])) {
             boundaries.push(i);
           }
         }
+
         if (boundaries.length > 0) {
           let pos = 0;
 
@@ -38,7 +37,6 @@ const spaceAroundAlphabet: LintMdRule = {
             loc: node.position,
             message: '中英文之间需要添加空格',
             fix: (fixer) => {
-              // 将第 loc.start.offset + i + 1 位置处的字符替换成空格
               return fixer.replaceTextRange([
                 node.position.start.offset,
                 node.position.end.offset

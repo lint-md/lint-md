@@ -18,10 +18,20 @@ import { readFileSync } from 'node:fs';
 // ---------------------------------------------------------------------------
 
 function median(values) {
-  if (values.length === 0) return 0;
+  if (values.length === 0) return null;
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
   return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+function safeMin(values) {
+  if (values.length === 0) return null;
+  return Math.min(...values);
+}
+
+function safeMax(values) {
+  if (values.length === 0) return null;
+  return Math.max(...values);
 }
 
 function formatBytes(n) {
@@ -37,6 +47,11 @@ function formatBytes(n) {
 function formatMs(n) {
   if (n === null || n === undefined) return 'N/A';
   return `${Math.round(n)} ms`;
+}
+
+function formatPct(n) {
+  if (n === null || n === undefined) return 'N/A';
+  return `${n.toFixed(1)}%`;
 }
 
 function pad(str, len) { return String(str).padEnd(len); }
@@ -83,8 +98,8 @@ function main() {
       rule: rule || '',
       runs: items.length,
       rssMedian: median(rssDeltas),
-      rssMin: Math.min(...rssDeltas),
-      rssMax: Math.max(...rssDeltas),
+      rssMin: safeMin(rssDeltas),
+      rssMax: safeMax(rssDeltas),
       wallMedian: median(wallTimes),
       heapGcMedian: median(heapGcs),
     });
@@ -152,50 +167,46 @@ function main() {
     const parserBase = parserOnly ? parserOnly.rssMedian : 0;
     const traverseBase = parseTraverse ? parseTraverse.rssMedian : 0;
     const allRulesBase = allRules ? allRules.rssMedian : 0;
+    const totalDelta = allRulesBase - inputBase;
+
+    // %total is always relative to (allRules - inputOnly); guard against 0/NaN
+    const calcPct = (delta) => {
+      if (Math.abs(totalDelta) < 1) return null;
+      return delta / totalDelta * 100;
+    };
 
     const rows2 = [];
 
     // parser delta
     if (inputOnly && parserOnly) {
-      const delta = parserBase - inputBase;
-      const pct = inputBase > 0 ? (delta / (allRulesBase - inputBase || 1) * 100) : 0;
-      rows2.push({ label: 'parser            ', delta, pct, wall: parserOnly.wallMedian, formula: 'parser-only − input-only' });
+      rows2.push({ label: 'parser            ', delta: parserBase - inputBase, pct: calcPct(parserBase - inputBase), wall: parserOnly.wallMedian, formula: 'parser-only − input-only' });
     }
 
     // traverser delta
     if (parserOnly && parseTraverse) {
-      const delta = traverseBase - parserBase;
-      const pct = inputBase > 0 ? (delta / (allRulesBase - inputBase || 1) * 100) : 0;
-      rows2.push({ label: 'traverser         ', delta, pct, wall: parseTraverse.wallMedian - parserOnly.wallMedian, formula: 'parse-traverse − parser-only' });
+      rows2.push({ label: 'traverser         ', delta: traverseBase - parserBase, pct: calcPct(traverseBase - parserBase), wall: parseTraverse.wallMedian - parserOnly.wallMedian, formula: 'parse-traverse − parser-only' });
     }
 
     // single-rule deltas
     if (combo.singleRuleRows && parseTraverse) {
       for (const sr of combo.singleRuleRows) {
-        const delta = sr.rssMedian - traverseBase;
-        const pct = inputBase > 0 ? (delta / (allRulesBase - inputBase || 1) * 100) : 0;
-        rows2.push({ label: `single-rule [${sr.rule}]`, delta, pct, wall: sr.wallMedian - parseTraverse.wallMedian, formula: `${sr.rule} − parse-traverse` });
+        rows2.push({ label: `single-rule [${sr.rule}]`, delta: sr.rssMedian - traverseBase, pct: calcPct(sr.rssMedian - traverseBase), wall: sr.wallMedian - parseTraverse.wallMedian, formula: `${sr.rule} − parse-traverse` });
       }
     }
 
     // all-rules delta
     if (parseTraverse && allRules) {
-      const delta = allRulesBase - traverseBase;
-      const pct = inputBase > 0 ? (delta / (allRulesBase - inputBase || 1) * 100) : 0;
-      rows2.push({ label: 'all-rules         ', delta, pct, wall: allRules.wallMedian - parseTraverse.wallMedian, formula: 'all-rules − parse-traverse' });
+      rows2.push({ label: 'all-rules         ', delta: allRulesBase - traverseBase, pct: calcPct(allRulesBase - traverseBase), wall: allRules.wallMedian - parseTraverse.wallMedian, formula: 'all-rules − parse-traverse' });
     }
 
     // fix-mode delta
     if (allRules && fixMode) {
-      const delta = fixMode.rssMedian - allRulesBase;
-      const pct = inputBase > 0 ? (delta / (allRulesBase - inputBase || 1) * 100) : 0;
-      rows2.push({ label: 'fix-mode          ', delta, pct, wall: fixMode.wallMedian - allRules.wallMedian, formula: 'fix-mode − all-rules' });
+      rows2.push({ label: 'fix-mode          ', delta: fixMode.rssMedian - allRulesBase, pct: calcPct(fixMode.rssMedian - allRulesBase), wall: fixMode.wallMedian - allRules.wallMedian, formula: 'fix-mode − all-rules' });
     }
 
     if (rows2.length === 0) continue;
 
     // Print total
-    const totalDelta = allRulesBase - inputBase;
     console.log(`  total (all-rules − input-only): ${formatBytes(totalDelta)} ${formatMs(allRules ? allRules.wallMedian : 0)}`);
     console.log('');
 
@@ -205,25 +216,28 @@ function main() {
     console.log('  ' + '-'.repeat(header2.length));
 
     for (const r2 of rows2) {
-      const pctStr = (r2.delta !== 0 || r2.pct === 0) ? `${r2.pct.toFixed(1)}%` : '—';
-      const vals = [r2.label, formatBytes(r2.delta), pctStr, formatMs(r2.wall)];
+      const vals = [r2.label, formatBytes(r2.delta), formatPct(r2.pct), formatMs(r2.wall)];
       console.log('  ' + vals.map((s, i) => pad(s, col2w[i])).join(' | '));
     }
 
     // Decision guidance
     console.log('');
     if (inputOnly && parserOnly && allRules) {
-      const parserPct = (parserBase - inputBase) / (allRulesBase - inputBase) * 100;
-      const rulesPct = (allRulesBase - traverseBase) / (allRulesBase - inputBase) * 100;
-      console.log(`  → parser contributes ${parserPct.toFixed(0)}% of total delta`);
-      console.log(`  → rules contribute  ${rulesPct.toFixed(0)}% of total delta`);
-
-      if (parserPct >= 70) {
-        console.log('  → Decision: parser dominates → Phase 3B (parser optimization)');
-      } else if (rulesPct >= 20) {
-        console.log('  → Decision: rules dominate → Phase 3A (text-rule optimization)');
+      if (Math.abs(totalDelta) < 1024 * 1024) {
+        console.log('  → Decision: total RSS delta too small/noisy → collect more runs or inspect profiles');
       } else {
-        console.log('  → Decision: evenly distributed → profile both before deciding');
+        const parserPct = (parserBase - inputBase) / totalDelta * 100;
+        const rulesPct = (allRulesBase - traverseBase) / totalDelta * 100;
+        console.log(`  → parser contributes ${parserPct.toFixed(0)}% of total delta`);
+        console.log(`  → rules contribute  ${rulesPct.toFixed(0)}% of total delta`);
+
+        if (parserPct >= 70) {
+          console.log('  → Decision: parser dominates → Phase 3B (parser optimization)');
+        } else if (rulesPct >= 20) {
+          console.log('  → Decision: rules dominate → Phase 3A (text-rule optimization)');
+        } else {
+          console.log('  → Decision: evenly distributed → profile both before deciding');
+        }
       }
     }
 

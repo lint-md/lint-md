@@ -48,14 +48,29 @@ export const lintMarkdown = (markdown: string, rules: LintMdRulesConfig = {}, is
 
   const { fixedResult, lintResult } = lintMarkdownInternal(markdown, internalRules, isFixMode);
 
-  const reportDataWithSeverity = lintResult?.ruleManager.getReportData().map((item) => {
+  const reportData = lintResult?.ruleManager.getReportData();
+  let fixableErrorCount = 0;
+  let fixableWarningCount = 0;
+
+  const reportDataWithSeverity = reportData?.map((item) => {
+    const severity = registeredRules[item.name].severity;
+
+    if (typeof item.fix === 'function') {
+      if (severity === RULE_SEVERITY.ERROR) {
+        fixableErrorCount++;
+      }
+      else if (severity === RULE_SEVERITY.WARN) {
+        fixableWarningCount++;
+      }
+    }
+
     const { loc, message, name, content } = item;
     return {
       loc,
       message,
       name,
       content,
-      severity: registeredRules[name].severity
+      severity
     };
   });
 
@@ -70,6 +85,8 @@ export const lintMarkdown = (markdown: string, rules: LintMdRulesConfig = {}, is
   return {
     lintResult: reportDataWithSeverity,
     diagnostics,
-    fixedResult
+    fixedResult,
+    fixableErrorCount,
+    fixableWarningCount
   };
 };

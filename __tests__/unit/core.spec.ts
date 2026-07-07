@@ -6,6 +6,10 @@ import { lintMarkdownInternal } from '../../src/core/lint-markdown';
 import type { LintMdRule } from '../../src/types';
 
 describe('test core methods for lint-markdown', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   test('test runLint() to lint source', () => {
     const lintResult = runLint(`# Hello
 
@@ -47,7 +51,6 @@ Some **importance**, and \`code\`.
     expect(consoleSpy).toHaveBeenCalledWith(
       expect.stringContaining('Test error from rule')
     );
-    consoleSpy.mockRestore();
   });
 
   test('test runLint() silently handles non-Error throws', () => {
@@ -64,7 +67,6 @@ Some **importance**, and \`code\`.
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
     runLint('hello world', [{ rule: throwingRule }]);
     expect(consoleSpy).not.toHaveBeenCalled();
-    consoleSpy.mockRestore();
   });
 
   test('test lintAndFixInternal() to lint or fix markdown source', () => {

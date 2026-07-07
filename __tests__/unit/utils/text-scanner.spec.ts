@@ -85,7 +85,7 @@ describe('TextScanner', () => {
     it('should handle zero-length matches without infinite loop', () => {
       const scanner = new TextScanner(createTextNode('abc'));
       const matches = scanner.findAllMatches(/(\b)/g);
-      expect(Array.isArray(matches)).toBe(true);
+      expect(matches).toEqual([]);
     });
 
     it('should return empty array when no matches', () => {
@@ -102,6 +102,16 @@ describe('TextScanner', () => {
       expect(matches).toHaveLength(2);
       expect(matches[0].index).toBe(1);
       expect(matches[1].index).toBe(3);
+    });
+
+    it('should find overlapping occurrences', () => {
+      const scanner = new TextScanner(createTextNode('aaa'));
+      const matches = scanner.findAllOccurrences('aa');
+      expect(matches).toHaveLength(2);
+      expect(matches[0].index).toBe(0);
+      expect(matches[0].absoluteRange).toEqual([0, 2]);
+      expect(matches[1].index).toBe(1);
+      expect(matches[1].absoluteRange).toEqual([1, 3]);
     });
 
     it('should return empty array for empty search string', () => {

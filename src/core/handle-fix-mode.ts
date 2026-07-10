@@ -7,29 +7,40 @@ export const handleFixMode = (markdown: string, rules: LintMdRuleWithOptions[]) 
   let lintTimes = 0;
   let initialLintResult = {} as ReturnType<typeof runLint>;
 
+  let current = markdown;
   let fixedResult: { result: string; notAppliedFixes: FixConfig[] } = {
     result: markdown,
     notAppliedFixes: []
   };
 
-  while (lintTimes <= MAX_LINT_AND_FIX_CALL_TIMES) {
-    // 1. 先 lint
-    const lintResult = runLint(fixedResult.result, rules);
+  while (lintTimes < MAX_LINT_AND_FIX_CALL_TIMES) {
+    const lintResult = runLint(current, rules);
 
-    lintTimes += 1;
-
-    // 第一次的 lint 操作需要作为 lint 结果保存起来
-    if (lintTimes === 1) {
+    if (lintTimes === 0) {
       initialLintResult = lintResult;
     }
 
-    // 2. 尝试修复
-    fixedResult = applyFix(fixedResult.result, lintResult.ruleManager.getAllFixes());
+    lintTimes++;
 
-    // 4. 没有剩余的修复项，退出循环
-    if (!fixedResult.notAppliedFixes.length) {
+    const fixes = lintResult.ruleManager.getAllFixes();
+
+    if (!fixes.length) {
+      fixedResult = {
+        result: current,
+        notAppliedFixes: []
+      };
       break;
     }
+
+    const nextFixedResult = applyFix(current, fixes);
+
+    if (nextFixedResult.result === current) {
+      fixedResult = nextFixedResult;
+      break;
+    }
+
+    fixedResult = nextFixedResult;
+    current = nextFixedResult.result;
   }
 
   return {

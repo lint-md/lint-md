@@ -36,7 +36,7 @@ export class TextScanner {
   private readonly _startLine: number;
   private readonly _startColumn: number;
   private readonly _startOffset: number;
-  private readonly _lineBreakIndices: number[];
+  private _lineBreakIndices?: number[];
 
   constructor(node: MarkdownTextNode) {
     this._node = node;
@@ -44,14 +44,20 @@ export class TextScanner {
     this._startLine = node.position.start.line;
     this._startColumn = node.position.start.column;
     this._startOffset = node.position.start.offset;
+  }
 
-    const indices: number[] = [];
-    for (let i = 0; i < this._value.length; i++) {
-      if (this._value[i] === '\n') {
-        indices.push(i);
+  /** 换行索引，首次需要时构建 */
+  private get lineBreakIndices(): number[] {
+    if (!this._lineBreakIndices) {
+      const indices: number[] = [];
+      for (let i = 0; i < this._value.length; i++) {
+        if (this._value[i] === '\n') {
+          indices.push(i);
+        }
       }
+      this._lineBreakIndices = indices;
     }
-    this._lineBreakIndices = indices;
+    return this._lineBreakIndices;
   }
 
   /** 文本内容 */
@@ -70,7 +76,7 @@ export class TextScanner {
    * 使用预计算的换行索引 + 二分查找，复杂度 O(log k)，k = 换行数。
    */
   private positionAt(index: number): CharPosition {
-    const lb = this._lineBreakIndices;
+    const lb = this.lineBreakIndices;
     let lo = 0;
     let hi = lb.length;
     while (lo < hi) {

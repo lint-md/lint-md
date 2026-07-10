@@ -92,12 +92,12 @@ describe('handleFixMode', () => {
     expect(result.fixedResult.notAppliedFixes).toStrictEqual([]);
   });
 
-  test('conflict fixes — overlapping ranges, applied one per round', () => {
+  test('conflict fixes — overlapping ranges, only one applied', () => {
     // Two rules both target the same text node with overlapping ranges.
     // Rule A: [0, 3) → "X"  (wider range)
     // Rule B: [1, 2) → "Y"  (narrower range, conflicts with A)
     // Round 1: A wins (first in sort), B is notAppliedFixes
-    // Round 2: A's fix already applied, no more violations → exit
+    // Round 2: text is "X", no violations → exit
     const ruleA = makeRule({
       name: 'wide-replace',
       selector: 'text',
@@ -134,9 +134,11 @@ describe('handleFixMode', () => {
     });
 
     const result = handleFixMode('abc', [{ rule: ruleA }, { rule: ruleB }]);
+    // ruleA applied, ruleB's fix was dropped (conflict)
     expect(result.fixedResult.result).toBe('X');
-    // ruleB's fix was a conflict (overlapping range with ruleA)
-    expect(result.fixedResult.notAppliedFixes.length).toBeGreaterThanOrEqual(0);
+    expect(result.fixedResult.result).not.toContain('Y');
+    // Loop completed in 2 rounds: round 1 applied A, round 2 found no fixes
+    expect(result.lintResult.ruleManager.getReportData().length).toBe(2);
   });
 
   test('text unchanged (all fixes conflict) — exits loop', () => {
@@ -185,30 +187,31 @@ describe('handleFixMode', () => {
   });
 
   test('does not exceed MAX_LINT_AND_FIX_CALL_TIMES', () => {
-    // Rule that always reports a violation but fix is identity (no-op fix).
-    // This would loop forever without the guard.
+    // Rule that doubles "a" → "aa" → "aaaa" → ... each round.
+    // Text always changes, always produces a violation → loop would be infinite without the guard.
     let callCount = 0;
     const rule = makeRule({
-      name: 'always-report',
+      name: 'double-a',
       selector: 'text',
       reportFn: (ctx, node) => {
-        callCount++;
-        ctx.report({
-          loc: node.position,
-          message: 'always',
-          fix: () => ({
-            range: [node.position.start.offset, node.position.end.offset],
-            text: node.value // identity fix — text doesn't change
-          })
-        });
+        if (node.value === 'a'.repeat(Math.pow(2, callCount))) {
+          callCount++;
+          ctx.report({
+            loc: node.position,
+            message: 'double it',
+            fix: () => ({
+              range: [node.position.start.offset, node.position.end.offset],
+              text: node.value + node.value // a → aa → aaaa → ...
+            })
+          });
+        }
       }
     });
 
-    const result = handleFixMode('hello', [{ rule }]);
-    // Should exit because text doesn't change (nextFixedResult.result === current)
-    expect(result.fixedResult.result).toBe('hello');
-    // Should not have called rule more than MAX times
-    expect(callCount).toBeLessThanOrEqual(MAX_LINT_AND_FIX_CALL_TIMES);
+    const result = handleFixMode('a', [{ rule }]);
+    // Should hit MAX guard, not exit early
+    expect(callCount).toBe(MAX_LINT_AND_FIX_CALL_TIMES);
+    expect(result.fixedResult.result).toBe('a'.repeat(Math.pow(2, MAX_LINT_AND_FIX_CALL_TIMES)));
   });
 
   test('initialLintResult reflects first round', () => {

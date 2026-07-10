@@ -36,6 +36,7 @@ export class TextScanner {
   private readonly _startLine: number;
   private readonly _startColumn: number;
   private readonly _startOffset: number;
+  private readonly _lineBreakIndices: number[];
 
   constructor(node: MarkdownTextNode) {
     this._node = node;
@@ -43,6 +44,14 @@ export class TextScanner {
     this._startLine = node.position.start.line;
     this._startColumn = node.position.start.column;
     this._startOffset = node.position.start.offset;
+
+    const indices: number[] = [];
+    for (let i = 0; i < this._value.length; i++) {
+      if (this._value[i] === '\n') {
+        indices.push(i);
+      }
+    }
+    this._lineBreakIndices = indices;
   }
 
   /** 文本内容 */
@@ -58,21 +67,26 @@ export class TextScanner {
   /**
    * 计算文本内某个 index 对应的文档位置
    *
-   * Text nodes are typically small; a simple linear scan is clearer than caching.
+   * 使用预计算的换行索引 + 二分查找，复杂度 O(log k)，k = 换行数。
    */
   private positionAt(index: number): CharPosition {
-    let line = this._startLine;
-    let column = this._startColumn;
-
-    for (let i = 0; i < index; i++) {
-      if (this._value[i] === '\n') {
-        line++;
-        column = 1;
+    const lb = this._lineBreakIndices;
+    let lo = 0;
+    let hi = lb.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (lb[mid] < index) {
+        lo = mid + 1;
       }
       else {
-        column++;
+        hi = mid;
       }
     }
+    // lo = 换行符在 index 之前的数量（index 处的换行符不算）
+    const line = this._startLine + lo;
+    const column = lo === 0
+      ? this._startColumn + index
+      : index - lb[lo - 1];
 
     return {
       line,
@@ -86,19 +100,7 @@ export class TextScanner {
    */
   matchAt(index: number, length: number): TextMatch {
     const start = this.positionAt(index);
-
-    let endLine = start.line;
-    let endColumn = start.column;
-    for (let i = 0; i < length; i++) {
-      if (this._value[index + i] === '\n') {
-        endLine++;
-        endColumn = 1;
-      }
-      else {
-        endColumn++;
-      }
-    }
-
+    const end = this.positionAt(index + length);
     const endOffset = start.offset + length;
 
     return {
@@ -106,7 +108,7 @@ export class TextScanner {
       length,
       loc: {
         start: { line: start.line, column: start.column, offset: start.offset },
-        end: { line: endLine, column: endColumn, offset: endOffset }
+        end: { line: end.line, column: end.column, offset: endOffset }
       },
       absoluteRange: [start.offset, endOffset]
     };

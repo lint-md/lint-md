@@ -65,6 +65,56 @@ describe('TextScanner', () => {
       expect(match.loc.end.column).toBe(2);
       expect(match.absoluteRange).toEqual([0, 3]);
     });
+
+    it('should handle non-1/1/0 start position with multi-line text', () => {
+      const scanner = new TextScanner(createTextNode('ab\ncd\nef', 3, 5, 100));
+      // ab\ncd\nef (8 chars)
+      const match = scanner.matchAt(0, 8);
+      expect(match.loc.start).toEqual({ line: 3, column: 5, offset: 100 });
+      // After 'f' at line 5 col 2 → end is line 5 col 3
+      expect(match.loc.end).toEqual({ line: 5, column: 3, offset: 108 });
+    });
+
+    it('should hit middle of second/third line', () => {
+      const scanner = new TextScanner(createTextNode('line1\nline2\nline3'));
+      // 'line1\nline2\nline3'
+      //  01234 567890 1234567
+      const match = scanner.matchAt(8, 1); // 'i' in line2
+      expect(match.loc.start).toEqual({ line: 2, column: 3, offset: 8 });
+      expect(match.loc.end).toEqual({ line: 2, column: 4, offset: 9 });
+    });
+
+    it('should handle matchAt spanning 3+ lines', () => {
+      const scanner = new TextScanner(createTextNode('a\nb\nc\nd'));
+      const match = scanner.matchAt(0, 6); // 'a\nb\nc' (6 chars)
+      expect(match.loc.start).toEqual({ line: 1, column: 1, offset: 0 });
+      // After 'c' at line 3 col 1 → end is line 3 col 2? No — 6 chars means position at index 6 = 'd' at (4,1)
+      // Actually: indices 0-5 are 'a','\n','b','\n','c','\n'. index 6 is 'd' at (4,1)
+      expect(match.loc.end).toEqual({ line: 4, column: 1, offset: 6 });
+    });
+
+    it('should handle matchAt at value.length with length=0', () => {
+      const scanner = new TextScanner(createTextNode('hello'));
+      const match = scanner.matchAt(5, 0);
+      expect(match.loc.start).toEqual({ line: 1, column: 6, offset: 5 });
+      expect(match.loc.end).toEqual({ line: 1, column: 6, offset: 5 });
+    });
+
+    it('should handle empty text matchAt(0, 0)', () => {
+      const scanner = new TextScanner(createTextNode(''));
+      const match = scanner.matchAt(0, 0);
+      expect(match.loc.start).toEqual({ line: 1, column: 1, offset: 0 });
+      expect(match.loc.end).toEqual({ line: 1, column: 1, offset: 0 });
+    });
+
+    it('should handle CRLF text: \\r counted in column, \\n triggers newline', () => {
+      const scanner = new TextScanner(createTextNode('a\r\nb'));
+      // 'a' = index 0, '\r' = index 1, '\n' = index 2, 'b' = index 3
+      const match = scanner.matchAt(0, 4);
+      expect(match.loc.start).toEqual({ line: 1, column: 1, offset: 0 });
+      // '\r' at index 1 → column 2; '\n' at index 2 → line 2, column 1; 'b' at index 3 → column 2
+      expect(match.loc.end).toEqual({ line: 2, column: 2, offset: 4 });
+    });
   });
 
   describe('findAllMatches', () => {
@@ -92,6 +142,25 @@ describe('TextScanner', () => {
       const scanner = new TextScanner(createTextNode('hello'));
       const matches = scanner.findAllMatches(/xyz/g);
       expect(matches).toEqual([]);
+    });
+
+    it('should have accurate loc for high-density matches', () => {
+      const scanner = new TextScanner(createTextNode('aaa'));
+      const matches = scanner.findAllMatches(/a/g);
+      expect(matches).toHaveLength(3);
+      expect(matches[0]).toMatchObject({ index: 0, length: 1, loc: { start: { line: 1, column: 1 }, end: { line: 1, column: 2 } } });
+      expect(matches[1]).toMatchObject({ index: 1, length: 1, loc: { start: { line: 1, column: 2 }, end: { line: 1, column: 3 } } });
+      expect(matches[2]).toMatchObject({ index: 2, length: 1, loc: { start: { line: 1, column: 3 }, end: { line: 1, column: 4 } } });
+    });
+
+    it('should have accurate loc across newlines', () => {
+      const scanner = new TextScanner(createTextNode('ab\ncd'));
+      // Use /[\s\S]/ to match each char including newline
+      const matches = scanner.findAllMatches(/[\s\S]/g);
+      expect(matches).toHaveLength(5);
+      expect(matches[2]).toMatchObject({ index: 2, loc: { start: { line: 1, column: 3 }, end: { line: 2, column: 1 } } }); // '\n'
+      expect(matches[3]).toMatchObject({ index: 3, loc: { start: { line: 2, column: 1 }, end: { line: 2, column: 2 } } }); // 'c'
+      expect(matches[4]).toMatchObject({ index: 4, loc: { start: { line: 2, column: 2 }, end: { line: 2, column: 3 } } }); // 'd'
     });
   });
 
@@ -124,6 +193,14 @@ describe('TextScanner', () => {
       const scanner = new TextScanner(createTextNode('hello'));
       const matches = scanner.findAllOccurrences('xyz');
       expect(matches).toEqual([]);
+    });
+
+    it('should have accurate positions for overlapping occurrences across newlines', () => {
+      const scanner = new TextScanner(createTextNode('aa\naa'));
+      const matches = scanner.findAllOccurrences('aa');
+      expect(matches).toHaveLength(2);
+      expect(matches[0]).toMatchObject({ index: 0, absoluteRange: [0, 2], loc: { start: { line: 1, column: 1 }, end: { line: 1, column: 3 } } });
+      expect(matches[1]).toMatchObject({ index: 3, absoluteRange: [3, 5], loc: { start: { line: 2, column: 1 }, end: { line: 2, column: 3 } } });
     });
   });
 

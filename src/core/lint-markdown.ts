@@ -34,6 +34,10 @@ export const lintMarkdownInternal = (
  * 核心方法，对某个 Markdown 文本进行 lint 或者 fix
  *
  * @date 2021-12-14 17:16:12
+ *    默认开启 fix 模式：
+ * - isFixMode=true 或省略时，fixedResult 为 FixedResult
+ * - isFixMode=false 时，fixedResult 为 null
+ * - isFixMode 为 boolean 变量时，返回联合类型
  */
 export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: true): LintMdFixResult;
 export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: false): LintMdLintResult;

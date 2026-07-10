@@ -237,4 +237,114 @@ describe('handleFixMode', () => {
     expect(result.lintResult.ruleManager.getReportData().length).toBe(1);
     expect(result.lintResult.ruleManager.getReportData()[0].message).toBe('replace foo');
   });
+
+  test('notAppliedFixes reflects only last round, not historical', () => {
+    // Round 1: ruleA replaces "abc"→"X", ruleB replaces "abc"→"Y" (conflict, B skipped)
+    // Round 2: text is "X", ruleC replaces "X"→"Z" (applied cleanly, no conflict)
+    // If accumulated: notAppliedFixes would contain stale B fix (wrong)
+    // If last-round only: notAppliedFixes is [] (correct — round 2 had no conflict)
+    const ruleA = makeRule({
+      name: 'a',
+      selector: 'text',
+      reportFn: (ctx, node) => {
+        if (node.value === 'abc') {
+          ctx.report({
+            loc: node.position,
+            message: 'a',
+            fix: () => ({
+              range: [node.position.start.offset, node.position.end.offset],
+              text: 'X'
+            })
+          });
+        }
+      }
+    });
+
+    const ruleB = makeRule({
+      name: 'b',
+      selector: 'text',
+      reportFn: (ctx, node) => {
+        if (node.value === 'abc') {
+          ctx.report({
+            loc: node.position,
+            message: 'b',
+            fix: () => ({
+              range: [node.position.start.offset, node.position.end.offset],
+              text: 'Y'
+            })
+          });
+        }
+      }
+    });
+
+    const ruleC = makeRule({
+      name: 'c',
+      selector: 'text',
+      reportFn: (ctx, node) => {
+        if (node.value === 'X') {
+          ctx.report({
+            loc: node.position,
+            message: 'c',
+            fix: () => ({
+              range: [node.position.start.offset, node.position.end.offset],
+              text: 'Z'
+            })
+          });
+        }
+      }
+    });
+
+    const result = handleFixMode('abc', [{ rule: ruleA }, { rule: ruleB }, { rule: ruleC }]);
+    // Final text: "Z" (round 1: abc→X, round 2: X→Z)
+    expect(result.fixedResult.result).toBe('Z');
+    // Round 2 had no conflict → notAppliedFixes should be empty
+    // NOT: [ruleB's stale fix from round 1]
+    expect(result.fixedResult.notAppliedFixes).toStrictEqual([]);
+  });
+
+  test('notAppliedFixes from last round when text converges with conflicts', () => {
+    // Round 1: "abc" → ruleA wins "abc"→"X", ruleB conflict skipped
+    // Round 2: "X" → ruleA wins "X"→"W", ruleB conflict skipped
+    // Round 3: "W" → no fixes → exit
+    // lastNotAppliedFixes should be round 2's [ruleB fix], not accumulated [ruleB, ruleB]
+    const ruleA = makeRule({
+      name: 'a',
+      selector: 'text',
+      reportFn: (ctx, node) => {
+        if (node.value === 'abc' || node.value === 'X') {
+          ctx.report({
+            loc: node.position,
+            message: 'a',
+            fix: () => ({
+              range: [node.position.start.offset, node.position.end.offset],
+              text: node.value === 'abc' ? 'X' : 'W'
+            })
+          });
+        }
+      }
+    });
+
+    const ruleB = makeRule({
+      name: 'b',
+      selector: 'text',
+      reportFn: (ctx, node) => {
+        if (node.value === 'abc' || node.value === 'X') {
+          ctx.report({
+            loc: node.position,
+            message: 'b',
+            fix: () => ({
+              range: [node.position.start.offset, node.position.end.offset],
+              text: 'Y'
+            })
+          });
+        }
+      }
+    });
+
+    const result = handleFixMode('abc', [{ rule: ruleA }, { rule: ruleB }]);
+    expect(result.fixedResult.result).toBe('W');
+    // last round (round 2) had a conflict → 1 entry
+    expect(result.fixedResult.notAppliedFixes.length).toBe(1);
+    expect(result.fixedResult.notAppliedFixes[0].text).toBe('Y');
+  });
 });

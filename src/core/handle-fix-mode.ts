@@ -8,10 +8,7 @@ export const handleFixMode = (markdown: string, rules: LintMdRuleWithOptions[]) 
   let initialLintResult = {} as ReturnType<typeof runLint>;
 
   let current = markdown;
-  let fixedResult: { result: string; notAppliedFixes: FixConfig[] } = {
-    result: markdown,
-    notAppliedFixes: []
-  };
+  let lastNotAppliedFixes: FixConfig[] = [];
 
   while (lintTimes < MAX_LINT_AND_FIX_CALL_TIMES) {
     const lintResult = runLint(current, rules);
@@ -25,23 +22,26 @@ export const handleFixMode = (markdown: string, rules: LintMdRuleWithOptions[]) 
     const fixes = lintResult.ruleManager.getAllFixes();
 
     if (!fixes.length) {
-      fixedResult = {
-        result: current,
-        notAppliedFixes: []
-      };
       break;
     }
 
     const nextFixedResult = applyFix(current, fixes);
 
+    // 仅保留最后一轮 applyFix 返回的 notAppliedFixes
+    // 不跨轮累积：不同轮次的 fix range 基于各自输入文本，跨轮混用会导致 range 失效
+    lastNotAppliedFixes = nextFixedResult.notAppliedFixes;
+
     if (nextFixedResult.result === current) {
-      fixedResult = nextFixedResult;
       break;
     }
 
-    fixedResult = nextFixedResult;
     current = nextFixedResult.result;
   }
+
+  const fixedResult = {
+    result: current,
+    notAppliedFixes: lastNotAppliedFixes
+  };
 
   return {
     lintResult: initialLintResult,

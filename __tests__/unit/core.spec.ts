@@ -92,4 +92,84 @@ Some **importance**, and \`code\`.
 
     expect(res.fixedResult?.result).toMatchSnapshot();
   });
+
+  test('notAppliedFixes accessible via lintMarkdown public API', () => {
+    const ruleA: LintMdRule = {
+      meta: { name: 'replace-to-x' },
+      create: (ctx) => ({
+        text: (node: any) => {
+          if (node.value === 'abc') {
+            ctx.report({
+              loc: node.position,
+              message: 'to X',
+              fix: () => ({
+                range: [node.position.start.offset, node.position.end.offset],
+                text: 'X'
+              })
+            });
+          }
+        }
+      })
+    };
+
+    const ruleB: LintMdRule = {
+      meta: { name: 'replace-to-y' },
+      create: (ctx) => ({
+        text: (node: any) => {
+          if (node.value === 'abc') {
+            ctx.report({
+              loc: node.position,
+              message: 'to Y',
+              fix: () => ({
+                range: [node.position.start.offset, node.position.end.offset],
+                text: 'Y'
+              })
+            });
+          }
+        }
+      })
+    };
+
+    const res = lintMarkdown(
+      'abc',
+      { 'replace-to-x': [ruleA, 2, {}], 'replace-to-y': [ruleB, 2, {}] },
+      true
+    );
+
+    expect(res.fixedResult).not.toBeNull();
+    expect(res.fixedResult!.result).toBe('X');
+    // ruleB's fix conflicts with ruleA's — should be in notAppliedFixes
+    expect(res.fixedResult!.notAppliedFixes.length).toBe(1);
+    expect(res.fixedResult!.notAppliedFixes[0].text).toBe('Y');
+  });
+
+  test('notAppliedFixes empty when no conflicts', () => {
+    const ruleA: LintMdRule = {
+      meta: { name: 'replace-foo' },
+      create: (ctx) => ({
+        text: (node: any) => {
+          if (node.value === 'foo') {
+            ctx.report({
+              loc: node.position,
+              message: 'replace foo',
+              fix: () => ({
+                range: [node.position.start.offset, node.position.end.offset],
+                text: 'bar'
+              })
+            });
+          }
+        }
+      })
+    };
+
+    const res = lintMarkdown(
+      'foo',
+      { 'replace-foo': [ruleA, 2, {}] },
+      true
+    );
+
+    expect(res.fixedResult).not.toBeNull();
+    expect(res.fixedResult!.result).toBe('bar');
+    expect(res.fixedResult!.notAppliedFixes).toStrictEqual([]);
+  });
 });

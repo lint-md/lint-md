@@ -164,7 +164,10 @@ export interface LintDiagnostic {
 export interface FixedResult {
   /** 修复后的完整 Markdown 文本 */
   result: string
-  /** 因冲突等原因未能应用的修复项 */
+  /**
+   * 最终轮次中因冲突等原因未能应用的修复项。
+   * range 基于 result 文本的坐标，可直接用于 result。
+   */
   notAppliedFixes: FixConfig[]
 }
 

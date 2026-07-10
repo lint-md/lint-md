@@ -54,7 +54,7 @@ lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: boolean)
 
 - `lintResult`：命中规则后的诊断结果列表（含规则名、位置信息、消息、级别）
 - `diagnostics`：标准诊断格式列表（`LintDiagnostic[]`），供编辑器集成直接消费
-- `fixedResult`：开启修复模式时返回修复后的文本，否则为 `null`
+- `fixedResult`：开启修复模式时返回 `{ result, notAppliedFixes }`（`result` 为修复后的文本，`notAppliedFixes` 为因冲突等原因未能应用的修复项），否则为 `null`
 
 下面是一个最小示例，可直接作为接入起点：
 
@@ -70,7 +70,7 @@ const result = lintMarkdown(markdown, {
 }, true);
 
 console.log(result.lintResult);
-console.log(result.fixedResult);
+console.log(result.fixedResult.result);
 ```
 
 ```ts

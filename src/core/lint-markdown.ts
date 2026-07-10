@@ -1,6 +1,11 @@
 import type {
+  FixedResult,
+  LintMdFixResult,
+  LintMdLintResult,
+  LintMdResult,
   LintMdRuleWithOptions,
-  LintMdRulesConfig
+  LintMdRulesConfig,
+  LintReportItem
 } from '../types';
 import * as internalRuleConfig from '../rules';
 import { overrideDefaultRules } from '../utils/override-default-rules';
@@ -8,7 +13,11 @@ import { RULE_SEVERITY } from '../types';
 import { runLint } from './run-lint';
 import { handleFixMode } from './handle-fix-mode';
 
-export const lintMarkdownInternal = (markdown: string, rules: LintMdRuleWithOptions[], isFixMode: boolean) => {
+export const lintMarkdownInternal = (
+  markdown: string,
+  rules: LintMdRuleWithOptions[],
+  isFixMode: boolean
+): { lintResult: ReturnType<typeof runLint>; fixedResult: FixedResult | null } => {
   if (!isFixMode) {
     const lintResult = runLint(markdown, rules);
     return {
@@ -26,7 +35,10 @@ export const lintMarkdownInternal = (markdown: string, rules: LintMdRuleWithOpti
  *
  * @date 2021-12-14 17:16:12
  */
-export const lintMarkdown = (markdown: string, rules: LintMdRulesConfig = {}, isFixMode = true) => {
+export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: true): LintMdFixResult;
+export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: false): LintMdLintResult;
+export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: boolean): LintMdResult;
+export function lintMarkdown(markdown: string, rules: LintMdRulesConfig = {}, isFixMode = true): LintMdResult {
   // 基于用户配置覆盖默认配置
   const registeredRules = overrideDefaultRules(internalRuleConfig, rules);
 
@@ -52,8 +64,8 @@ export const lintMarkdown = (markdown: string, rules: LintMdRulesConfig = {}, is
   let fixableErrorCount = 0;
   let fixableWarningCount = 0;
 
-  const reportDataWithSeverity = reportData?.map((item) => {
-    const severity = registeredRules[item.name].severity;
+  const reportDataWithSeverity: LintReportItem[] = reportData?.map((item) => {
+    const severity = registeredRules[item.name].severity as RULE_SEVERITY;
 
     if (typeof item.fix === 'function') {
       if (severity === RULE_SEVERITY.ERROR) {
@@ -72,7 +84,7 @@ export const lintMarkdown = (markdown: string, rules: LintMdRulesConfig = {}, is
       content,
       severity
     };
-  });
+  }) ?? [];
 
   const diagnostics = (reportDataWithSeverity ?? []).map(item => ({
     line: item.loc.start.line,
@@ -89,4 +101,4 @@ export const lintMarkdown = (markdown: string, rules: LintMdRulesConfig = {}, is
     fixableErrorCount,
     fixableWarningCount
   };
-};
+}

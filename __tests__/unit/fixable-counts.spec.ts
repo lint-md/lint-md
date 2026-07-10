@@ -132,6 +132,6 @@ describe('lintMarkdown() fixable counts (issue #152)', () => {
     expect(Object.keys(item!)).toEqual(
       expect.arrayContaining(['loc', 'message', 'name', 'content', 'severity'])
     );
-    expect((item as Record<string, unknown>).fix).toBeUndefined();
+    expect((item as unknown as Record<string, unknown>).fix).toBeUndefined();
   });
 });

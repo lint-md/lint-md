@@ -159,3 +159,41 @@ export interface LintDiagnostic {
   /** 严重级别 */
   severity: RULE_SEVERITY
 }
+
+/** fix 模式下 `fixedResult` 的形状 */
+export interface FixedResult {
+  /** 修复后的完整 Markdown 文本 */
+  result: string
+  /** 因冲突等原因未能应用的修复项 */
+  notAppliedFixes: FixConfig[]
+}
+
+/** `lintMarkdown` 返回的 lint 诊断项（带严重级别） */
+export interface LintReportItem {
+  loc: ReportOption['loc']
+  message: string
+  name: string
+  content: string
+  severity: RULE_SEVERITY
+}
+
+/** `lintMarkdown` 返回结果的公共部分 */
+export interface LintMdResultBase {
+  lintResult: LintReportItem[]
+  diagnostics: LintDiagnostic[]
+  fixableErrorCount: number
+  fixableWarningCount: number
+}
+
+/** 非修复模式（isFixMode=false）：`fixedResult` 为 null */
+export interface LintMdLintResult extends LintMdResultBase {
+  fixedResult: null
+}
+
+/** 修复模式（isFixMode=true，默认）：`fixedResult` 为对象 */
+export interface LintMdFixResult extends LintMdResultBase {
+  fixedResult: FixedResult
+}
+
+/** `lintMarkdown` 的返回类型（按 isFixMode 区分 fixedResult 形状） */
+export type LintMdResult = LintMdLintResult | LintMdFixResult;

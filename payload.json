@@ -1,0 +1,6 @@
+{
+  "title": "feat(rule-manager): 可观测的 fallbackHits 统计与 offset 契约测试 (#180)",
+  "head": "luojiyin1987:fix/issue-180-offset-contract",
+  "base": "master",
+  "body": "## 关联\n\nCloses #180\n\n## 改动说明\n\n### 1. 内部可观测性：`getFallbackHits()`（src/utils/rule-manager.ts）\n- 在 `createRuleManager()` 内维护 `fallbackHits` 计数器，新增 `getFallbackHits()`。\n- 计数单位是一条**报告**：只要其 `start` 或 `end` 任一 `offset` 缺失，计 1 次（同一报告不重复计 start/end）。\n- 不加入 `lintMarkdown` 公共返回类型，仅作为内部、可收窄的防线证据。\n- 保留 `resolveOffset` 兜底逻辑（不删除）：parser 节点 offset 100% 覆盖只能证明 parser 输出可靠，无法覆盖规则自行构造 `loc` 的路径。\n\n### 2. 新增 `__tests__/unit/offset-contract.spec.ts`\n- **parseMd 位置完整性矩阵**：plain / CRLF / 未闭合 fenced / 缩进代码 / 普通 fenced / list 六种输入，断言每个 positioned 节点 `start`/`end` 的 `offset` 均为 `number`。\n- **跨规则 fallbackHits 为 0**：\n  - `no-long-code`（CRLF / 未闭合围栏 / 缩进代码）报告保留精确 offset，`content` 为局部切片；\n  - `no-half-width-punctuation`、`use-standard-ellipsis` 验证其报告（含自合成位置）不触发 fallback（fallbackHits === 0），且 `content` 为局部切片、行列正确。\n- **兜底仍正确切片**：用一条只提供 line/column、缺 offset 的合成规则断言 `fallbackHits === 1`，且 `content` 为整篇文档的子串（不退化）。\n\n### 与既有测试的边界\n- 现有 `no-long-code.spec.ts` 已覆盖 CRLF/未闭合 fenced/缩进代码及其 offset 精确性，本 PR 的新测试重点放在「跨规则的 offset 契约与 fallbackHits 为 0」，避免复制同一组断言。\n\n## 测试\n- `npm run typecheck`、`npm run lint` 通过。\n- 全量测试：217 passed（新增 12 条 offset-contract 用例）。"
+}

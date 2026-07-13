@@ -13,6 +13,12 @@ export const createRuleManager = (appliedMarkdown: string) => {
   // 已经上报的数据
   const allReportedData: ReportOption[] = [];
 
+  // 统计触发 resolveOffset 兜底的报告数，使防御性 fallback 可观测、可收窄。
+  // 计数单位是一条报告：只要其 start 或 end 任一 offset 缺失，计 1（同一报告不重复计）。
+  let fallbackHits = 0;
+
+  const getFallbackHits = () => fallbackHits;
+
   // 获取所有上报的数据
   const getReportData = () => {
     return allReportedData;
@@ -56,11 +62,25 @@ export const createRuleManager = (appliedMarkdown: string) => {
 
     // 上报方法，供选择器内部调用
     const report = (option: Omit<ReportOption, 'content' | 'name'>) => {
-      // offset 在 ReportOption 中是可选的（合成 loc 没有真实 offset），这里兜底
-      const startOffset = option.loc.start.offset
-        ?? resolveOffset(option.loc.start.line, option.loc.start.column);
-      const endOffset = option.loc.end.offset
-        ?? resolveOffset(option.loc.end.line, option.loc.end.column);
+      // offset 在 ReportOption 中是可选的（合成 loc 没有真实 offset）。
+      // 合法 offset 必须是有限非负整数；NaN/Infinity/负数 均视为缺失，触发兜底。
+      const isValidOffset = (value: unknown): value is number =>
+        typeof value === 'number' && Number.isInteger(value) && value >= 0;
+      const startOffsetMissing = !isValidOffset(option.loc.start.offset);
+      const endOffsetMissing = !isValidOffset(option.loc.end.offset);
+      // 任一端 offset 缺失即记为一次兜底（按报告计数，不重复计）。
+      if (startOffsetMissing || endOffsetMissing) {
+        fallbackHits++;
+      }
+
+      // offset 在此处必为 number：缺失分支由 resolveOffset 返回 number，
+      // 非缺失分支已通过 isValidOffset 收敛为非负整数。
+      const startOffset = startOffsetMissing
+        ? resolveOffset(option.loc.start.line, option.loc.start.column)
+        : (option.loc.start.offset as number);
+      const endOffset = endOffsetMissing
+        ? resolveOffset(option.loc.end.line, option.loc.end.column)
+        : (option.loc.end.offset as number);
       const markStart = Math.max(0, startOffset - 5);
       const markEnd = Math.min(appliedMarkdown.length, endOffset + 5);
 
@@ -82,6 +102,7 @@ export const createRuleManager = (appliedMarkdown: string) => {
   return {
     getReportData,
     getAllFixes,
+    getFallbackHits,
     createRuleContext
   };
 };

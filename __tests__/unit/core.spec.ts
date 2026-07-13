@@ -33,7 +33,7 @@ Some **importance**, and \`code\`.
     expect(lintResult.ruleManager.getReportData().length).toBe(0);
   });
 
-  test('test runLint() catches Error thrown by rule', () => {
+  test('test runLint() collects Error thrown by rule (collect policy, structured errors)', () => {
     const throwingRule: LintMdRule = {
       meta: { name: 'throwing-rule' },
       create: () => ({
@@ -44,16 +44,20 @@ Some **importance**, and \`code\`.
     };
 
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    runLint('hello world', [{ rule: throwingRule }]);
-    expect(consoleSpy).toHaveBeenCalledWith(
-      expect.stringContaining('rule execution error')
-    );
-    expect(consoleSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Test error from rule')
-    );
+    const { executionErrors } = runLint('hello world', [{ rule: throwingRule }]);
+    // 兼容模式不写 console.error，错误以结构化数组返回
+    expect(consoleSpy).not.toHaveBeenCalled();
+    expect(executionErrors).toHaveLength(1);
+    expect(executionErrors[0]).toMatchObject({
+      ruleName: 'throwing-rule',
+      nodeType: 'text',
+      message: 'Test error from rule',
+      round: 0,
+      phase: 'selector'
+    });
   });
 
-  test('test runLint() silently handles non-Error throws', () => {
+  test('test runLint() collects non-Error throws (normalized to string, structured errors)', () => {
     const throwingRule: LintMdRule = {
       meta: { name: 'throwing-string' },
       create: () => ({
@@ -65,8 +69,48 @@ Some **importance**, and \`code\`.
     };
 
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    runLint('hello world', [{ rule: throwingRule }]);
+    const { executionErrors } = runLint('hello world', [{ rule: throwingRule }]);
     expect(consoleSpy).not.toHaveBeenCalled();
+    expect(executionErrors).toHaveLength(1);
+    expect(executionErrors[0]).toMatchObject({
+      ruleName: 'throwing-string',
+      message: 'string error',
+      phase: 'selector'
+    });
+  });
+
+  test('test runLint() strict policy throws RuleExecutionFailure on first rule error', () => {
+    const throwingRule: LintMdRule = {
+      meta: { name: 'throwing-strict' },
+      create: () => ({
+        text: () => {
+          throw new Error('strict boom');
+        }
+      })
+    };
+
+    expect(() => runLint('hello world', [{ rule: throwingRule }], { ruleErrorPolicy: 'strict' }))
+      .toThrow('strict boom');
+  });
+
+  test('test runLint() one bad rule does not block other rules on same node (partial success)', () => {
+    const badRule: LintMdRule = {
+      meta: { name: 'bad-rule' },
+      create: () => ({
+        text: () => {
+          throw new Error('bad');
+        }
+      })
+    };
+    const goodRule = noEmptyCode as unknown as LintMdRule;
+    const { ruleManager, executionErrors } = runLint('# Hello\n\n```\n\n```', [
+      { rule: badRule },
+      { rule: goodRule }
+    ]);
+    // 坏规则失败被记录，好规则仍正常产出报告（部分成功）
+    expect(executionErrors).toHaveLength(1);
+    expect(executionErrors[0].ruleName).toBe('bad-rule');
+    expect(ruleManager.getReportData().length).toBeGreaterThan(0);
   });
 
   test('test lintAndFixInternal() to lint or fix markdown source', () => {

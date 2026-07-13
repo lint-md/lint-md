@@ -180,6 +180,45 @@ export interface FixMetrics {
   perRound: number[]
 }
 
+/**
+ * 规则执行错误的捕获阶段。
+ * - `create`：rule.create() 初始化回调阶段（每条规则在遍历前执行一次）
+ * - `selector`：selector 节点回调阶段（emitter 按 node.type 分发后执行）
+ * - `fix`：fix() 回调阶段（applyFix 前 getAllFixes 调用时执行）
+ * 仅覆盖规则自身执行路径，不覆盖 parser / 遍历器等基础设施故障。
+ */
+export type RuleExecutionPhase = 'create' | 'selector' | 'fix';
+
+/** 规则执行错误收集策略（执行器级，非单规则级） */
+export type RuleErrorPolicy = 'collect' | 'strict';
+
+/** 全局执行选项，作为 lintMarkdown 的独立第 4 参数，不污染 LintMdRuleWithOptions */
+export interface LintExecutionOptions {
+  /** 规则执行失败策略；默认 'collect'，保持 CLI/编辑器获得部分结果的兼容行为 */
+  ruleErrorPolicy?: RuleErrorPolicy
+}
+
+/** 单条规则执行错误，挂在 LintMdResultBase 上，对 lint-only 与 fix 多轮均适用 */
+export interface RuleExecutionError {
+  /** 失败规则名（来自 rule.meta.name） */
+  ruleName: string
+  /** 触发节点类型；create/fix 阶段无具体节点时为 undefined */
+  nodeType?: string
+  /** 规范化后的消息：Error 取 message，非 Error 抛值用 String() 归一化 */
+  message: string
+  /** 所属 fix 轮次（lint-only 恒为 0） */
+  round: number
+  /** 捕获阶段；用于区分 create / selector / fix 三类规则执行失败（collector 创建时必填） */
+  phase: RuleExecutionPhase
+}
+
+/** runLint 的可选参数 */
+export interface RunLintOptions {
+  ruleErrorPolicy?: RuleErrorPolicy
+  /** 本轮在 fix 模式下的轮次，用于聚合多轮错误；lint-only 恒为 0 */
+  round?: number
+}
+
 /** fix 模式下 `fixedResult` 的形状 */
 export interface FixedResult {
   /** 修复后的完整 Markdown 文本 */
@@ -212,6 +251,12 @@ export interface LintMdResultBase {
   diagnostics: LintDiagnostic[]
   fixableErrorCount: number
   fixableWarningCount: number
+  /**
+   * 结构化根级规则执行错误数组（兼容所有返回模式：lint-only 与 fix 多轮）。
+   * 兼容模式（默认）：继续执行，不写 console.error，最终在此返回。
+   * 严格模式：首次规则执行失败立即抛出 RuleExecutionFailure，不返回正常结果。
+   */
+  executionErrors: RuleExecutionError[]
 }
 
 /** 非修复模式（isFixMode=false）：`fixedResult` 为 null */

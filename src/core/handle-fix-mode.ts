@@ -4,9 +4,16 @@ import { MAX_LINT_AND_FIX_CALL_TIMES } from '../common/constant';
 import { applyFix } from '../utils/apply-fix';
 import { runLint } from './run-lint';
 
-export const handleFixMode = (markdown: string, rules: LintMdRuleWithOptions[]) => {
+export const handleFixMode = (
+  markdown: string,
+  rules: LintMdRuleWithOptions[],
+  policy: 'collect' | 'strict' = 'collect'
+) => {
   let lintTimes = 0;
   let initialLintResult = {} as ReturnType<typeof runLint>;
+
+  // 聚合所有 fix 轮次的规则执行错误（lint-only 恒为 0 轮）；严格模式下任一失败即抛 RuleExecutionFailure。
+  const allExecutionErrors: ReturnType<typeof runLint>['executionErrors'] = [];
 
   let current = markdown;
   let lastNotAppliedFixes: FixConfig[] = [];
@@ -25,7 +32,7 @@ export const handleFixMode = (markdown: string, rules: LintMdRuleWithOptions[]) 
     // 记录本轮输入文本，供后续判断是否回到历史状态。
     seenTexts.add(current);
 
-    const lintResult = runLint(current, rules);
+    const lintResult = runLint(current, rules, { ruleErrorPolicy: policy, round: lintTimes });
 
     if (lintTimes === 0) {
       initialLintResult = lintResult;
@@ -33,7 +40,12 @@ export const handleFixMode = (markdown: string, rules: LintMdRuleWithOptions[]) 
 
     lintTimes++;
 
+    // 先取 fix 列表：fix() 回调在 getAllFixes() 内执行，其错误已并入 ruleManager 的 collector，
+    // 并反映到 runLint 返回的 executionErrors 中。聚合必须放在 getAllFixes 之后，否则会丢 fix 阶段错误。
     const fixes = lintResult.ruleManager.getAllFixes();
+
+    // 累加本轮错误（含 create/selector 与 fix 阶段；严格模式下可能已抛 RuleExecutionFailure）。
+    allExecutionErrors.push(...lintResult.executionErrors);
 
     // 无 fix 可应用 => 正常收敛。
     if (!fixes.length) {
@@ -87,6 +99,7 @@ export const handleFixMode = (markdown: string, rules: LintMdRuleWithOptions[]) 
 
   return {
     lintResult: initialLintResult,
-    fixedResult
+    fixedResult,
+    executionErrors: allExecutionErrors
   };
 };

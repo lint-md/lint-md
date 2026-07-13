@@ -1,5 +1,6 @@
 import type {
   FixedResult,
+  LintExecutionOptions,
   LintMdFixResult,
   LintMdLintResult,
   LintMdResult,
@@ -17,17 +18,28 @@ import { handleFixMode } from './handle-fix-mode';
 export const lintMarkdownInternal = (
   markdown: string,
   rules: LintMdRuleWithOptions[],
-  isFixMode: boolean
-): { lintResult: ReturnType<typeof runLint>; fixedResult: FixedResult | null } => {
+  isFixMode: boolean,
+  policy: 'collect' | 'strict' = 'collect'
+): {
+  lintResult: ReturnType<typeof runLint>
+  fixedResult: FixedResult | null
+  executionErrors: ReturnType<typeof runLint>['executionErrors']
+} => {
   if (!isFixMode) {
-    const lintResult = runLint(markdown, rules);
+    const lintResult = runLint(markdown, rules, { ruleErrorPolicy: policy });
     return {
       lintResult,
-      fixedResult: null
+      fixedResult: null,
+      executionErrors: lintResult.executionErrors
     };
   }
   else {
-    return handleFixMode(markdown, rules);
+    const { lintResult, fixedResult, executionErrors } = handleFixMode(markdown, rules, policy);
+    return {
+      lintResult,
+      fixedResult,
+      executionErrors
+    };
   }
 };
 
@@ -40,10 +52,10 @@ export const lintMarkdownInternal = (
  * - isFixMode=false 时，fixedResult 为 null
  * - isFixMode 为 boolean 变量时，返回联合类型
  */
-export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: true): LintMdFixResult;
-export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: false): LintMdLintResult;
-export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: boolean): LintMdResult;
-export function lintMarkdown(markdown: string, rules: LintMdRulesConfig = {}, isFixMode = true): LintMdResult {
+export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: true, options?: LintExecutionOptions): LintMdFixResult;
+export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: false, options?: LintExecutionOptions): LintMdLintResult;
+export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: boolean, options?: LintExecutionOptions): LintMdResult;
+export function lintMarkdown(markdown: string, rules: LintMdRulesConfig = {}, isFixMode = true, options: LintExecutionOptions = {}): LintMdResult {
   // 基于用户配置覆盖默认配置
   const registeredRules = overrideDefaultRules(internalRuleConfig, rules);
 
@@ -78,7 +90,8 @@ export function lintMarkdown(markdown: string, rules: LintMdRulesConfig = {}, is
       };
     });
 
-  const { fixedResult, lintResult } = lintMarkdownInternal(markdown, internalRules, isFixMode);
+  const policy = options.ruleErrorPolicy ?? 'collect';
+  const { fixedResult, lintResult, executionErrors } = lintMarkdownInternal(markdown, internalRules, isFixMode, policy);
 
   const reportData = lintResult?.ruleManager.getReportData();
   let fixableErrorCount = 0;
@@ -119,6 +132,7 @@ export function lintMarkdown(markdown: string, rules: LintMdRulesConfig = {}, is
     diagnostics,
     fixedResult,
     fixableErrorCount,
-    fixableWarningCount
+    fixableWarningCount,
+    executionErrors
   };
 }

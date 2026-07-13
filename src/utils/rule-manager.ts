@@ -4,6 +4,7 @@ import type {
   ReportOption,
   ReportPosition
 } from '../types';
+import type { createRuleErrorCollector } from './rule-execution-errors';
 import { createFixer } from './fixer';
 
 /** 合法 offset 必须是有限非负整数：排除 NaN / Infinity / 负数，避免第三方规则传入非法值绕过兜底。 */
@@ -23,8 +24,13 @@ const resolveReportOffset = (
  * 初始化全局 rule 管理器
  *
  * @param {string} appliedMarkdown 已经应用了规则的 markdown
+ * @param collector 可选的规则执行错误收集器；传入后 getAllFixes 中 fix() 抛错会归入规则执行错误，
+ *                 否则（如单测直接 new）fix 阶段错误仍按原生异常抛出。
  */
-export const createRuleManager = (appliedMarkdown: string) => {
+export const createRuleManager = (
+  appliedMarkdown: string,
+  collector?: ReturnType<typeof createRuleErrorCollector>
+) => {
   // 修复器
   const fixer = createFixer();
 
@@ -39,11 +45,24 @@ export const createRuleManager = (appliedMarkdown: string) => {
 
   const getReportData = () => allReportedData;
 
+  // 暴露 collector 中已收集的规则执行错误（含 fix 阶段），供单测与上层聚合读取。
+  const getExecutionErrors = () => collector?.getErrors() ?? [];
+
   const getAllFixes = () =>
     allReportedData.flatMap((item) => {
       if (typeof item.fix === 'function') {
-        const fix = item.fix(fixer);
-        return [{ ...fix, targetRule: item.name }];
+        try {
+          const fix = item.fix(fixer);
+          return [{ ...fix, targetRule: item.name }];
+        }
+        catch (e) {
+          if (collector) {
+            // 严格模式会在 collect 内抛 RuleExecutionFailure，向上传递。
+            collector.collect(item.name, 'fix', e);
+            return [];
+          }
+          throw e;
+        }
       }
       return [];
     });
@@ -102,6 +121,7 @@ export const createRuleManager = (appliedMarkdown: string) => {
 
   return {
     getReportData,
+    getExecutionErrors,
     getAllFixes,
     getFallbackHits,
     createRuleContext

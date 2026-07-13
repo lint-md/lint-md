@@ -61,7 +61,8 @@ function parseNDJSON(text) {
 }
 
 function assert(condition, message) {
-  if (!condition) throw new Error(`Assertion failed: ${message}`);
+  if (!condition)
+    throw new Error(`Assertion failed: ${message}`);
 }
 
 async function main() {
@@ -139,6 +140,33 @@ async function main() {
   if (noopLines.length > 0) {
     console.log(`  noop baseline RSS delta: ${noopLines[0].rssDelta} bytes`);
   }
+
+  // Test 6: profile-scanner-176.mjs 独立 smoke（#176 可复现数据脚本）
+  console.log('  Running profile-scanner-176.mjs (many-small-nodes, 4 KiB, 1 run)...');
+  const profileOut = await new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [
+      path.join(SCRIPT_DIR, 'profile-scanner-176.mjs'),
+      '--shape', 'many-small-nodes',
+      '--bytes', '4096',
+      '--runs', '1',
+      '--warmup', '0',
+    ], { cwd: path.resolve(SCRIPT_DIR, '..'), stdio: ['ignore', 'pipe', 'pipe'] });
+    let out = '';
+    child.stdout.on('data', (c) => { out += c; });
+    child.stderr.on('data', (c) => { out += c; });
+    child.on('close', code => resolve({ code, out }));
+    child.on('error', reject);
+  });
+  assert(profileOut.code === 0, 'profile-scanner-176.mjs should exit 0');
+  const profileLines = parseNDJSON(profileOut.out);
+  assert(profileLines.length === 1, 'profile should output exactly one line');
+  const pl = profileLines[0];
+  assert(typeof pl.textNodeCount === 'number' && pl.textNodeCount > 0, 'profile textNodeCount should be > 0');
+  assert(typeof pl.reportCount === 'number' && pl.reportCount > 0, 'profile reportCount should be > 0');
+  assert(Array.isArray(pl.buildMsRuns) && pl.buildMsRuns.length === 1, 'profile buildMsRuns should have 1 entry');
+  assert(Array.isArray(pl.wallMsRuns) && pl.wallMsRuns.length === 1, 'profile wallMsRuns should have 1 entry');
+  assert(typeof pl.bytes === 'number' && pl.bytes > 0, 'profile bytes (actual) should be > 0');
+  assert(typeof pl.requestedBytes === 'number' && pl.requestedBytes === 4096, 'profile requestedBytes should be 4096');
 
   console.log('\nSmoke test PASSED');
 }

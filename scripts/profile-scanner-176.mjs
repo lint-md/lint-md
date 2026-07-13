@@ -150,9 +150,13 @@ function main() {
 
   for (const shape of shapes) {
     const gen = GENERATORS[shape];
-    const md = gen(opts.bytes);
-    const textNodeCount = countTextNodes(parseMd(md));
-    const triggeredMd = withTriggerChars(md);
+    // 注意顺序：先生成 + 触发字符替换，最后再统计实际被测输入。
+    // withTriggerChars 会改变 UTF-8 字节长度与潜在 AST 结构，因此
+    // 字节数与文本节点数都必须取自转换后的 triggeredMd（回应 P1/P2）。
+    const sourceMd = gen(opts.bytes);
+    const triggeredMd = withTriggerChars(sourceMd);
+    const actualBytes = Buffer.byteLength(triggeredMd, 'utf8');
+    const textNodeCount = countTextNodes(parseMd(triggeredMd));
 
     const buildMsRuns = [];
     const wallMsRuns = [];
@@ -178,7 +182,8 @@ function main() {
     const line = {
       shape,
       triggerInput: true,
-      bytes: opts.bytes,
+      requestedBytes: opts.bytes,
+      bytes: actualBytes,
       runs: opts.runs,
       warmup: opts.warmup,
       textNodeCount,
@@ -188,6 +193,9 @@ function main() {
       buildMsMedian: Number(buildMsMedian.toFixed(4)),
       wallMsMedian: Number(wallMsMedian.toFixed(3)),
       ratioPctMedian: Number(ratioPctMedian.toFixed(3)),
+      nodeVersion: process.version,
+      platform: process.platform,
+      arch: process.arch,
     };
     allLines.push(line);
   }

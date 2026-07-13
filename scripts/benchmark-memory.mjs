@@ -18,7 +18,7 @@
  *                     (default: long-paragraph)
  *   --runs <n>        Measured runs per case (default: 5)
  *   --warmup <n>      Warmup runs before measurement (default: 2)
- *   --all             Run all shape+size combinations
+ *   --all             Run all shape+size combinations (incl. text-scanner-rules)
  *   -h, --help        Show this help
  */
 
@@ -49,6 +49,7 @@ if (process.env.BENCHMARK_CHILD === '1') {
   const { parseMd } = require_('@lint-md/parser');
   const core = require_('../lib/index.js');
   const { runLint } = require_('../lib/core/run-lint.js');
+  const scannerDiag = require_('../lib/utils/text-scanner.js');
 
   const TEXT_RULE_IMPORTS = {
     'space-around-alphabet': () => core.spaceAroundAlphabet,
@@ -83,6 +84,22 @@ if (process.env.BENCHMARK_CHILD === '1') {
     return { reportCount: reports.length, fixCount: 0, runLintCalls: 1 };
   }
 
+  function runTextScannerRules() {
+    // 仅启用这 5 条依赖 TextScanner 的文本规则，隔离 scanner 成本以独立归因。
+    const names = [
+      'use-standard-ellipsis',
+      'no-half-width-punctuation',
+      'no-full-width-number',
+      'space-around-number',
+      'no-special-characters',
+    ];
+    const configs = names.map((n) => ({ rule: TEXT_RULE_IMPORTS[n]() }));
+    const result = runLint(input, configs);
+    const reports = result.ruleManager.getReportData();
+    const fixes = result.ruleManager.getAllFixes();
+    return { reportCount: reports.length, fixCount: fixes.length, runLintCalls: 1 };
+  }
+
   function runSingleRule() {
     const ruleFactory = TEXT_RULE_IMPORTS[ruleName];
     if (!ruleFactory) throw new Error(`Unknown rule: ${ruleName}`);
@@ -105,10 +122,15 @@ if (process.env.BENCHMARK_CHILD === '1') {
 
   function runFixMode() {
     const result = core.lintMarkdown(input, {}, true);
+    const fixed = result.fixedResult || null;
     return {
       reportCount: (result.lintResult || []).length,
+      // fixCount 在其他 case 表示规则生成的 fix 数量；此处不混用同一语义。
       fixCount: null,
-      runLintCalls: null, // handleFixMode may loop internally; exact count unknown here
+      notAppliedFixCount: fixed ? fixed.notAppliedFixes.length : null,
+      runLintCalls: fixed ? fixed.rounds : null,
+      convergence: fixed ? fixed.convergence : undefined,
+      fixMetrics: fixed ? fixed.metrics : undefined,
     };
   }
 
@@ -118,6 +140,7 @@ if (process.env.BENCHMARK_CHILD === '1') {
     'parser-only': runParserOnly,
     'parse-traverse': runParseTraverse,
     'single-rule': runSingleRule,
+    'text-scanner-rules': runTextScannerRules,
     'all-rules': runAllRules,
     'fix-mode': runFixMode,
   };
@@ -125,11 +148,16 @@ if (process.env.BENCHMARK_CHILD === '1') {
   const runner = runners[caseName];
   if (!runner) throw new Error(`Unknown case: ${caseName}`);
 
+  // Warmup 完成后清零，只统计正式测量（见 #176 评审：避免诊断累计 warmup 而分母仅正式运行）。
   // Warmup
   for (let i = 0; i < warmupCount; i++) {
     runner();
     if (typeof global.gc === 'function') global.gc();
   }
+
+  // 只统计正式测量：warmup 运行不计入 scanner 诊断，避免分母为单次 wallTime
+  // 却累计多次 build 耗时（buildMs / wallTime 比例被高估无法作为缓存决策依据）。
+  scannerDiag.resetScannerDiagnostics();
 
   // Measure
   const rssBefore = process.memoryUsage.rss();
@@ -155,7 +183,8 @@ if (process.env.BENCHMARK_CHILD === '1') {
     shape,
     bytes,
     rule: ruleName || undefined,
-    wallTimeMs: Math.round(end - start),
+    // 保留原始浮点耗时（不取整），保证 buildMs / wallTime 占比在快 case 下不被取整扰动；展示时再格式化。
+    wallTimeMs: end - start,
     maxRss: maxRssBytes,
     rssBefore,
     rssAfter,
@@ -168,6 +197,8 @@ if (process.env.BENCHMARK_CHILD === '1') {
     platform: process.platform,
     arch: process.arch,
     timestamp: new Date().toISOString(),
+    textScannerIndexBuilds: scannerDiag.getScannerDiagnostics().textScannerIndexBuilds,
+    textScannerIndexBuildWallTimeMs: scannerDiag.getScannerDiagnostics().textScannerIndexBuildWallTimeMs,
   };
 
   process.stdout.write(JSON.stringify(result) + '\n');
@@ -188,7 +219,7 @@ Options:
                             high-match-density | low-match-density | overlapping-fixes
   --runs <n>        Measured runs per case (default: 5)
   --warmup <n>      Warmup runs per child process (default: 2)
-  --all             Run all shape+size combinations
+  --all             Run all shape+size combinations (incl. text-scanner-rules)
   -h, --help        Show this help
 
 Examples:
@@ -275,6 +306,7 @@ const CASES = [
   'parser-only',
   'parse-traverse',
   'single-rule',
+  'text-scanner-rules',
   'all-rules',
   'fix-mode',
 ];

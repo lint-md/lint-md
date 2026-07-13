@@ -22,12 +22,13 @@ const REQUIRED_FIELDS = [
   'wallTimeMs', 'maxRss', 'rssBefore', 'rssAfter', 'rssDelta',
   'heapBefore', 'heapAfter',
   'reportCount', 'fixCount', 'runLintCalls',
+  'textScannerIndexBuilds', 'textScannerIndexBuildWallTimeMs',
   'nodeVersion', 'platform', 'arch',
 ];
 
 const VALID_CASES = new Set([
   'noop', 'input-only', 'parser-only', 'parse-traverse',
-  'single-rule', 'all-rules', 'fix-mode',
+  'single-rule', 'text-scanner-rules', 'all-rules', 'fix-mode',
 ]);
 
 const VALID_SHAPES = new Set([
@@ -101,6 +102,16 @@ async function main() {
     assert(typeof line.reportCount === 'number', 'reportCount should be a number');
     assert(line.fixCount === null || typeof line.fixCount === 'number', 'fixCount should be number or null');
     assert(line.runLintCalls === null || typeof line.runLintCalls === 'number', 'runLintCalls should be number or null');
+    // notAppliedFixCount 仅 fix-mode 输出
+    if (line.case === 'fix-mode') {
+      assert(line.notAppliedFixCount === null || typeof line.notAppliedFixCount === 'number',
+        'notAppliedFixCount should be number or null on fix-mode');
+    }
+    // Scanner index-build diagnostics: non-negative numbers (present on every case).
+    assert(typeof line.textScannerIndexBuilds === 'number' && line.textScannerIndexBuilds >= 0,
+      'textScannerIndexBuilds should be a non-negative number');
+    assert(typeof line.textScannerIndexBuildWallTimeMs === 'number' && line.textScannerIndexBuildWallTimeMs >= 0,
+      'textScannerIndexBuildWallTimeMs should be a non-negative number');
     assert(typeof line.run === 'number' && line.run >= 1, 'run should be >= 1');
 
     assert(VALID_CASES.has(line.case), `unknown case: ${line.case}`);

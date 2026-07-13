@@ -1,4 +1,4 @@
-import { TextScanner } from '../../../src/utils/text-scanner';
+import { TextScanner, getScannerDiagnostics, resetScannerDiagnostics } from '../../../src/utils/text-scanner';
 import type { MarkdownTextNode } from '../../../src/utils/get-text-nodes';
 
 const createTextNode = (
@@ -233,6 +233,62 @@ describe('TextScanner', () => {
         positions.push(pos.offset);
       });
       expect(positions).toEqual([10, 11, 12]);
+    });
+  });
+
+  describe('index-build diagnostics (issue #176)', () => {
+    beforeEach(() => {
+      resetScannerDiagnostics();
+    });
+
+    it('should not build index for forEachChar (no position lookup needed)', () => {
+      const scanner = new TextScanner(createTextNode('a\nb\nc'));
+      scanner.forEachChar(() => {});
+      expect(getScannerDiagnostics().textScannerIndexBuilds).toBe(0);
+      expect(getScannerDiagnostics().textScannerIndexBuildWallTimeMs).toBe(0);
+    });
+
+    it('should count one build per scanner that resolves positions', () => {
+      const scanner = new TextScanner(createTextNode('a\nb\nc'));
+      // findAllMatches forces position resolution -> builds index once
+      scanner.findAllMatches(/a/g);
+      const diag = getScannerDiagnostics();
+      expect(diag.textScannerIndexBuilds).toBe(1);
+      expect(diag.textScannerIndexBuildWallTimeMs).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should build index once per scanner instance even with multiple matches', () => {
+      const scanner = new TextScanner(createTextNode('a\nb\nc\nd'));
+      scanner.findAllMatches(/[\s\S]/g); // every char incl. newlines
+      expect(getScannerDiagnostics().textScannerIndexBuilds).toBe(1);
+    });
+
+    it('should accumulate across distinct scanner instances', () => {
+      const s1 = new TextScanner(createTextNode('x\ny'));
+      const s2 = new TextScanner(createTextNode('p\nq'));
+      s1.findAllMatches(/x/g);
+      s2.findAllMatches(/p/g);
+      expect(getScannerDiagnostics().textScannerIndexBuilds).toBe(2);
+    });
+
+    it('should accumulate across two distinct text nodes sharing the same value', () => {
+      // Same value, different node identity: index is NOT shared (no cache yet).
+      const s1 = new TextScanner(createTextNode('a\nb'));
+      const s2 = new TextScanner(createTextNode('a\nb'));
+      s1.findAllMatches(/a/g);
+      s2.findAllMatches(/a/g);
+      expect(getScannerDiagnostics().textScannerIndexBuilds).toBe(2);
+    });
+
+    it('reset should clear all counters', () => {
+      const scanner = new TextScanner(createTextNode('a\nb'));
+      scanner.findAllMatches(/a/g);
+      expect(getScannerDiagnostics().textScannerIndexBuilds).toBe(1);
+      resetScannerDiagnostics();
+      expect(getScannerDiagnostics()).toEqual({
+        textScannerIndexBuilds: 0,
+        textScannerIndexBuildWallTimeMs: 0
+      });
     });
   });
 });

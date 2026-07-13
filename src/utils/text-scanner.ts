@@ -1,4 +1,23 @@
 import type { MarkdownTextNode } from './get-text-nodes';
+import { now } from './time';
+
+/**
+ * TextScanner 索引构建诊断（仅供 benchmark / 单测观测使用）。
+ * 仅记录「换行索引首次构建」的重复成本，用于判断是否有必要引入
+ * 跨 scanner 的索引缓存（见 issue #176）。不涉及规则公共 API。
+ */
+let scannerIndexBuilds = 0;
+let scannerIndexBuildWallTimeMs = 0;
+
+export const getScannerDiagnostics = () => ({
+  textScannerIndexBuilds: scannerIndexBuilds,
+  textScannerIndexBuildWallTimeMs: scannerIndexBuildWallTimeMs
+});
+
+export const resetScannerDiagnostics = () => {
+  scannerIndexBuilds = 0;
+  scannerIndexBuildWallTimeMs = 0;
+};
 
 /** 文本匹配结果，包含相对位置和绝对位置 */
 export interface TextMatch {
@@ -46,9 +65,10 @@ export class TextScanner {
     this._startOffset = node.position.start.offset;
   }
 
-  /** 换行索引，首次需要时构建 */
+  /** 换行索引，首次需要时构建（并累计诊断计数/耗时） */
   private get lineBreakIndices(): number[] {
     if (!this._lineBreakIndices) {
+      const buildStart = now();
       const indices: number[] = [];
       for (let i = 0; i < this._value.length; i++) {
         if (this._value[i] === '\n') {
@@ -56,6 +76,8 @@ export class TextScanner {
         }
       }
       this._lineBreakIndices = indices;
+      scannerIndexBuilds++;
+      scannerIndexBuildWallTimeMs += now() - buildStart;
     }
     return this._lineBreakIndices;
   }

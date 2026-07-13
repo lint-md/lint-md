@@ -160,6 +160,26 @@ export interface LintDiagnostic {
   severity: RULE_SEVERITY
 }
 
+/** fix 收敛状态：调用方据此区分“已稳定”“检测到循环”“达到上限” */
+export enum FixConvergence {
+  /** 无 fix 可应用或文本不再变化，正常收敛 */
+  STABLE = 'stable',
+  /** 检测到振荡循环（某轮 current 文本曾出现过），提前停止 */
+  CYCLE_DETECTED = 'cycle',
+  /** 达到 MAX_LINT_AND_FIX_CALL_TIMES 上限被截断 */
+  MAX_ROUNDS = 'max'
+}
+
+/** fix 收敛过程的性能基线（仅记录轮数 / 每轮 wall time，不拆分 parse/规则） */
+export interface FixMetrics {
+  /** 实际 runLint 次数 */
+  rounds: number
+  /** 整体 wall time（毫秒） */
+  wallTime: number
+  /** 每一轮的 wall time（毫秒） */
+  perRound: number[]
+}
+
 /** fix 模式下 `fixedResult` 的形状 */
 export interface FixedResult {
   /** 修复后的完整 Markdown 文本 */
@@ -169,6 +189,12 @@ export interface FixedResult {
    * range 基于 result 文本的坐标，可直接用于 result。
    */
   notAppliedFixes: FixConfig[]
+  /** 收敛状态，调用方可据此判断质量而非盲用文本 */
+  convergence: FixConvergence
+  /** 实际执行的 runLint 轮数 */
+  rounds: number
+  /** 性能基线，可选；用于后续判断是否值得做增量重跑的独立研究 */
+  metrics?: FixMetrics
 }
 
 /** `lintMarkdown` 返回的 lint 诊断项（带严重级别） */

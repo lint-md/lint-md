@@ -352,8 +352,9 @@ describe('handleFixMode', () => {
   test('A -> B -> A oscillation: stops after 2 rounds, returns applied A', () => {
     // Round 1: "A" -> ruleA "A"->"B"
     // Round 2: "B" -> ruleB "B"->"A"
-    // Round 3 start: current === "A" already seen => CYCLE_DETECTED, break.
-    // returns the A applied in round 2, NOT the round-1 B.
+    // After round 2 applies the fix (B -> A), current becomes "A" which was already
+    // seen in round 1 => CYCLE_DETECTED, break. Returns the A applied in round 2,
+    // NOT the round-1 B.
     const ruleA = makeRule({
       name: 'a-to-b',
       selector: 'text',

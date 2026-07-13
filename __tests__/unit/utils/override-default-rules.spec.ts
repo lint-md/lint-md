@@ -71,11 +71,22 @@ describe('overrideDefaultRules', () => {
     }).toThrow(/第三方规则.*配置长度必须为 3/);
   });
 
-  it('should not register third-party rule when config is not an array', () => {
+  it('should throw for unknown rule when config is not an array (issue #177)', () => {
+    expect(() => {
+      overrideDefaultRules(defaultRules, {
+        'custom-rule': RULE_SEVERITY.WARN as any
+      });
+    }).toThrow(/配置格式非法/);
+  });
+
+  it('should register third-party rule alias by meta.name (issue #177)', () => {
+    const customRule = createMockRule('actual-name');
     const result = overrideDefaultRules(defaultRules, {
-      'custom-rule': RULE_SEVERITY.WARN as any
+      'configured-alias': [customRule, RULE_SEVERITY.WARN, {}]
     });
-    expect(result['custom-rule']).toBeUndefined();
+    // 配置键与 meta.name 不等时，按 meta.name 建立别名，回查仍能命中同一记录。
+    expect(result['configured-alias']).toBeDefined();
+    expect(result['actual-name']).toBe(result['configured-alias']);
   });
 
   it('should handle empty default rules', () => {

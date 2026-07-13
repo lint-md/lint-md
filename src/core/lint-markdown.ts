@@ -3,6 +3,7 @@ import type {
   LintMdFixResult,
   LintMdLintResult,
   LintMdResult,
+  LintMdRule,
   LintMdRuleWithOptions,
   LintMdRulesConfig,
   LintReportItem
@@ -49,10 +50,22 @@ export function lintMarkdown(markdown: string, rules: LintMdRulesConfig = {}, is
   const registeredRuleEntries = Object.entries(registeredRules);
 
   // 最终的 rules
+  // 注意：注册表可能包含同一规则的多条记录（配置键 + meta.name 别名），
+  // 这里按 rule 引用去重，避免规则被重复执行导致报告与计数翻倍。
+  const seenRules = new Set<LintMdRule>();
   const internalRules = registeredRuleEntries
     .filter((item) => {
+      const value = item[1];
       // 过滤掉 severity 为 0 的规则，提高性能
-      return item[1].severity !== RULE_SEVERITY.OFF;
+      if (value.severity === RULE_SEVERITY.OFF) {
+        return false;
+      }
+      // 同一 rule 只保留一次（配置键与 meta.name 别名指向同一记录）
+      if (seenRules.has(value.rule)) {
+        return false;
+      }
+      seenRules.add(value.rule);
+      return true;
     })
     .map((options) => {
       const value = options[1];

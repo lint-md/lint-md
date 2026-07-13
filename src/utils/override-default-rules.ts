@@ -8,7 +8,9 @@ import { RULE_SEVERITY } from '../types';
  */
 export const overrideDefaultRules = (defaultRules: Record<string, LintMdRule>, ruleConfig: LintMdRulesConfig) => {
   // 默认所有的内部 rules 都会被初始化，等级为 Error，参数为空
-  const registeredRules: RegisteredRules = {};
+  // 使用无原型对象，避免 __proto__/constructor/toString 等键从原型链误读，
+  // 防止原型污染（见 issue #177 后续反馈）。
+  const registeredRules = Object.create(null) as RegisteredRules;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const [_, ruleValue] of Object.entries(defaultRules)) {
@@ -22,7 +24,9 @@ export const overrideDefaultRules = (defaultRules: Record<string, LintMdRule>, r
   // 将用户传入的 rules 合并到内部 rules 中
   for (const [ruleName, ruleConfigValue] of Object.entries(ruleConfig)) {
     // 如果配置的 rule 为内部 rule，覆盖之（只覆盖配置过的）
-    const targetRule = registeredRules[ruleName];
+    const targetRule = Object.prototype.hasOwnProperty.call(registeredRules, ruleName)
+      ? registeredRules[ruleName]
+      : undefined;
 
     // 匹配到内部规则
     if (targetRule) {
@@ -79,9 +83,7 @@ export const overrideDefaultRules = (defaultRules: Record<string, LintMdRule>, r
     //  1. 阻止第三方规则通过 meta.name 静默覆盖内置规则；
     //  2. 阻止不同配置键占用同一 meta.name；
     //  3. 阻止同一 rule 对象被多个配置键重复注册（options/severity 错配）。
-    const existing = Object.prototype.hasOwnProperty.call(registeredRules, nameKey)
-      ? registeredRules[nameKey]
-      : undefined;
+    const existing = registeredRules[nameKey];
 
     if (existing && existing !== record) {
       throw new TypeError(`[lint-md] 规则别名冲突：${nameKey} 已被另一规则占用`);

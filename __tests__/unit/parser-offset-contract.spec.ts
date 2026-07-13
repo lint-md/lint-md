@@ -1,7 +1,7 @@
 import { parseMd } from '@lint-md/parser';
 import { isValidOffset } from '../../src/utils/rule-manager';
 
-export interface OffsetContractIssue {
+interface OffsetContractIssue {
   type: string
   hasPosition: boolean
   hasStart: boolean

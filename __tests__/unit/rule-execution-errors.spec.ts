@@ -32,6 +32,17 @@ describe('rule-execution-errors', () => {
     expect(normalizeErrorMessage(42)).toBe('42');
     // Object.create(null) 无法被 String() 转换；collect 模式仍必须保持可观测、不中断。
     expect(normalizeErrorMessage(Object.create(null))).toBe('[unprintable thrown value]');
+
+    const prototypeThrowingProxy = new Proxy({}, {
+      getPrototypeOf: () => { throw new Error('prototype trap'); }
+    });
+    expect(normalizeErrorMessage(prototypeThrowingProxy)).toBe('[unprintable thrown value]');
+
+    const messageThrowingError = new Error('ignored');
+    Object.defineProperty(messageThrowingError, 'message', {
+      get: () => { throw new Error('message getter'); }
+    });
+    expect(normalizeErrorMessage(messageThrowingError)).toBe('[unprintable thrown value]');
   });
 
   test('collect policy accumulates multiple rule failures with round/phase', () => {

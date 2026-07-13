@@ -22,11 +22,10 @@ export class RuleExecutionFailure extends Error {
  * 非 Error 抛值”反而中断 collect 模式。
  */
 export const normalizeErrorMessage = (thrown: unknown): string => {
-  if (thrown instanceof Error) {
-    return thrown.message;
-  }
-
   try {
+    if (thrown instanceof Error) {
+      return String(thrown.message);
+    }
     return String(thrown);
   }
   catch {

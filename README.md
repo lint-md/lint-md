@@ -39,7 +39,12 @@ core 遵循「纯引擎 + 薄适配器」设计：
 从 API 到结果处理，核心只需要一个方法即可完成 lint/fix。当前对外仅提供 **1 个核心 API**：`lintMarkdown`。
 
 ```ts
-lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: boolean)
+lintMarkdown(
+  markdown: string,
+  rules?: LintMdRulesConfig,
+  isFixMode?: boolean,
+  options?: LintExecutionOptions
+)
 ```
 
 参数说明：
@@ -49,12 +54,14 @@ lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: boolean)
 | `markdown` | 要检查的 Markdown 字符串 |
 | `rules` | 规则配置，默认 `{}` |
 | `isFixMode` | 是否开启自动修复，默认 `true` |
+| `options.ruleErrorPolicy` | 规则执行失败策略：默认 `'collect'` 返回部分结果及错误；`'strict'` 首次失败即抛出 `RuleExecutionFailure` |
 
 返回结果：
 
 - `lintResult`：命中规则后的诊断结果列表（含规则名、位置信息、消息、级别）
 - `diagnostics`：标准诊断格式列表（`LintDiagnostic[]`），供编辑器集成直接消费
 - `fixedResult`：开启修复模式时返回 `{ result, notAppliedFixes }`（`result` 为修复后的文本，`notAppliedFixes` 为因冲突等原因未能应用的修复项），否则为 `null`
+- `executionErrors`：规则执行失败的结构化列表。非空时，`diagnostics` 与 `lintResult` 可能只是部分结果；CLI 和编辑器 Adapter 应据此标记本次检查不完整。
 
 下面是一个最小示例，可直接作为接入起点：
 
@@ -81,6 +88,21 @@ const result = lintMarkdown('中文English 123', {}, false);
 console.log(toALEOutput(result.diagnostics, 'test.md'));
 // test.md:1:3: E space-around-alphabet: 中英文之间需要添加空格
 // test.md:1:12: W space-around-number: 中文与数字之间需要添加空格
+```
+
+集成层应在消费 diagnostics 前检查执行错误；默认 `'collect'` 保留可用的部分结果，适合
+交互式编辑器。需要快速失败的 CI 可显式启用 strict 模式：
+
+```ts
+const result = lintMarkdown(markdown, rules, false);
+
+if (result.executionErrors.length > 0) {
+  // 标记本次 lint 结果不完整，并按 Adapter 的策略记录或设置退出码。
+}
+
+lintMarkdown(markdown, rules, false, {
+  ruleErrorPolicy: 'strict'
+}); // 首次规则执行失败即抛出 RuleExecutionFailure
 ```
 
 `no-long-code` 的 `exclude` 用于排除指定代码语言（如 `['dot', 'mermaid']`）的长度检查。
@@ -128,9 +150,9 @@ lint-md 提供了多个常用场景的官方封装，可按你的工程工具链
 按照架构原则，新集成的开发步骤（以 ALE 为例）：
 
 1. 依赖 `@lint-md/core`
-2. 调用 `lintMarkdown()` 获取 `diagnostics`
+2. 调用 `lintMarkdown()` 获取 `diagnostics`，并检查 `executionErrors` 是否为空
 3. 使用 `toALEOutput()` 或自行转换格式
-4. 处理 stdin/file 输入 → 输出 → 退出码
+4. 处理 stdin/file 输入 → 输出 → 退出码；CI 需要快速失败时启用 strict 模式
 
 约 30 行代码即可完成一个新编辑器集成。
 

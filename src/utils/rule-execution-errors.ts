@@ -14,9 +14,25 @@ export class RuleExecutionFailure extends Error {
   }
 }
 
-/** 把任意抛值规范化为消息：Error 取 message，其余用 String() 归一化 */
-export const normalizeErrorMessage = (thrown: unknown): string =>
-  thrown instanceof Error ? thrown.message : String(thrown);
+/**
+ * 把任意抛值规范化为消息。
+ *
+ * `String()` 本身也可能失败，例如 `Object.create(null)` 没有可转换的原型链，
+ * 或恶意 Proxy 的转换 hook 再次抛错。错误收集路径必须始终可用，不能让“记录
+ * 非 Error 抛值”反而中断 collect 模式。
+ */
+export const normalizeErrorMessage = (thrown: unknown): string => {
+  if (thrown instanceof Error) {
+    return thrown.message;
+  }
+
+  try {
+    return String(thrown);
+  }
+  catch {
+    return '[unprintable thrown value]';
+  }
+};
 
 /**
  * 规则执行错误收集器：在兼容模式下累积，严格模式下首次即抛 RuleExecutionFailure。
@@ -50,6 +66,7 @@ export const createRuleErrorCollector = (
 
   return {
     collect,
-    getErrors: () => errors
+    // 返回快照，避免调用方持有的结果在稍后执行 fix() 时被隐式改变。
+    getErrors: () => errors.map(error => ({ ...error }))
   };
 };

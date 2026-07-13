@@ -26,10 +26,12 @@ const makeFixRule = (
 });
 
 describe('rule-execution-errors', () => {
-  test('normalizeErrorMessage: Error -> message, non-Error -> String()', () => {
+  test('normalizeErrorMessage: Error / non-Error values become safe messages', () => {
     expect(normalizeErrorMessage(new Error('boom'))).toBe('boom');
     expect(normalizeErrorMessage('plain')).toBe('plain');
     expect(normalizeErrorMessage(42)).toBe('42');
+    // Object.create(null) 无法被 String() 转换；collect 模式仍必须保持可观测、不中断。
+    expect(normalizeErrorMessage(Object.create(null))).toBe('[unprintable thrown value]');
   });
 
   test('collect policy accumulates multiple rule failures with round/phase', () => {
@@ -40,6 +42,16 @@ describe('rule-execution-errors', () => {
     expect(errs).toHaveLength(2);
     expect(errs[0]).toMatchObject({ ruleName: 'r1', nodeType: 'text', message: 'e1', round: 2, phase: 'selector' });
     expect(errs[1]).toMatchObject({ ruleName: 'r2', message: 'e2', round: 2, phase: 'create' });
+  });
+
+  test('getErrors returns a snapshot rather than a later-mutated collector array', () => {
+    const c = createRuleErrorCollector('collect', 0);
+    c.collect('r1', 'create', 'first');
+    const snapshot = c.getErrors();
+    c.collect('r2', 'create', 'second');
+
+    expect(snapshot).toHaveLength(1);
+    expect(c.getErrors()).toHaveLength(2);
   });
 
   test('strict policy throws RuleExecutionFailure carrying normalized error', () => {

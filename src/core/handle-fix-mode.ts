@@ -45,7 +45,9 @@ export const handleFixMode = (
     const fixes = lintResult.ruleManager.getAllFixes();
 
     // 累加本轮错误（含 create/selector 与 fix 阶段；严格模式下可能已抛 RuleExecutionFailure）。
-    allExecutionErrors.push(...lintResult.executionErrors);
+    // `runLint().executionErrors` 是调用完成时的快照；fix() 在 getAllFixes()
+    // 中才会执行，因此这里从 manager 重新读取，确保本轮 fix 阶段错误也被聚合。
+    allExecutionErrors.push(...lintResult.ruleManager.getExecutionErrors());
 
     // 无 fix 可应用 => 正常收敛。
     if (!fixes.length) {

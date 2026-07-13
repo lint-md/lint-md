@@ -189,10 +189,10 @@ export interface FixedResult {
    * range 基于 result 文本的坐标，可直接用于 result。
    */
   notAppliedFixes: FixConfig[]
-  /** 收敛状态，调用方可据此判断质量而非盲用文本 */
-  convergence: FixConvergence
-  /** 实际执行的 runLint 轮数 */
-  rounds: number
+  /** 收敛状态，调用方可据此判断质量而非盲用文本（兼容扩展，历史构造方式仍可用） */
+  convergence?: FixConvergence
+  /** 实际执行的 runLint 轮数（兼容扩展，历史构造方式仍可用） */
+  rounds?: number
   /** 性能基线，可选；用于后续判断是否值得做增量重跑的独立研究 */
   metrics?: FixMetrics
 }

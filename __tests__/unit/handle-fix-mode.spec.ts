@@ -416,13 +416,15 @@ describe('handleFixMode', () => {
     expect(result.fixedResult.rounds).toBe(3);
   });
 
-  test('text unchanged with conflict is STABLE (not cycle, not max)', () => {
+  test('text unchanged with conflict is STABLE via result===current branch', () => {
+    // ruleA replaces 'abc' -> 'abc' (text unchanged), ruleB 'abc' -> 'Y' conflicts with it.
+    // After applyFix, text stays 'abc' => STABLE on the FIRST round (result === current).
     const ruleA = makeRule({
-      name: 'to-x',
+      name: 'same',
       selector: 'text',
       reportFn: (ctx, node) => {
         if (node.value === 'abc') {
-          ctx.report({ loc: node.position, message: 'x', fix: () => ({ range: [node.position.start.offset, node.position.end.offset], text: 'X' }) });
+          ctx.report({ loc: node.position, message: 'same', fix: () => ({ range: [node.position.start.offset, node.position.end.offset], text: 'abc' }) });
         }
       }
     });
@@ -437,9 +439,35 @@ describe('handleFixMode', () => {
     });
 
     const result = handleFixMode('abc', [{ rule: ruleA }, { rule: ruleB }]);
-    expect(result.fixedResult.result).toBe('X');
+    expect(result.fixedResult.result).toBe('abc');
     expect(result.fixedResult.convergence).toBe(FixConvergence.STABLE);
-    expect(result.fixedResult.rounds).toBe(2);
+    expect(result.fixedResult.rounds).toBe(1);
+    // ruleB's fix was dropped (conflict), still reported in last round
+    expect(result.fixedResult.notAppliedFixes.length).toBe(1);
+    expect(result.fixedResult.notAppliedFixes[0].text).toBe('Y');
+  });
+
+  test('cycle of length MAX is detected, not mislabeled MAX_ROUNDS', () => {
+    // S0 -> S1 -> ... -> S9 -> S0, where S_i is the string i repeated.
+    // After the 10th round, current returns to S0 which was already seen,
+    // so it must be CYCLE_DETECTED (not MAX_ROUNDS / rounds 10 truncation).
+    const states = Array.from({ length: MAX_LINT_AND_FIX_CALL_TIMES }, (_, i) => String(i).repeat(3));
+    const rules = states.map((state, i) => {
+      const next = states[(i + 1) % states.length];
+      return makeRule({
+        name: `s${i}-to-s${(i + 1) % states.length}`,
+        selector: 'text',
+        reportFn: (ctx, node) => {
+          if (node.value === state) {
+            ctx.report({ loc: node.position, message: 'step', fix: () => ({ range: [node.position.start.offset, node.position.end.offset], text: next }) });
+          }
+        }
+      });
+    });
+
+    const result = handleFixMode(states[0], rules.map((rule) => ({ rule })));
+    expect(result.fixedResult.rounds).toBe(MAX_LINT_AND_FIX_CALL_TIMES);
+    expect(result.fixedResult.convergence).toBe(FixConvergence.CYCLE_DETECTED);
   });
 
   test('monotonic growth hits MAX_ROUNDS at 10, not mis-detected as cycle', () => {

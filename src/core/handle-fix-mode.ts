@@ -15,22 +15,17 @@ export const handleFixMode = (markdown: string, rules: LintMdRuleWithOptions[]) 
   const seenTexts = new Set<string>();
   let convergence: FixConvergence | undefined;
 
-  // 性能基线：仅记录每轮 wall time 与整体耗时，不拆分 parse/规则成本。
+  // 性能基线：记录每一轮完整 wall time（parse + AST 遍历 + 规则执行 + applyFix）。
   const perRound: number[] = [];
   const startAll = performance.now();
 
   while (lintTimes < MAX_LINT_AND_FIX_CALL_TIMES) {
-    // 循环检测：在执行某轮 current 之前，判断该文本是否已被处理过。
-    // 这样 A -> B -> A 只会执行 2 轮、最终返回实际已应用的 A。
-    if (seenTexts.has(current)) {
-      convergence = FixConvergence.CYCLE_DETECTED;
-      break;
-    }
+    const roundStart = performance.now();
+
+    // 记录本轮输入文本，供后续判断是否回到历史状态。
     seenTexts.add(current);
 
-    const roundStart = performance.now();
     const lintResult = runLint(current, rules);
-    perRound.push(performance.now() - roundStart);
 
     if (lintTimes === 0) {
       initialLintResult = lintResult;
@@ -42,6 +37,7 @@ export const handleFixMode = (markdown: string, rules: LintMdRuleWithOptions[]) 
 
     // 无 fix 可应用 => 正常收敛。
     if (!fixes.length) {
+      perRound.push(performance.now() - roundStart);
       convergence = FixConvergence.STABLE;
       break;
     }
@@ -54,11 +50,22 @@ export const handleFixMode = (markdown: string, rules: LintMdRuleWithOptions[]) 
 
     // 文本不再变化 => 正常收敛（即便该轮存在冲突未应用的 fix）。
     if (nextFixedResult.result === current) {
+      perRound.push(performance.now() - roundStart);
       convergence = FixConvergence.STABLE;
       break;
     }
 
     current = nextFixedResult.result;
+
+    // 文本回到了某个已处理过的状态 => 检测到循环，提前停止。
+    // 放在文本不变判断之后，自替换规则仍归类为 STABLE。
+    if (seenTexts.has(current)) {
+      perRound.push(performance.now() - roundStart);
+      convergence = FixConvergence.CYCLE_DETECTED;
+      break;
+    }
+
+    perRound.push(performance.now() - roundStart);
   }
 
   // 走到上限仍未收敛 => 被截断。

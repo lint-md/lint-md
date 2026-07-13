@@ -124,4 +124,21 @@ describe('lintMarkdown() rule alias & config contract (issue #177)', () => {
     expect(res.fixableErrorCount).toBe(1);
     expect(res.fixableWarningCount).toBe(1);
   });
+
+  test('9. third-party rule cannot silently override a built-in rule by meta.name (P1)', () => {
+    // 复用内置规则名 space-around-alphabet，但实现为空，企图替换内置规则。
+    const hijackRule = makeMockRule({ name: 'space-around-alphabet', withFix: false });
+    expect(() => lintMarkdown('hello world', {
+      'hijack-alias': [hijackRule, RULE_SEVERITY.WARN, {}]
+    }, false)).toThrow(/别名冲突/);
+  });
+
+  test('10. same rule object reused under two config keys is a conflict (P1)', () => {
+    const sharedRule = makeMockRule({ name: 'shared-name', withFix: false });
+    expect(() => lintMarkdown('text only', {
+      ...disableAllInternal(),
+      'alias-a': [sharedRule, RULE_SEVERITY.ERROR, { source: 'a' }],
+      'alias-b': [sharedRule, RULE_SEVERITY.WARN, { source: 'b' }]
+    }, false)).toThrow(/别名冲突/);
+  });
 });

@@ -66,8 +66,6 @@ export const overrideDefaultRules = (defaultRules: Record<string, LintMdRule>, r
   // rule.meta.name 回查注册表的。当配置键与 meta.name 不一致时，回查会失败
   // 并抛出 TypeError。这里为每个注册记录按其 meta.name 建立别名，使报告名称
   // 仍能命中同一记录，从而修复崩溃且无需推翻既有注册结构。
-  const internalNames = new Set(Object.values(defaultRules).map(rule => rule.meta.name));
-
   for (const [configKey, record] of Object.entries(registeredRules)) {
     const nameKey = record.rule.meta.name;
 
@@ -76,12 +74,17 @@ export const overrideDefaultRules = (defaultRules: Record<string, LintMdRule>, r
       continue;
     }
 
-    // 若 meta.name 已被另一不同的规则占用（非内置规则），则明确报错。
-    if (!internalNames.has(nameKey)) {
-      const existing = registeredRules[nameKey];
-      if (existing && existing.rule !== record.rule) {
-        throw new TypeError(`[lint-md] 规则别名冲突：${nameKey} 已被另一规则占用`);
-      }
+    // 只要 nameKey 已被另一个（不同的）注册记录占用，就报冲突——
+    // 不区分内置/第三方，也不比较 rule 对象身份：
+    //  1. 阻止第三方规则通过 meta.name 静默覆盖内置规则；
+    //  2. 阻止不同配置键占用同一 meta.name；
+    //  3. 阻止同一 rule 对象被多个配置键重复注册（options/severity 错配）。
+    const existing = Object.prototype.hasOwnProperty.call(registeredRules, nameKey)
+      ? registeredRules[nameKey]
+      : undefined;
+
+    if (existing && existing !== record) {
+      throw new TypeError(`[lint-md] 规则别名冲突：${nameKey} 已被另一规则占用`);
     }
 
     registeredRules[nameKey] = record;

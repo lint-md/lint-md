@@ -3,10 +3,10 @@ import type {
   LintMdFixResult,
   LintMdLintResult,
   LintMdResult,
-  LintMdRule,
   LintMdRuleWithOptions,
   LintMdRulesConfig,
-  LintReportItem
+  LintReportItem,
+  RegisteredRules
 } from '../types';
 import * as internalRuleConfig from '../rules';
 import { overrideDefaultRules } from '../utils/override-default-rules';
@@ -50,9 +50,12 @@ export function lintMarkdown(markdown: string, rules: LintMdRulesConfig = {}, is
   const registeredRuleEntries = Object.entries(registeredRules);
 
   // 最终的 rules
-  // 注意：注册表可能包含同一规则的多条记录（配置键 + meta.name 别名），
-  // 这里按 rule 引用去重，避免规则被重复执行导致报告与计数翻倍。
-  const seenRules = new Set<LintMdRule>();
+  // 注意：注册表可能为同一注册记录建立过别名（配置键 + meta.name 指向同一对象），
+  // 这里按注册记录引用去重，避免规则被重复执行导致报告与计数翻倍。
+  // 按记录（而非 rule）去重很重要：当同一个 rule 对象被两个配置键复用时，
+  // 它们是不同的注册记录（不同 severity/options），冲突检查已在注册阶段阻止，
+  // 此处不会遇到这种情况，但按记录去重更能与注册表契约保持一致。
+  const seenRecords = new Set<RegisteredRules[string]>();
   const internalRules = registeredRuleEntries
     .filter((item) => {
       const value = item[1];
@@ -60,11 +63,11 @@ export function lintMarkdown(markdown: string, rules: LintMdRulesConfig = {}, is
       if (value.severity === RULE_SEVERITY.OFF) {
         return false;
       }
-      // 同一 rule 只保留一次（配置键与 meta.name 别名指向同一记录）
-      if (seenRules.has(value.rule)) {
+      // 同一注册记录只保留一次（配置键与 meta.name 别名指向同一对象）
+      if (seenRecords.has(value)) {
         return false;
       }
-      seenRules.add(value.rule);
+      seenRecords.add(value);
       return true;
     })
     .map((options) => {

@@ -23,27 +23,54 @@ const ESCAPABLE_PUNCTUATION = new Set('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'.split
  *
  * @see issue #155
  */
-const buildDecodePrefixLengths = (raw: string): number[] => {
+interface EntityReference {
+  decoded: string
+  endOffset: number
+}
+
+const collectEntityReferences = (raw: string): Map<number, EntityReference> => {
+  const references = new Map<number, EntityReference>();
+  const reference = (
+    decoded: string,
+    location: { start: { offset: number }; end: { offset: number } }
+  ) => {
+    references.set(location.start.offset, {
+      decoded,
+      endOffset: location.end.offset
+    });
+  };
+
+  // 单次解析整个原始切片，避免为每个 `&` 重复扫描剩余文本。
+  parseEntities(raw, { text: () => {}, reference: reference as never });
+  return references;
+};
+
+const buildDecodePrefixLengths = (raw: string, value: string): number[] => {
   const prefixLengths: number[] = [0];
+  const entityReferences = collectEntityReferences(raw);
   let i = 0;
+  let valueIndex = 0;
   while (i < raw.length) {
     const char = raw[i];
 
-    if (char === '&') {
-      // 注意：parse-entities 的 reference 回调第三个参数类型声明为 Location，
-      // 但运行时实际传入的是该字符引用的原始源片段字符串（见 micromark 实现）。
-      let entityRaw: string | '' = '';
-      const refHandler = (_value: string, _pos: unknown, full: unknown) => {
-        entityRaw = typeof full === 'string' ? full : '';
-      };
-      parseEntities(raw.slice(i), { text: () => {}, reference: refHandler as never });
-      if (entityRaw !== '' && raw.startsWith(entityRaw, i)) {
-        prefixLengths.push(prefixLengths[prefixLengths.length - 1] + entityRaw.length);
-        i += entityRaw.length;
-        continue;
+    const entityReference = entityReferences.get(i);
+    if (entityReference) {
+      const rawLength = entityReference.endOffset - i;
+      // 大多数实体的解码结果可直接和 node.value 对齐。旧版解析器对部分
+      // astral numeric reference 只保留一个 UTF-16 code unit，因此不一致时
+      // 以 node.value 的一个 code unit 为准。
+      const decodedLength = value.startsWith(entityReference.decoded, valueIndex)
+        ? entityReference.decoded.length
+        : 1;
+
+      for (let unit = 0; unit < decodedLength; unit++) {
+        // 一个实体产生多个 code unit 时，它们都起始于同一原始位置；只有
+        // 最后一个 unit 的结束边界越过完整实体源文本。
+        prefixLengths.push(prefixLengths[prefixLengths.length - 1]
+          + (unit === decodedLength - 1 ? rawLength : 0));
       }
-      prefixLengths.push(prefixLengths[prefixLengths.length - 1] + 1);
-      i++;
+      i = entityReference.endOffset;
+      valueIndex += decodedLength;
       continue;
     }
 
@@ -51,11 +78,13 @@ const buildDecodePrefixLengths = (raw: string): number[] => {
       // 转义序列占两个原始字符，但归一化后只占一个字符。
       prefixLengths.push(prefixLengths[prefixLengths.length - 1] + 2);
       i += 2;
+      valueIndex++;
       continue;
     }
 
     prefixLengths.push(prefixLengths[prefixLengths.length - 1] + 1);
     i++;
+    valueIndex++;
   }
   return prefixLengths;
 };
@@ -164,7 +193,7 @@ export class TextScanner {
   /** 归一化索引 -> 原始文档前缀长度映射，首次需要时构建（见 issue #155）。 */
   private get decodePrefixLengths(): number[] {
     if (!this._decodePrefixLengths) {
-      this._decodePrefixLengths = buildDecodePrefixLengths(this._raw);
+      this._decodePrefixLengths = buildDecodePrefixLengths(this._raw, this._value);
     }
     return this._decodePrefixLengths;
   }

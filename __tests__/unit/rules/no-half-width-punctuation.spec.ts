@@ -116,3 +116,19 @@ describe('test no-half-width-punctuation', () => {
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
   });
 });
+
+  test('fix mixed full-width/half-width parentheses with escaped backslash in text (issue #155)', () => {
+    const md = '在 DOM 检查器中按下 ctrl + \\\\(（(Chrome/Window）) 可以随时暂停 JS 的执行。这样您就可以检查 DOM 的快照，而不必担心 JS 会改变 DOM 或事件（如鼠标悬停）会导致 DOM 从您脚下发生变化。';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(fixedResult?.result).toStrictEqual('在 DOM 检查器中按下 ctrl + \\\\(（（Chrome/Window）） 可以随时暂停 JS 的执行。这样您就可以检查 DOM 的快照，而不必担心 JS 会改变 DOM 或事件（如鼠标悬停）会导致 DOM 从您脚下发生变化。');
+    const { lintResult: after } = fixer(fixedResult!.result);
+    expect(after.ruleManager.getReportData().length).toStrictEqual(0);
+  });
+
+  test('fix ASCII parentheses adjacent to HTML entity in text', () => {
+    const md = '价格&amp;(test)很不错';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(fixedResult?.result).toStrictEqual('价格&amp;（test）很不错');
+  });

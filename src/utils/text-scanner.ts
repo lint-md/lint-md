@@ -59,6 +59,26 @@ const getLegacyNumericEntityDecode = (source: string): string | undefined => {
   return Number.isNaN(codePoint) ? undefined : String.fromCharCode(codePoint);
 };
 
+const getParserNumericEntityDecode = (source: string): string | undefined => {
+  const match = /^&#(?:([0-9]+)|[xX]([0-9A-Fa-f]+));$/.exec(source);
+  if (!match) {
+    return undefined;
+  }
+
+  const codePoint = Number.parseInt(match[1] ?? match[2], match[1] ? 10 : 16);
+  const invalid = codePoint < 0x09
+    || codePoint === 0x0B
+    || (codePoint > 0x0D && codePoint < 0x20)
+    || (codePoint > 0x7E && codePoint < 0xA0)
+    || (codePoint > 0xD7FF && codePoint < 0xE000)
+    || (codePoint > 0xFDCF && codePoint < 0xFDF0)
+    || (codePoint & 0xFFFF) === 0xFFFF
+    || (codePoint & 0xFFFF) === 0xFFFE
+    || codePoint > 0x10FFFF;
+
+  return invalid ? '\uFFFD' : String.fromCharCode(codePoint);
+};
+
 const collectEntityReferences = (raw: string): Map<number, EntityReference> => {
   const references = new Map<number, EntityReference>();
   const reference = (
@@ -134,7 +154,11 @@ const buildDecodePrefixLengths = (raw: string, value: string): number[] => {
     const entityReference = entityReferences.get(rawIndex);
     if (entityReference) {
       const source = raw.slice(rawIndex, entityReference.endOffset);
-      const decodedCandidates = new Set([entityReference.decoded, getLegacyNumericEntityDecode(source)]);
+      const decodedCandidates = new Set([
+        entityReference.decoded,
+        getLegacyNumericEntityDecode(source),
+        getParserNumericEntityDecode(source)
+      ]);
       for (const decoded of decodedCandidates) {
         if (decoded && value.startsWith(decoded, valueIndex)) {
           enqueue(rawIndex, valueIndex, entityReference.endOffset, valueIndex + decoded.length);

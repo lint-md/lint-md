@@ -186,4 +186,19 @@ describe('test no-half-width-punctuation', () => {
     expect(lintResult.ruleManager.getReportData()).toHaveLength(2);
     expect(fixedResult?.result).toStrictEqual(`中文${entity}（test）中文`);
   });
+
+  test.each([
+    '&#0;',
+    '&#11;',
+    '&#127;',
+    '&#128;',
+    '&#xFDD0;',
+    '&#xFFFF;'
+  ])('aligns numeric entities normalized to replacement character: %s', entity => {
+    const md = `中文${entity}(test)中文`;
+    const { executionErrors, fixedResult, lintResult } = fixer(md);
+    expect(executionErrors).toHaveLength(0);
+    expect(lintResult.ruleManager.getReportData()).toHaveLength(2);
+    expect(fixedResult?.result).toStrictEqual(`中文${entity}（test）中文`);
+  });
 });

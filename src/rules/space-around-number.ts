@@ -31,13 +31,11 @@ const spaceAroundNumber: LintMdRule = {
 
         scanner.forEachChar((char, i, pos) => {
           if (i < value.length - 1 && shouldInsertSpaceBetween(value, i)) {
+            const match = scanner.matchAt(i, 2);
             context.report({
-              loc: {
-                start: { line: pos.line, column: pos.column, offset: pos.offset },
-                end: { line: pos.line, column: pos.column + 2, offset: pos.offset + 2 }
-              },
+              loc: match.loc,
               message: '中文与数字之间需要增加空格',
-              fix: fixer => fixer.insertTextAt(pos.offset + 1, ' ')
+              fix: fixer => fixer.insertTextAt(pos.endOffset, ' ')
             });
           }
         });

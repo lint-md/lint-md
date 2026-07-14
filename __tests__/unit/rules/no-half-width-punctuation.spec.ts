@@ -145,4 +145,25 @@ describe('test no-half-width-punctuation', () => {
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
     expect(fixedResult?.result).toStrictEqual('甲&Afr;（test）中文');
   });
+
+  test('replace the complete escaped parenthesis source', () => {
+    const md = '中文\\(test\\)中文';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(fixedResult?.result).toStrictEqual('中文（test）中文');
+  });
+
+  test('replace the complete parenthesis entity source', () => {
+    const md = '中文&#40;test&#41;中文';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(fixedResult?.result).toStrictEqual('中文（test）中文');
+  });
+
+  test.each(['&copy', '&amp'])('keep non-terminated entity-like text aligned: %s', entity => {
+    const md = `中文${entity}(test)中文`;
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(fixedResult?.result).toStrictEqual(`中文${entity}（test）中文`);
+  });
 });

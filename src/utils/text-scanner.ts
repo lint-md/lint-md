@@ -41,7 +41,11 @@ const collectEntityReferences = (raw: string): Map<number, EntityReference> => {
   };
 
   // 单次解析整个原始切片，避免为每个 `&` 重复扫描剩余文本。
-  parseEntities(raw, { text: () => {}, reference: reference as never });
+  parseEntities(raw, {
+    nonTerminated: false,
+    text: () => {},
+    reference: reference as never
+  });
   return references;
 };
 
@@ -86,6 +90,11 @@ const buildDecodePrefixLengths = (raw: string, value: string): number[] => {
     i++;
     valueIndex++;
   }
+
+  if (prefixLengths.length !== value.length + 1
+    || prefixLengths[prefixLengths.length - 1] !== raw.length) {
+    throw new RangeError('TextScanner raw/normalized offset mapping is inconsistent');
+  }
   return prefixLengths;
 };
 
@@ -123,10 +132,15 @@ export interface TextMatch {
 }
 
 /** 逐字符迭代时的位置信息 */
-export interface CharPosition {
+interface DocumentPosition {
   line: number
   column: number
   offset: number
+}
+
+export interface CharPosition extends DocumentPosition {
+  /** 当前归一化字符在原始文档中的结束 offset */
+  endOffset: number
 }
 
 /**
@@ -201,9 +215,10 @@ export class TextScanner {
   /** 将「归一化 value 的索引」换算为「原始文档 offset」。 */
   private rawOffsetAt(index: number): number {
     const prefixLengths = this.decodePrefixLengths;
-    const len = prefixLengths.length - 1;
-    const clamped = index < 0 ? 0 : index > len ? len : index;
-    return this._startOffset + prefixLengths[clamped];
+    if (!Number.isInteger(index) || index < 0 || index >= prefixLengths.length) {
+      throw new RangeError(`TextScanner index out of range: ${index}`);
+    }
+    return this._startOffset + prefixLengths[index];
   }
 
   /** 文本内容（归一化，用于匹配） */
@@ -221,7 +236,7 @@ export class TextScanner {
    *
    * 通过前缀长度映射得到原始切片内的偏移，再基于原始切片换行索引换算行列号。
    */
-  private positionAt(index: number): CharPosition {
+  private positionAt(index: number): DocumentPosition {
     const rawRel = this.rawOffsetAt(index) - this._startOffset;
     const lb = this.rawLineBreakIndices;
     let lo = 0;
@@ -241,12 +256,10 @@ export class TextScanner {
       ? this._startColumn + rawRel
       : rawRel - lb[lo - 1];
 
-    const clampedIndex = Math.max(0, Math.min(index, this.decodePrefixLengths.length - 1));
-
     return {
       line,
       column,
-      offset: this._startOffset + this.decodePrefixLengths[clampedIndex]
+      offset: this._startOffset + this.decodePrefixLengths[index]
     };
   }
 
@@ -347,7 +360,12 @@ export class TextScanner {
       const runEnd = prefixLengths[i + 1];
       const offset = this._startOffset + runStart;
 
-      callback(char, i, { line, column, offset });
+      callback(char, i, {
+        line,
+        column,
+        offset,
+        endOffset: this._startOffset + runEnd
+      });
 
       // 沿原始切片推进行列号（不构建二分换行索引，保持 issue #176 诊断行为）。
       for (let r = runStart; r < runEnd; r++) {

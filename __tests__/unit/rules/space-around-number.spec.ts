@@ -35,4 +35,11 @@ describe('test space-around-number', () => {
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
     expect(fixedResult?.result).toStrictEqual(md);
   });
+
+  test('insert spaces outside a numeric character entity', () => {
+    const md = '中&#49;文';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(fixedResult?.result).toStrictEqual('中 &#49; 文');
+  });
 });

@@ -28,16 +28,50 @@ interface EntityReference {
   endOffset: number
 }
 
+interface AlignmentTransition {
+  previousKey: string
+  rawStart: number
+  rawEnd: number
+  valueLength: number
+}
+
+const isCommonMarkNumericEntity = (source: string): boolean => {
+  const decimal = /^&#([0-9]+);$/.exec(source);
+  if (decimal) {
+    return decimal[1].length <= 7;
+  }
+
+  const hexadecimal = /^&#[xX]([0-9A-Fa-f]+);$/.exec(source);
+  if (hexadecimal) {
+    return hexadecimal[1].length <= 6;
+  }
+
+  return true;
+};
+
+const getLegacyNumericEntityDecode = (source: string): string | undefined => {
+  const match = /^&#(?:([0-9]+)|[xX]([0-9A-Fa-f]+));$/.exec(source);
+  if (!match) {
+    return undefined;
+  }
+
+  const codePoint = Number.parseInt(match[1] ?? match[2], match[1] ? 10 : 16);
+  return Number.isNaN(codePoint) ? undefined : String.fromCharCode(codePoint);
+};
+
 const collectEntityReferences = (raw: string): Map<number, EntityReference> => {
   const references = new Map<number, EntityReference>();
   const reference = (
     decoded: string,
     location: { start: { offset: number }; end: { offset: number } }
   ) => {
-    references.set(location.start.offset, {
-      decoded,
-      endOffset: location.end.offset
-    });
+    const source = raw.slice(location.start.offset, location.end.offset);
+    if (isCommonMarkNumericEntity(source)) {
+      references.set(location.start.offset, {
+        decoded,
+        endOffset: location.end.offset
+      });
+    }
   };
 
   // 单次解析整个原始切片，避免为每个 `&` 重复扫描剩余文本。
@@ -50,51 +84,86 @@ const collectEntityReferences = (raw: string): Map<number, EntityReference> => {
 };
 
 const buildDecodePrefixLengths = (raw: string, value: string): number[] => {
-  const prefixLengths: number[] = [0];
   const entityReferences = collectEntityReferences(raw);
-  let i = 0;
-  let valueIndex = 0;
-  while (i < raw.length) {
-    const char = raw[i];
+  const stateKey = (rawIndex: number, valueIndex: number) => `${rawIndex}:${valueIndex}`;
+  const startKey = stateKey(0, 0);
+  const targetKey = stateKey(raw.length, value.length);
+  const visited = new Set<string>([startKey]);
+  const transitions = new Map<string, AlignmentTransition>();
+  const queue: Array<{ rawIndex: number; valueIndex: number }> = [{ rawIndex: 0, valueIndex: 0 }];
 
-    const entityReference = entityReferences.get(i);
+  const enqueue = (
+    rawStart: number,
+    valueStart: number,
+    rawEnd: number,
+    valueEnd: number
+  ) => {
+    const key = stateKey(rawEnd, valueEnd);
+    if (visited.has(key)) {
+      return;
+    }
+
+    visited.add(key);
+    transitions.set(key, {
+      previousKey: stateKey(rawStart, valueStart),
+      rawStart,
+      rawEnd,
+      valueLength: valueEnd - valueStart
+    });
+    queue.push({ rawIndex: rawEnd, valueIndex: valueEnd });
+  };
+
+  for (let cursor = 0; cursor < queue.length; cursor++) {
+    const { rawIndex, valueIndex } = queue[cursor];
+    if (rawIndex === raw.length && valueIndex === value.length) {
+      break;
+    }
+
+    if (rawIndex < raw.length && valueIndex < value.length && raw[rawIndex] === value[valueIndex]) {
+      enqueue(rawIndex, valueIndex, rawIndex + 1, valueIndex + 1);
+    }
+
+    if (raw[rawIndex] === '\\'
+      && rawIndex + 1 < raw.length
+      && valueIndex < value.length
+      && ESCAPABLE_PUNCTUATION.has(raw[rawIndex + 1])
+      && raw[rawIndex + 1] === value[valueIndex]) {
+      enqueue(rawIndex, valueIndex, rawIndex + 2, valueIndex + 1);
+    }
+
+    const entityReference = entityReferences.get(rawIndex);
     if (entityReference) {
-      const rawLength = entityReference.endOffset - i;
-      // 大多数实体的解码结果可直接和 node.value 对齐。旧版解析器对部分
-      // astral numeric reference 只保留一个 UTF-16 code unit，因此不一致时
-      // 以 node.value 的一个 code unit 为准。
-      const decodedLength = value.startsWith(entityReference.decoded, valueIndex)
-        ? entityReference.decoded.length
-        : 1;
-
-      for (let unit = 0; unit < decodedLength; unit++) {
-        // 一个实体产生多个 code unit 时，它们都起始于同一原始位置；只有
-        // 最后一个 unit 的结束边界越过完整实体源文本。
-        prefixLengths.push(prefixLengths[prefixLengths.length - 1]
-          + (unit === decodedLength - 1 ? rawLength : 0));
+      const source = raw.slice(rawIndex, entityReference.endOffset);
+      const decodedCandidates = new Set([entityReference.decoded, getLegacyNumericEntityDecode(source)]);
+      for (const decoded of decodedCandidates) {
+        if (decoded && value.startsWith(decoded, valueIndex)) {
+          enqueue(rawIndex, valueIndex, entityReference.endOffset, valueIndex + decoded.length);
+        }
       }
-      i = entityReference.endOffset;
-      valueIndex += decodedLength;
-      continue;
     }
-
-    if (char === '\\' && i + 1 < raw.length && ESCAPABLE_PUNCTUATION.has(raw[i + 1])) {
-      // 转义序列占两个原始字符，但归一化后只占一个字符。
-      prefixLengths.push(prefixLengths[prefixLengths.length - 1] + 2);
-      i += 2;
-      valueIndex++;
-      continue;
-    }
-
-    prefixLengths.push(prefixLengths[prefixLengths.length - 1] + 1);
-    i++;
-    valueIndex++;
   }
 
-  if (prefixLengths.length !== value.length + 1
-    || prefixLengths[prefixLengths.length - 1] !== raw.length) {
+  if (!visited.has(targetKey)) {
     throw new RangeError('TextScanner raw/normalized offset mapping is inconsistent');
   }
+
+  const matchedTransitions: AlignmentTransition[] = [];
+  for (let key = targetKey; key !== startKey;) {
+    const transition = transitions.get(key);
+    if (!transition) {
+      throw new RangeError('TextScanner offset mapping is missing an alignment transition');
+    }
+    matchedTransitions.push(transition);
+    key = transition.previousKey;
+  }
+
+  const prefixLengths: number[] = [0];
+  for (const transition of matchedTransitions.reverse()) {
+    for (let unit = 1; unit <= transition.valueLength; unit++) {
+      prefixLengths.push(unit === transition.valueLength ? transition.rawEnd : transition.rawStart);
+    }
+  }
+
   return prefixLengths;
 };
 

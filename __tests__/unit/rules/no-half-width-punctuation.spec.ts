@@ -166,4 +166,24 @@ describe('test no-half-width-punctuation', () => {
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
     expect(fixedResult?.result).toStrictEqual(`中文${entity}（test）中文`);
   });
+
+  test.each([
+    '<https://example.com/?a&amp;b>',
+    'www.example.com/?a&amp;b'
+  ])('does not reinterpret entities inside an autolink: %s', md => {
+    const { executionErrors, lintResult } = fixer(md);
+    expect(executionErrors).toHaveLength(0);
+    expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
+  });
+
+  test.each([
+    '&#00000049;',
+    '&#x0000028;'
+  ])('keeps overlong numeric entity-like text aligned: %s', entity => {
+    const md = `中文${entity}(test)中文`;
+    const { executionErrors, fixedResult, lintResult } = fixer(md);
+    expect(executionErrors).toHaveLength(0);
+    expect(lintResult.ruleManager.getReportData()).toHaveLength(2);
+    expect(fixedResult?.result).toStrictEqual(`中文${entity}（test）中文`);
+  });
 });

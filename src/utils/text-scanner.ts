@@ -1,6 +1,10 @@
-import parseEntities = require('parse-entities');
+import * as parseEntitiesNs from 'parse-entities';
 import type { MarkdownTextNode } from './get-text-nodes';
 import { now } from './time';
+
+// parse-entities 使用 `export =`，需兼容 CommonJS 与 ESM 两种产物：
+// 在 ESM 构建下命名空间对象本身不可调用，需取 .default。
+const parseEntities = (parseEntitiesNs as { default?: typeof parseEntitiesNs }).default ?? parseEntitiesNs;
 
 /** CommonMark 可转义标点集合（与解析器一致）。 */
 const ESCAPABLE_PUNCTUATION = new Set('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'.split(''));

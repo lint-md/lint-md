@@ -1,13 +1,51 @@
 import { runLint } from '../../src/core/run-lint';
 import { lintMarkdownInternal } from '../../src/core/lint-markdown';
 import { RuleExecutionFailure } from '../../src/utils/rule-execution-errors';
-import { TextScanner } from '../../src/utils/text-scanner';
+import { parseMdWithSourceMap } from '@lint-md/parser';
+import { TextScanner, registerTextNodeSourceMap } from '../../src/utils/text-scanner';
 import noHalfWidthPunctuation from '../../src/rules/no-half-width-punctuation';
 import type { LintMdRule } from '../../src/types';
 
 const halfWidthConfig = [{ rule: noHalfWidthPunctuation }];
 
 describe('parser source-map integration', () => {
+  test('does not resolve source ranges for uninspected code points', () => {
+    const node = {
+      type: 'text',
+      value: 'abc',
+      position: {
+        start: { line: 1, column: 1, offset: 0 },
+        end: { line: 1, column: 4, offset: 3 }
+      }
+    };
+    const getSourceRange = jest.fn((_node: unknown, _start: number, _end: number) => node.position);
+    registerTextNodeSourceMap(
+      { type: 'root', children: [node], position: node.position } as any,
+      { getSourceRange } as any
+    );
+
+    new TextScanner(node as any).forEachChar(() => {});
+    expect(getSourceRange).not.toHaveBeenCalled();
+
+    const positions: Array<{ endOffset: number }> = [];
+    new TextScanner(node as any).forEachChar((_char, _index, pos) => {
+      positions.push(pos);
+    });
+    expect(getSourceRange).not.toHaveBeenCalled();
+    positions.forEach(pos => void pos.endOffset);
+    expect(getSourceRange).toHaveBeenCalledTimes(3);
+    expect(getSourceRange.mock.calls.map(([, start, end]) => [start, end]))
+      .toEqual([[0, 1], [1, 2], [2, 3]]);
+  });
+
+  test('keeps inlineCode on the identity fallback instead of registering an unsupported source map', () => {
+    const { ast, sourceMap } = parseMdWithSourceMap('`code`');
+    registerTextNodeSourceMap(ast, sourceMap);
+    const inlineCode = (ast.children[0] as any).children[0];
+    expect(inlineCode.type).toBe('inlineCode');
+    expect(new TextScanner(inlineCode).matchAt(0, 1).absoluteRange).toEqual([0, 1]);
+  });
+
   test.each([
     ['escaped', '中文\\(test\\)中文', '中文（test）中文'],
     ['numeric entity', '中文&#40;test&#41;中文', '中文（test）中文']

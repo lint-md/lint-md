@@ -14,7 +14,8 @@
  * CLI params (parent mode):
  *   --bytes <n>       Input size in bytes per case (default: 65536)
  *   --shape <name>    Input shape: long-paragraph | many-paragraphs | mixed-markdown |
- *                     high-match-density | low-match-density | overlapping-fixes
+ *                     high-match-density | low-match-density | overlapping-fixes |
+ *                     entity-dense | escape-dense
  *                     (default: long-paragraph)
  *   --runs <n>        Measured runs per case (default: 5)
  *   --warmup <n>      Warmup runs before measurement (default: 2)
@@ -288,6 +289,7 @@ function runChildCase(opts) {
 const ALL_SHAPES = [
   'long-paragraph', 'many-paragraphs', 'mixed-markdown',
   'high-match-density', 'low-match-density', 'overlapping-fixes',
+  'entity-dense', 'escape-dense',
 ];
 const ALL_SIZES = [64 * 1024, 256 * 1024, 1024 * 1024];
 
@@ -391,6 +393,16 @@ function generateOverlappingFixes(targetBytes) {
   return repeatToSize(base, targetBytes);
 }
 
+// Every entity / escape becomes a distinct parser source-map segment. These
+// shapes guard against accidentally resolving a range for every scanned unit.
+function generateEntityDense(targetBytes) {
+  return repeatToSize('中文&amp;文本', targetBytes);
+}
+
+function generateEscapeDense(targetBytes) {
+  return repeatToSize('中文\\(文本\\)中文', targetBytes);
+}
+
 function generateInput(shape, bytes) {
   const generators = {
     'long-paragraph': generateLongParagraph,
@@ -399,6 +411,8 @@ function generateInput(shape, bytes) {
     'high-match-density': generateHighMatchDensity,
     'low-match-density': generateLowMatchDensity,
     'overlapping-fixes': generateOverlappingFixes,
+    'entity-dense': generateEntityDense,
+    'escape-dense': generateEscapeDense,
   };
   const gen = generators[shape];
   if (!gen) throw new Error(`Unknown shape: ${shape}`);

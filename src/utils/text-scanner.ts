@@ -19,7 +19,12 @@ export const registerTextNodeSourceMap = (
   sourceMap: MarkdownSourceMap
 ): void => {
   for (const node of getTextNodes(ast)) {
-    sourceMaps.set(node, sourceMap);
+    // Parser 0.1.3 maps text nodes only. inlineCode remains supported by the
+    // scanner's identity fallback, rather than being registered to a map that
+    // would reject it with SourceMapUnavailableError.
+    if (node.type === 'text') {
+      sourceMaps.set(node, sourceMap);
+    }
   }
 };
 
@@ -191,18 +196,27 @@ export class TextScanner {
   forEachChar(callback: (char: string, index: number, pos: CharPosition) => void): void {
     for (let index = 0; index < this._value.length;) {
       const char = String.fromCodePoint(this._value.codePointAt(index)!);
-      const range = this._sourceMap
-        ? this.sourceRange(index, index + char.length)
-        : {
-            start: this.fallbackPointAtLinear(index),
-            end: this.fallbackPointAtLinear(index + char.length)
-          };
-      callback(char, index, {
-        line: range.start.line,
-        column: range.start.column,
-        offset: range.start.offset,
-        endOffset: range.end.offset
-      });
+      const charIndex = index;
+      const charLength = char.length;
+      let range: ReturnType<TextScanner['sourceRange']> | undefined;
+      const getRange = () => {
+        range ??= this._sourceMap
+          ? this.sourceRange(charIndex, charIndex + charLength)
+          : {
+              start: this.fallbackPointAtLinear(charIndex),
+              end: this.fallbackPointAtLinear(charIndex + charLength)
+            };
+        return range;
+      };
+      // Position lookup is deliberately lazy. Most rules inspect the character
+      // first and only need a source range after deciding to report it.
+      const pos = Object.defineProperties({}, {
+        line: { enumerable: true, get: () => getRange().start.line },
+        column: { enumerable: true, get: () => getRange().start.column },
+        offset: { enumerable: true, get: () => getRange().start.offset },
+        endOffset: { enumerable: true, get: () => getRange().end.offset }
+      }) as CharPosition;
+      callback(char, index, pos);
       index += char.length;
     }
   }

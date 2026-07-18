@@ -1,9 +1,10 @@
-import { parseMd } from '@lint-md/parser';
+import { parseMdWithSourceMap } from '@lint-md/parser';
 import type { LintMdRuleWithOptions, RunLintOptions } from '../types';
 import { createEmitter } from '../utils/emitter';
 import { createTraverser } from '../utils/traverser';
 import { createRuleManager } from '../utils/rule-manager';
 import { createRuleErrorCollector } from '../utils/rule-execution-errors';
+import { registerTextNodeSourceMap } from '../utils/text-scanner';
 
 /**
  * 基于各种 rules 对 Markdown 文本进行校验
@@ -29,8 +30,10 @@ export const runLint = (
   // 先创建收集器，再创建 ruleManager：getAllFixes() 内的 fix() 阶段错误才能接入收集器。
   const collector = createRuleErrorCollector(policy, round);
 
-  // 将 markdown 转换成 ast
-  const ast = parseMd(markdown);
+  // Parser owns normalized-text -> original-Markdown mapping.  Register it
+  // internally for TextScanner without changing the third-party rule context.
+  const { ast, sourceMap } = parseMdWithSourceMap(markdown);
+  registerTextNodeSourceMap(ast, sourceMap);
 
   // 全局规则管理器（传入 collector，使 fix 阶段捕获生效）
   const ruleManager = createRuleManager(markdown, collector);

@@ -21,7 +21,7 @@ const noFullWidthNumber: LintMdRule = {
   create: (context) => {
     return {
       text: (node: PositionedTextNode) => {
-        const scanner = new TextScanner(node, context.markdown);
+        const scanner = new TextScanner(node);
         const matches = scanner.findAllMatches(/[０-９]+/g);
 
         matches.forEach((m) => {

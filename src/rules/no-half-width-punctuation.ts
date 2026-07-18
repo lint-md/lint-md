@@ -66,7 +66,7 @@ const noHalfWidthPunctuation: LintMdRule = {
   create: (context) => {
     return {
       text: (node: PositionedTextNode) => {
-        const scanner = new TextScanner(node, context.markdown);
+        const scanner = new TextScanner(node);
         const { value } = scanner;
 
         // 预处理：找出需要转换的括号对
@@ -81,7 +81,7 @@ const noHalfWidthPunctuation: LintMdRule = {
         }
 
         // 逐字符扫描
-        scanner.forEachChar((char, i, pos) => {
+        scanner.forEachChar((char, i) => {
           const fullChar = HALF_TO_FULL[char];
           if (!fullChar)
             return;
@@ -96,7 +96,7 @@ const noHalfWidthPunctuation: LintMdRule = {
             context.report({
               loc: match.loc,
               message: `不应在中文中使用半角标点"${char}"，请使用全角"${fullChar}"`,
-              fix: fixer => fixer.replaceTextRange([pos.offset, pos.endOffset], fullChar)
+              fix: fixer => fixer.replaceTextRange(match.absoluteRange, fullChar)
             });
           }
         });

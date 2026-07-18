@@ -46,7 +46,7 @@ if (process.env.BENCHMARK_CHILD === '1') {
 
   // Use CJS build (ESM build has extensionless imports that break Node.js resolution)
   const require_ = createRequire(import.meta.url);
-  const { parseMd } = require_('@lint-md/parser');
+  const { parseMdWithSourceMap } = require_('@lint-md/parser');
   const core = require_('../lib/index.js');
   const { runLint } = require_('../lib/core/run-lint.js');
   const scannerDiag = require_('../lib/utils/text-scanner.js');
@@ -74,7 +74,7 @@ if (process.env.BENCHMARK_CHILD === '1') {
   }
 
   function runParserOnly() {
-    parseMd(input);
+    parseMdWithSourceMap(input);
     return { reportCount: 0, fixCount: 0, runLintCalls: 0 };
   }
 

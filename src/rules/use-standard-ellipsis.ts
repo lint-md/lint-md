@@ -8,7 +8,7 @@ const useStandardEllipsis: LintMdRule = {
   create: (context) => {
     return {
       text: (node: PositionedTextNode) => {
-        const scanner = new TextScanner(node, context.markdown);
+        const scanner = new TextScanner(node);
 
         // 找到所有的 . 组成的省略号
         const dotMatches = scanner.findAllMatches(/\.{4,}/g);

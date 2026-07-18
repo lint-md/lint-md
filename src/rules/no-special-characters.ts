@@ -11,7 +11,7 @@ const noSpecialCharacters: LintMdRule = {
   create: (context) => {
     return {
       text: (node: PositionedTextNode) => {
-        const scanner = new TextScanner(node, context.markdown);
+        const scanner = new TextScanner(node);
 
         SPECIAL_CHARACTERS.forEach((sc) => {
           const matches = scanner.findAllOccurrences(sc);

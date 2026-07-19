@@ -87,6 +87,23 @@ describe('parser source-map integration', () => {
     expect(second.lintResult.ruleManager.getReportData()).toHaveLength(0);
   });
 
+  test.each([
+    [
+      'blockquote continuations',
+      ['> 中文(test)', '> 中文(test)'].join('\n'),
+      ['> 中文（test）', '> 中文（test）'].join('\n')
+    ],
+    [
+      'list continuation indentation',
+      ['- 中文(test)', '  中文(test)'].join('\n'),
+      ['- 中文（test）', '  中文（test）'].join('\n')
+    ]
+  ])('%s preserves container syntax while fixing mapped punctuation', (_name, input, expected) => {
+    const result = lintMarkdownInternal(input, halfWidthConfig, true);
+
+    expect(result.fixedResult?.result).toBe(expected);
+  });
+
   test('diagnostic offsets and fix ranges are resolved by the same source-map range', () => {
     const input = '中文&#40;test&#41;中文';
     const { ruleManager } = runLint(input, halfWidthConfig);

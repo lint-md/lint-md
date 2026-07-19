@@ -1,4 +1,5 @@
 import type {
+  MarkdownInlineCodeNode,
   MarkdownSourceMap,
   MarkdownTextNode as ParserMarkdownTextNode,
   PositionedMarkdownRoot
@@ -19,10 +20,7 @@ export const registerTextNodeSourceMap = (
   sourceMap: MarkdownSourceMap
 ): void => {
   for (const node of getTextNodes(ast)) {
-    // Parser 0.1.3 maps text nodes only. inlineCode remains supported by the
-    // scanner's identity fallback, rather than being registered to a map that
-    // would reject it with SourceMapUnavailableError.
-    if (node.type === 'text') {
+    if (node.type === 'text' || node.type === 'inlineCode') {
       sourceMaps.set(node, sourceMap);
     }
   }
@@ -146,7 +144,11 @@ export class TextScanner {
       throw new RangeError(`TextScanner range out of bounds: [${start}, ${end}]`);
     }
     return this._sourceMap
-      ? this._sourceMap.getSourceRange(this._node as ParserMarkdownTextNode, start, end)
+      ? this._sourceMap.getSourceRange(
+        this._node as ParserMarkdownTextNode | MarkdownInlineCodeNode,
+        start,
+        end
+      )
       : this.fallbackRange(start, end);
   }
 

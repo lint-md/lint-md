@@ -38,12 +38,17 @@ describe('parser source-map integration', () => {
       .toEqual([[0, 1], [1, 2], [2, 3]]);
   });
 
-  test('keeps inlineCode on the identity fallback instead of registering an unsupported source map', () => {
-    const { ast, sourceMap } = parseMdWithSourceMap('`code`');
+  test.each([
+    ['padding normalization', '` a `', 'a', [2, 3]],
+    ['multiple backtick delimiters', '`` `value` ``', '`value`', [3, 10]]
+  ])('%s resolves inlineCode ranges with the parser source map', (_name, markdown, value, expectedRange) => {
+    const { ast, sourceMap } = parseMdWithSourceMap(markdown);
     registerTextNodeSourceMap(ast, sourceMap);
     const inlineCode = (ast.children[0] as any).children[0];
-    expect(inlineCode.type).toBe('inlineCode');
-    expect(new TextScanner(inlineCode).matchAt(0, 1).absoluteRange).toEqual([0, 1]);
+
+    expect(inlineCode).toMatchObject({ type: 'inlineCode', value });
+    expect(new TextScanner(inlineCode).matchAt(0, value.length).absoluteRange)
+      .toEqual(expectedRange);
   });
 
   test.each([

@@ -51,6 +51,31 @@ describe('parser source-map integration', () => {
       .toEqual(expectedRange);
   });
 
+  test('runLint resolves an inlineCode selector fix through the source map', () => {
+    const inlineCodeRule: LintMdRule = {
+      meta: { name: 'inline-code-source-map' },
+      create: context => ({
+        inlineCode: node => {
+          const match = new TextScanner(node as any).matchAt(0, 1);
+          context.report({
+            loc: match.loc,
+            message: 'replace inline code value',
+            fix: fixer => fixer.replaceTextRange(match.absoluteRange, 'b')
+          });
+        }
+      })
+    };
+
+    const result = lintMarkdownInternal('` a `', [{ rule: inlineCodeRule }], true);
+    const [report] = result.lintResult.ruleManager.getReportData();
+
+    expect(report.loc).toMatchObject({
+      start: { offset: 2 },
+      end: { offset: 3 }
+    });
+    expect(result.fixedResult?.result).toBe('` b `');
+  });
+
   test.each([
     ['escaped', '中文\\(test\\)中文', '中文（test）中文'],
     ['numeric entity', '中文&#40;test&#41;中文', '中文（test）中文']

@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.6](https://github.com/lint-md/lint-md/compare/v2.1.5...v2.1.6) - 2026-07-19
+
+### Bug Fixes
+
+- **text-scanner**: use parser source maps for inline-code value ranges, correctly handling padding normalization and multi-backtick delimiters (#198)
+- **deps**: bump `@lint-md/parser` to `~0.2.0` (#198)
+
 ## [2.1.5](https://github.com/lint-md/lint-md/compare/v2.1.4...v2.1.5) - 2026-07-13
 
 ### Features

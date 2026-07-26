@@ -42,4 +42,19 @@ describe('test space-around-number', () => {
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
     expect(fixedResult?.result).toStrictEqual('中 &#49; 文');
   });
+
+  test.each([
+    ['𠀀123', '𠀀 123'],
+    ['123𠀀', '123 𠀀'],
+  ])('supports supplementary Han characters: "%s" → "%s"', (input, expectedFix) => {
+    const { fixedResult, lintResult } = fixer(input);
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(fixedResult?.result).toStrictEqual(expectedFix);
+  });
+
+  test('supports supplementary Han around percentages', () => {
+    const { fixedResult, lintResult } = fixer('𠀀100%𠀀');
+    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(fixedResult?.result).toStrictEqual('𠀀 100% 𠀀');
+  });
 });

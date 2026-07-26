@@ -18,7 +18,7 @@ const noSpecialCharacters: LintMdRule = {
 
           matches.forEach((m) => {
             context.report({
-              loc: m.loc,
+              range: m.absoluteRange,
               message: '文本中不能包含特殊字符，请删除或者替换',
               fix: fixer => fixer.removeRange(m.absoluteRange)
             });

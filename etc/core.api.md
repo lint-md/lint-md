@@ -135,7 +135,7 @@ export interface LintMdRuleContext {
     // (undocumented)
     options: Record<string, any>;
     // (undocumented)
-    report: (option: Omit<ReportOption, 'content' | 'name'>) => void;
+    report: (option: RuleReportInput) => void;
     // (undocumented)
     sourceCode: LintSourceCode;
 }
@@ -345,6 +345,13 @@ export class RuleExecutionFailure extends Error {
 
 // @public (undocumented)
 export type RuleExecutionPhase = 'create' | 'selector' | 'fix';
+
+// @public (undocumented)
+export type RuleReportInput = Omit<ReportOption, 'content' | 'name' | 'loc'> & ({
+    loc: ReportOption['loc'];
+} | {
+    range: TextRange;
+});
 
 // @public (undocumented)
 export type RuleSelector = (node: PositionedMarkdownNode) => void;

@@ -34,7 +34,7 @@ const spaceAroundNumber: LintMdRule = {
           if (isChineseNumBoundary || isPercentBoundary) {
             const match = scanner.matchAt(index, char.length + nextCharacter.length);
             context.report({
-              loc: match.loc,
+              range: match.absoluteRange,
               message: '中文与数字之间需要增加空格',
               fix: fixer => fixer.insertTextAt(pos.endOffset, ' ')
             });

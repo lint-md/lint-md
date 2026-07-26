@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.2.0](https://github.com/lint-md/lint-md/compare/v2.1.6...v2.2.0) - unreleased
+
+### Features
+
+- **source-code**: add `LintSourceCode` service on `context.sourceCode`, exposing `getRaw()`, `getTextRange()`, `getPosition()`, and `getLocation()` through parser source maps (#203, #204)
+- **report**: add `range` option to `context.report()` — rules pass absolute source offsets, core derives `loc` via `sourceCode.getLocation()` (#206)
+- **api-extractor**: add API Extractor baseline, committed report in `etc/core.api.md`, and CI check (#202)
+
+### Refactoring
+
+- **text-scanner**: inject `LintSourceCode` through constructor instead of module-level `WeakMap`; remove `registerTextNodeSourceMap()` (#205)
+
+### Bug Fixes
+
+- **space-around-alphabet**: use `codePointAt` for supplementary Han characters; preserve Markdown syntax when inserting spaces (#199)
+- **space-around-number**: use `codePointAt` for supplementary Han characters and percent-suffix boundaries (#201)
+
+### Type Changes
+
+- **TextRange**: narrowed from `number[]` to `readonly [start: number, end: number]` (#203)
+
 ## [2.1.6](https://github.com/lint-md/lint-md/compare/v2.1.5...v2.1.6) - 2026-07-19
 
 ### Bug Fixes

@@ -2,23 +2,6 @@ import type { LintMdRule, PositionedTextNode } from '../types';
 import { isChineseCharacter, isNumberCharacter } from '../utils/char-helper';
 import { TextScanner } from '../utils/text-scanner';
 
-const isPercentSuffixOfNumber = (value: string, index: number) => {
-  return value[index] === '%' && index > 0 && isNumberCharacter(value[index - 1]);
-};
-
-const shouldInsertSpaceBetween = (value: string, index: number) => {
-  const currentCharacter = value[index];
-  const nextCharacter = value[index + 1];
-
-  if (!currentCharacter || !nextCharacter) {
-    return false;
-  }
-
-  return (isChineseCharacter(currentCharacter) && isNumberCharacter(nextCharacter))
-    || (isNumberCharacter(currentCharacter) && isChineseCharacter(nextCharacter))
-    || (isPercentSuffixOfNumber(value, index) && isChineseCharacter(nextCharacter));
-};
-
 const spaceAroundNumber: LintMdRule = {
   meta: {
     name: 'space-around-number'
@@ -29,9 +12,26 @@ const spaceAroundNumber: LintMdRule = {
         const scanner = new TextScanner(node);
         const { value } = scanner;
 
-        scanner.forEachChar((char, i, pos) => {
-          if (i < value.length - 1 && shouldInsertSpaceBetween(value, i)) {
-            const match = scanner.matchAt(i, 2);
+        scanner.forEachChar((char, index, pos) => {
+          const nextCodePoint = value.codePointAt(index + char.length);
+          const nextCharacter = nextCodePoint === undefined
+            ? undefined
+            : String.fromCodePoint(nextCodePoint);
+
+          if (!nextCharacter) {
+            return;
+          }
+
+          const isChineseNumBoundary = (isChineseCharacter(char) && isNumberCharacter(nextCharacter))
+            || (isNumberCharacter(char) && isChineseCharacter(nextCharacter));
+
+          const isPercentBoundary = char === '%'
+            && index > 0
+            && isChineseCharacter(nextCharacter)
+            && isNumberCharacter(_prevCharAt(value, index));
+
+          if (isChineseNumBoundary || isPercentBoundary) {
+            const match = scanner.matchAt(index, char.length + nextCharacter.length);
             context.report({
               loc: match.loc,
               message: '中文与数字之间需要增加空格',
@@ -43,5 +43,10 @@ const spaceAroundNumber: LintMdRule = {
     };
   }
 };
+
+function _prevCharAt(value: string, index: number): string {
+  const codePoint = value.codePointAt(index - 1);
+  return codePoint === undefined ? '' : String.fromCodePoint(codePoint);
+}
 
 export default spaceAroundNumber;

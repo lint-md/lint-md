@@ -19,7 +19,7 @@
     "package-contract": "node scripts/check-package-contract.mjs",
     "benchmark": "node scripts/benchmark-memory.mjs",
     "smoke-test": "node scripts/benchmark-memory-smoke.mjs",
-    "api:report": "api-extractor run --local",
+    "api:report": "npm run build && api-extractor run --local",
     "api:check": "api-extractor run",
     "prepublishOnly": "npm run lint && npm run typecheck && npm run build && npm run package-contract && npm test",
     "release": "npm publish"

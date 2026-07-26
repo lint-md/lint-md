@@ -1,5 +1,6 @@
 import type { LintMdRule, PositionedTextNode } from '../types';
 import { isChineseCharacter, isEnglishCharacter } from '../utils/char-helper';
+import { TextScanner } from '../utils/text-scanner';
 
 const isChineseEnglishBoundary = (a: string, b: string): boolean => {
   return (isChineseCharacter(a) && isEnglishCharacter(b))
@@ -13,37 +14,23 @@ const spaceAroundAlphabet: LintMdRule = {
   create: (context) => {
     return {
       text: (node: PositionedTextNode) => {
-        const { value } = node;
+        const scanner = new TextScanner(node);
+        const { value } = scanner;
 
-        const boundaries: number[] = [];
-        for (let i = 0; i < value.length - 1; i++) {
-          if (isChineseEnglishBoundary(value[i], value[i + 1])) {
-            boundaries.push(i);
+        scanner.forEachChar((char, index, pos) => {
+          const nextCodePoint = value.codePointAt(index + char.length);
+          const nextCharacter = nextCodePoint === undefined
+            ? undefined
+            : String.fromCodePoint(nextCodePoint);
+          if (nextCharacter && isChineseEnglishBoundary(char, nextCharacter)) {
+            const match = scanner.matchAt(index, char.length + nextCharacter.length);
+            context.report({
+              loc: match.loc,
+              message: '中英文之间需要添加空格',
+              fix: fixer => fixer.insertTextAt(pos.endOffset, ' ')
+            });
           }
-        }
-
-        if (boundaries.length > 0) {
-          let pos = 0;
-
-          let newContent = boundaries.reduce((str, boundary) => {
-            const newContent = `${str}${value.slice(pos, boundary + 1)} `;
-            pos = boundary + 1;
-            return newContent;
-          }, '');
-
-          newContent += value.slice(pos);
-
-          context.report({
-            loc: node.position,
-            message: '中英文之间需要添加空格',
-            fix: (fixer) => {
-              return fixer.replaceTextRange([
-                node.position.start.offset,
-                node.position.end.offset
-              ], newContent);
-            }
-          });
-        }
+        });
       }
     };
   }

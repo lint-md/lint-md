@@ -28,7 +28,8 @@ const spaceAroundNumber: LintMdRule = {
           const isPercentBoundary = char === '%'
             && index > 0
             && isChineseCharacter(nextCharacter)
-            && isNumberCharacter(_prevCharAt(value, index));
+            // Always safe: ASCII digits occupy a single UTF-16 code unit at index - 1
+            && isNumberCharacter(value[index - 1]);
 
           if (isChineseNumBoundary || isPercentBoundary) {
             const match = scanner.matchAt(index, char.length + nextCharacter.length);
@@ -43,10 +44,5 @@ const spaceAroundNumber: LintMdRule = {
     };
   }
 };
-
-function _prevCharAt(value: string, index: number): string {
-  const codePoint = value.codePointAt(index - 1);
-  return codePoint === undefined ? '' : String.fromCodePoint(codePoint);
-}
 
 export default spaceAroundNumber;

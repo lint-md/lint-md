@@ -52,9 +52,9 @@ describe('test space-around-number', () => {
     expect(fixedResult?.result).toStrictEqual(expectedFix);
   });
 
-  test('fixes 100% after supplementary Han', () => {
-    const { fixedResult, lintResult } = fixer('𠀀100%测试');
+  test('supports supplementary Han around percentages', () => {
+    const { fixedResult, lintResult } = fixer('𠀀100%𠀀');
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
-    expect(fixedResult?.result).toStrictEqual('𠀀 100% 测试');
+    expect(fixedResult?.result).toStrictEqual('𠀀 100% 𠀀');
   });
 });

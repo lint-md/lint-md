@@ -11,16 +11,23 @@ const fakeRule = {
 
 const fakeAst = { type: 'root', children: [] } as unknown as PositionedMarkdownRoot;
 
+const fakeSourceCode = {
+  text: '',
+  ast: fakeAst,
+  getRaw: () => '',
+  getTextRange: () => [0, 0] as [number, number]
+} as any;
+
 describe('test rule context', () => {
   test('test rule context creation', () => {
     const ctx = createRuleManager('');
     expect(ctx).toBeTruthy();
-    expect(typeof ctx.createRuleContext(fakeRule as any, { ast: fakeAst, markdown: '' }).report).toStrictEqual('function');
+    expect(typeof ctx.createRuleContext(fakeRule as any, { ast: fakeAst, markdown: '', sourceCode: fakeSourceCode }).report).toStrictEqual('function');
   });
 
   test('test rule context report() call', () => {
     const manager = createRuleManager('');
-    manager.createRuleContext(fakeRule as any, { ast: fakeAst, markdown: '' }).report({
+    manager.createRuleContext(fakeRule as any, { ast: fakeAst, markdown: '', sourceCode: fakeSourceCode }).report({
       message: 'message 1',
       loc: {
         start: {
@@ -33,7 +40,7 @@ describe('test rule context', () => {
         }
       }
     });
-    manager.createRuleContext(fakeRule as any, { ast: fakeAst, markdown: '' }).report({
+    manager.createRuleContext(fakeRule as any, { ast: fakeAst, markdown: '', sourceCode: fakeSourceCode }).report({
       message: 'message 2',
       loc: {
         start: {

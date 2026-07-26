@@ -70,10 +70,10 @@ export const createRuleManager = (
   // 初始化一个 rule context
   const createRuleContext = (
     ruleConfig: LintMdRuleWithOptions,
-    extra: Pick<LintMdRuleContext, 'ast' | 'markdown'>
+    extra: Pick<LintMdRuleContext, 'ast' | 'markdown' | 'sourceCode'>
   ): LintMdRuleContext => {
     const { rule, options } = ruleConfig;
-    const { ast, markdown } = extra;
+    const { ast, markdown, sourceCode } = extra;
 
     // 将 (line, column) 换算成文档中的真实偏移；供 offset 缺失时的兜底，避免切片退化成整篇文档。
     const resolveOffset = (line: number, column: number): number => {
@@ -115,7 +115,8 @@ export const createRuleManager = (
       report,
       options: options || {},
       ast,
-      markdown
+      markdown,
+      sourceCode
     };
   };
 

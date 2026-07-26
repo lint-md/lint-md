@@ -5,6 +5,7 @@ import { createTraverser } from '../utils/traverser';
 import { createRuleManager } from '../utils/rule-manager';
 import { createRuleErrorCollector } from '../utils/rule-execution-errors';
 import { registerTextNodeSourceMap } from '../utils/text-scanner';
+import { createLintSourceCode } from '../utils/source-code';
 
 /**
  * 基于各种 rules 对 Markdown 文本进行校验
@@ -35,6 +36,8 @@ export const runLint = (
   const { ast, sourceMap } = parseMdWithSourceMap(markdown);
   registerTextNodeSourceMap(ast, sourceMap);
 
+  const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
+
   // 全局规则管理器（传入 collector，使 fix 阶段捕获生效）
   const ruleManager = createRuleManager(markdown, collector);
 
@@ -54,7 +57,7 @@ export const runLint = (
   for (const { rule, options: ruleOptions } of allRuleConfigs) {
     const ruleContext = ruleManager.createRuleContext(
       { rule, options: ruleOptions },
-      { ast, markdown }
+      { ast, markdown, sourceCode }
     );
 
     // create 阶段也可能抛错，需在调用 create 处捕获并归入规则执行错误。

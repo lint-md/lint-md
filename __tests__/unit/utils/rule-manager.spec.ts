@@ -1,12 +1,19 @@
 import { createRuleManager } from '../../../src/utils/rule-manager';
 
+const fakeSourceCode = {
+  text: '',
+  ast: {} as any,
+  getRaw: () => '',
+  getTextRange: () => [0, 0] as [number, number]
+} as any;
+
 describe('test rule-manager report content fallback', () => {
   test('report with offset slices only the reported range', () => {
     const markdown = 'line1\nline2\nline3';
     const manager = createRuleManager(markdown);
     const context = manager.createRuleContext(
       { rule: { meta: { name: 'demo' }, create: () => ({}) } as any, options: {} },
-      { ast: {} as any, markdown }
+      { ast: {} as any, markdown, sourceCode: fakeSourceCode }
     );
 
     context.report({
@@ -28,7 +35,7 @@ describe('test rule-manager report content fallback', () => {
     const manager = createRuleManager(markdown);
     const context = manager.createRuleContext(
       { rule: { meta: { name: 'demo' }, create: () => ({}) } as any, options: {} },
-      { ast: {} as any, markdown }
+      { ast: {} as any, markdown, sourceCode: fakeSourceCode }
     );
 
     context.report({

@@ -19,6 +19,8 @@
     "package-contract": "node scripts/check-package-contract.mjs",
     "benchmark": "node scripts/benchmark-memory.mjs",
     "smoke-test": "node scripts/benchmark-memory-smoke.mjs",
+    "api:report": "npm run build && api-extractor run --local",
+    "api:check": "api-extractor run",
     "prepublishOnly": "npm run lint && npm run typecheck && npm run build && npm run package-contract && npm test",
     "release": "npm publish"
   },
@@ -38,6 +40,7 @@
   "devDependencies": {
     "@attachments/eslint-config": "^0.3.3",
     "@lint-md/core": "0.2.2",
+    "@microsoft/api-extractor": "^7.58.12",
     "@types/benchmark": "^2.1.2",
     "@types/jest": "^29.2.0",
     "@types/node": "^26.1.0",

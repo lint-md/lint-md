@@ -174,6 +174,26 @@ npm run typecheck
 npm run build
 ```
 
+### 维护公共 API
+
+项目使用 [API Extractor](https://api-extractor.com/) 跟踪 `@lint-md/core` 的公开类型接口。API 基线保存在 `etc/core.api.md`，该文件由工具生成，请勿手动编辑。
+
+修改导出函数、类型、枚举或规则对象后，运行：
+
+```bash
+npm run api:report
+```
+
+该命令会重新构建项目，并根据当前声明文件更新 API report。提交代码前请检查 `etc/core.api.md` 的 diff，确认其中只包含预期的 API 变化，并将更新后的 report 与源码一起提交。
+
+CI 会在构建后运行：
+
+```bash
+npm run api:check
+```
+
+如果源码生成的公共 API 与已提交的 report 不一致，检查将失败。
+
 发布前会自动执行完整校验（lint → typecheck → build → test）。
 
 ## 📄 License

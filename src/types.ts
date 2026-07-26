@@ -71,12 +71,32 @@ export interface ReportOption {
   fix?: (fixer: ReturnType<typeof createFixer>) => FixConfig
 }
 
+/** Source code and mapping service for the current lint document */
+export interface LintSourceCode {
+  /** Complete original Markdown input */
+  readonly text: string
+  /** Parsed AST associated with this source document */
+  readonly ast: PositionedMarkdownRoot
+  /** Return the complete raw Markdown represented by a node */
+  getRaw(node: PositionedMarkdownNode): string
+  /**
+   * Convert a range in normalized text-node value to an absolute
+   * range in the original Markdown as `[start, end)`.
+   */
+  getTextRange(
+    node: PositionedTextNode,
+    valueStart: number,
+    valueEnd: number
+  ): TextRange
+}
+
 /** rules 上下文 */
 export interface LintMdRuleContext {
   report: (option: Omit<ReportOption, 'content' | 'name'>) => void
   options: Record<string, any>
   ast: PositionedMarkdownRoot
   markdown: string
+  sourceCode: LintSourceCode
 }
 
 /** rule 选择器签名：emitter 已按 node.type 分发，selector 形参可以用 positioned 具体节点类型 */

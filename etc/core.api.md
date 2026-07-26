@@ -136,6 +136,8 @@ export interface LintMdRuleContext {
     options: Record<string, any>;
     // (undocumented)
     report: (option: Omit<ReportOption, 'content' | 'name'>) => void;
+    // (undocumented)
+    sourceCode: LintSourceCode;
 }
 
 // @public (undocumented)
@@ -161,6 +163,18 @@ export interface LintReportItem {
     name: string;
     // (undocumented)
     severity: RULE_SEVERITY;
+}
+
+// @public (undocumented)
+export interface LintSourceCode {
+    // (undocumented)
+    readonly ast: PositionedMarkdownRoot;
+    // (undocumented)
+    getRaw(node: PositionedMarkdownNode): string;
+    // (undocumented)
+    getTextRange(node: PositionedTextNode, valueStart: number, valueEnd: number): TextRange;
+    // (undocumented)
+    readonly text: string;
 }
 
 // @public (undocumented)

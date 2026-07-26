@@ -88,6 +88,20 @@ export interface LintSourceCode {
     valueStart: number,
     valueEnd: number
   ): TextRange
+  /**
+   * Convert an absolute source offset to a position.
+   * Throws RangeError if offset is not a finite integer in [0, text.length].
+   */
+  getPosition(offset: number): MarkdownPosition
+  /**
+   * Convert a source range to start/end positions.
+   * Throws RangeError if range contains non-finite integers
+   * or start < 0 or start > end or end > text.length.
+   */
+  getLocation(range: TextRange): {
+    start: MarkdownPosition
+    end: MarkdownPosition
+  }
 }
 
 /** rules 上下文 */

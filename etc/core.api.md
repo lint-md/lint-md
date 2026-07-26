@@ -170,6 +170,13 @@ export interface LintSourceCode {
     // (undocumented)
     readonly ast: PositionedMarkdownRoot;
     // (undocumented)
+    getLocation(range: TextRange): {
+        start: MarkdownPosition;
+        end: MarkdownPosition;
+    };
+    // (undocumented)
+    getPosition(offset: number): MarkdownPosition;
+    // (undocumented)
     getRaw(node: PositionedMarkdownNode): string;
     // (undocumented)
     getTextRange(node: PositionedTextNode, valueStart: number, valueEnd: number): TextRange;

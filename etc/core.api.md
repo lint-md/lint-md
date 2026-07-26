@@ -179,7 +179,7 @@ export interface LintSourceCode {
     // (undocumented)
     getRaw(node: PositionedMarkdownNode): string;
     // (undocumented)
-    getTextRange(node: PositionedTextNode, valueStart: number, valueEnd: number): TextRange;
+    getTextRange(node: PositionedTextNode | PositionedInlineCodeNode, valueStart: number, valueEnd: number): TextRange;
     // (undocumented)
     readonly text: string;
 }

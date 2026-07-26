@@ -66,7 +66,7 @@ const noHalfWidthPunctuation: LintMdRule = {
   create: (context) => {
     return {
       text: (node: PositionedTextNode) => {
-        const scanner = new TextScanner(node);
+        const scanner = new TextScanner(node, context.sourceCode);
         const { value } = scanner;
 
         // 预处理：找出需要转换的括号对

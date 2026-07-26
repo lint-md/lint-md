@@ -1,8 +1,9 @@
 import type {
+  MarkdownInlineCodeNode,
   MarkdownSourceMap,
   MarkdownTextNode as ParserMarkdownTextNode
 } from '@lint-md/parser';
-import type { LintSourceCode, MarkdownPosition, PositionedMarkdownNode, PositionedMarkdownRoot, PositionedTextNode, TextRange } from '../types';
+import type { LintSourceCode, MarkdownPosition, PositionedInlineCodeNode, PositionedMarkdownNode, PositionedMarkdownRoot, PositionedTextNode, TextRange } from '../types';
 
 interface SourceCodeOptions {
   text: string
@@ -26,12 +27,12 @@ export const createLintSourceCode = ({
     },
 
     getTextRange(
-      node: PositionedTextNode,
+      node: PositionedTextNode | PositionedInlineCodeNode,
       valueStart: number,
       valueEnd: number
     ): TextRange {
       const range = sourceMap.getSourceRange(
-        node as unknown as ParserMarkdownTextNode,
+        node as unknown as ParserMarkdownTextNode | MarkdownInlineCodeNode,
         valueStart,
         valueEnd
       );

@@ -84,7 +84,7 @@ export interface LintSourceCode {
    * range in the original Markdown as `[start, end)`.
    */
   getTextRange(
-    node: PositionedTextNode,
+    node: PositionedTextNode | PositionedInlineCodeNode,
     valueStart: number,
     valueEnd: number
   ): TextRange

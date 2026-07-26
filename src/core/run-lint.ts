@@ -4,7 +4,6 @@ import { createEmitter } from '../utils/emitter';
 import { createTraverser } from '../utils/traverser';
 import { createRuleManager } from '../utils/rule-manager';
 import { createRuleErrorCollector } from '../utils/rule-execution-errors';
-import { registerTextNodeSourceMap } from '../utils/text-scanner';
 import { createLintSourceCode } from '../utils/source-code';
 
 /**
@@ -31,10 +30,9 @@ export const runLint = (
   // 先创建收集器，再创建 ruleManager：getAllFixes() 内的 fix() 阶段错误才能接入收集器。
   const collector = createRuleErrorCollector(policy, round);
 
-  // Parser owns normalized-text -> original-Markdown mapping.  Register it
-  // internally for TextScanner without changing the third-party rule context.
+  // Parser owns normalized-text -> original-Markdown mapping.
+  // Expose it to rules through the per-document SourceCode service.
   const { ast, sourceMap } = parseMdWithSourceMap(markdown);
-  registerTextNodeSourceMap(ast, sourceMap);
 
   const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
 

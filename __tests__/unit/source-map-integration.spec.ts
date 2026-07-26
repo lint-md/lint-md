@@ -2,9 +2,10 @@ import { runLint } from '../../src/core/run-lint';
 import { lintMarkdownInternal } from '../../src/core/lint-markdown';
 import { RuleExecutionFailure } from '../../src/utils/rule-execution-errors';
 import { parseMdWithSourceMap } from '@lint-md/parser';
-import { TextScanner, registerTextNodeSourceMap } from '../../src/utils/text-scanner';
+import { TextScanner } from '../../src/utils/text-scanner';
+import { createLintSourceCode } from '../../src/utils/source-code';
 import noHalfWidthPunctuation from '../../src/rules/no-half-width-punctuation';
-import type { LintMdRule } from '../../src/types';
+import type { LintMdRule, LintSourceCode } from '../../src/types';
 
 const halfWidthConfig = [{ rule: noHalfWidthPunctuation }];
 
@@ -18,23 +19,34 @@ describe('parser source-map integration', () => {
         end: { line: 1, column: 4, offset: 3 }
       }
     };
-    const getSourceRange = jest.fn((_node: unknown, _start: number, _end: number) => node.position);
-    registerTextNodeSourceMap(
-      { type: 'root', children: [node], position: node.position } as any,
-      { getSourceRange } as any
-    );
+    const getTextRange = jest.fn((_node: unknown, start: number, end: number) => [start, end] as [number, number]);
+    const getLocation = jest.fn((range: [number, number]) => ({
+      start: { line: 1, column: range[0] + 1, offset: range[0] },
+      end: { line: 1, column: range[1] + 1, offset: range[1] }
+    }));
+    const sourceCode = {
+      text: 'abc',
+      ast: { type: 'root', children: [] } as any,
+      getRaw: () => '',
+      getTextRange,
+      getPosition: () => ({ line: 1, column: 1, offset: 0 }),
+      getLocation
+    };
 
-    new TextScanner(node as any).forEachChar(() => {});
-    expect(getSourceRange).not.toHaveBeenCalled();
+    new TextScanner(node as any, sourceCode).forEachChar(() => {});
+    expect(getTextRange).not.toHaveBeenCalled();
+    expect(getLocation).not.toHaveBeenCalled();
 
     const positions: Array<{ endOffset: number }> = [];
-    new TextScanner(node as any).forEachChar((_char, _index, pos) => {
+    new TextScanner(node as any, sourceCode).forEachChar((_char, _index, pos) => {
       positions.push(pos);
     });
-    expect(getSourceRange).not.toHaveBeenCalled();
+    expect(getTextRange).not.toHaveBeenCalled();
+    expect(getLocation).not.toHaveBeenCalled();
     positions.forEach(pos => void pos.endOffset);
-    expect(getSourceRange).toHaveBeenCalledTimes(3);
-    expect(getSourceRange.mock.calls.map(([, start, end]) => [start, end]))
+    expect(getTextRange).toHaveBeenCalledTimes(3);
+    expect(getLocation).toHaveBeenCalledTimes(3);
+    expect(getTextRange.mock.calls.map(([, start, end]) => [start, end]))
       .toEqual([[0, 1], [1, 2], [2, 3]]);
   });
 
@@ -43,11 +55,11 @@ describe('parser source-map integration', () => {
     ['multiple backtick delimiters', '`` `value` ``', '`value`', [3, 10]]
   ])('%s resolves inlineCode ranges with the parser source map', (_name, markdown, value, expectedRange) => {
     const { ast, sourceMap } = parseMdWithSourceMap(markdown);
-    registerTextNodeSourceMap(ast, sourceMap);
+    const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
     const inlineCode = (ast.children[0] as any).children[0];
 
     expect(inlineCode).toMatchObject({ type: 'inlineCode', value });
-    expect(new TextScanner(inlineCode).matchAt(0, value.length).absoluteRange)
+    expect(new TextScanner(inlineCode, sourceCode).matchAt(0, value.length).absoluteRange)
       .toEqual(expectedRange);
   });
 
@@ -56,7 +68,7 @@ describe('parser source-map integration', () => {
       meta: { name: 'inline-code-source-map' },
       create: context => ({
         inlineCode: node => {
-          const match = new TextScanner(node as any).matchAt(0, 1);
+          const match = new TextScanner(node as any, context.sourceCode).matchAt(0, 1);
           context.report({
             loc: match.loc,
             message: 'replace inline code value',
@@ -137,7 +149,7 @@ describe('parser source-map integration', () => {
       meta: { name: 'atomic-entity' },
       create: context => ({
         text: node => {
-          const scanner = new TextScanner(node as any);
+          const scanner = new TextScanner(node as any, context.sourceCode);
           scanner.forEachChar((char, index) => {
             if (char === '𝔄') {
               const match = scanner.matchAt(index, char.length);
@@ -162,7 +174,7 @@ describe('parser source-map integration', () => {
       create: context => ({
         text: node => {
           (node as { value: string }).value = 'changed';
-          new TextScanner(node as any).matchAt(0, 1);
+          new TextScanner(node as any, context.sourceCode).matchAt(0, 1);
           context.report({ loc: node.position, message: 'unreachable' });
         }
       })

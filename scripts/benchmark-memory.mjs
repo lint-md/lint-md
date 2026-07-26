@@ -50,7 +50,6 @@ if (process.env.BENCHMARK_CHILD === '1') {
   const { parseMdWithSourceMap } = require_('@lint-md/parser');
   const core = require_('../lib/index.js');
   const { runLint } = require_('../lib/core/run-lint.js');
-  const scannerDiag = require_('../lib/utils/text-scanner.js');
 
   const TEXT_RULE_IMPORTS = {
     'space-around-alphabet': () => core.spaceAroundAlphabet,
@@ -156,10 +155,6 @@ if (process.env.BENCHMARK_CHILD === '1') {
     if (typeof global.gc === 'function') global.gc();
   }
 
-  // 只统计正式测量：warmup 运行不计入 scanner 诊断，避免分母为单次 wallTime
-  // 却累计多次 build 耗时（buildMs / wallTime 比例被高估无法作为缓存决策依据）。
-  scannerDiag.resetScannerDiagnostics();
-
   // Measure
   const rssBefore = process.memoryUsage.rss();
   const heapBefore = process.memoryUsage().heapUsed;
@@ -198,8 +193,6 @@ if (process.env.BENCHMARK_CHILD === '1') {
     platform: process.platform,
     arch: process.arch,
     timestamp: new Date().toISOString(),
-    textScannerIndexBuilds: scannerDiag.getScannerDiagnostics().textScannerIndexBuilds,
-    textScannerIndexBuildWallTimeMs: scannerDiag.getScannerDiagnostics().textScannerIndexBuildWallTimeMs,
   };
 
   process.stdout.write(JSON.stringify(result) + '\n');

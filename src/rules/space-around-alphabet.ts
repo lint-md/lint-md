@@ -14,7 +14,7 @@ const spaceAroundAlphabet: LintMdRule = {
   create: (context) => {
     return {
       text: (node: PositionedTextNode) => {
-        const scanner = new TextScanner(node);
+        const scanner = new TextScanner(node, context.sourceCode);
         const { value } = scanner;
 
         scanner.forEachChar((char, index, pos) => {

@@ -1,43 +1,5 @@
-import type {
-  MarkdownInlineCodeNode,
-  MarkdownSourceMap,
-  MarkdownTextNode as ParserMarkdownTextNode,
-  PositionedMarkdownRoot
-} from '@lint-md/parser';
+import type { LintSourceCode, PositionedInlineCodeNode, PositionedTextNode } from '../types';
 import type { MarkdownTextNode } from './get-text-nodes';
-import { getTextNodes } from './get-text-nodes';
-import { now } from './time';
-
-/**
- * The source map is deliberately kept out of LintMdRuleContext.  Rules keep
- * receiving the same public context, while TextScanner can resolve ranges for
- * nodes belonging to the AST currently being linted.
- */
-const sourceMaps = new WeakMap<object, MarkdownSourceMap>();
-
-export const registerTextNodeSourceMap = (
-  ast: PositionedMarkdownRoot,
-  sourceMap: MarkdownSourceMap
-): void => {
-  for (const node of getTextNodes(ast)) {
-    if (node.type === 'text' || node.type === 'inlineCode') {
-      sourceMaps.set(node, sourceMap);
-    }
-  }
-};
-
-let scannerIndexBuilds = 0;
-let scannerIndexBuildWallTimeMs = 0;
-
-export const getScannerDiagnostics = () => ({
-  textScannerIndexBuilds: scannerIndexBuilds,
-  textScannerIndexBuildWallTimeMs: scannerIndexBuildWallTimeMs
-});
-
-export const resetScannerDiagnostics = () => {
-  scannerIndexBuilds = 0;
-  scannerIndexBuildWallTimeMs = 0;
-};
 
 export interface TextMatch {
   index: number
@@ -58,20 +20,19 @@ export interface CharPosition {
 
 /**
  * Scans a normalized text node and resolves every diagnostic/fix range through
- * parser's source map.  The fallback is intentionally an identity mapping for
- * manually-created nodes and legacy direct consumers; it never attempts to
- * decode Markdown itself.
+ * the document SourceCode service.  Falls back to node-position arithmetic
+ * when no source code is provided.
  */
 export class TextScanner {
   private readonly _value: string;
   private readonly _node: MarkdownTextNode;
-  private readonly _sourceMap?: MarkdownSourceMap;
+  private readonly _sourceCode?: LintSourceCode;
   private _lineBreakIndices?: number[];
 
-  constructor(node: MarkdownTextNode) {
+  constructor(node: MarkdownTextNode, sourceCode?: LintSourceCode) {
     this._node = node;
     this._value = node.value;
-    this._sourceMap = sourceMaps.get(node);
+    this._sourceCode = sourceCode;
   }
 
   get value(): string {
@@ -84,7 +45,6 @@ export class TextScanner {
 
   private get lineBreakIndices(): number[] {
     if (!this._lineBreakIndices) {
-      const buildStart = now();
       const indices: number[] = [];
       for (let i = 0; i < this._value.length; i++) {
         if (this._value[i] === '\n') {
@@ -92,8 +52,6 @@ export class TextScanner {
         }
       }
       this._lineBreakIndices = indices;
-      scannerIndexBuilds++;
-      scannerIndexBuildWallTimeMs += now() - buildStart;
     }
     return this._lineBreakIndices;
   }
@@ -143,13 +101,15 @@ export class TextScanner {
       || start < 0 || end < start || end > this._value.length) {
       throw new RangeError(`TextScanner range out of bounds: [${start}, ${end}]`);
     }
-    return this._sourceMap
-      ? this._sourceMap.getSourceRange(
-        this._node as ParserMarkdownTextNode | MarkdownInlineCodeNode,
+    if (this._sourceCode) {
+      const range = this._sourceCode.getTextRange(
+        this._node as MarkdownTextNode as PositionedTextNode | PositionedInlineCodeNode,
         start,
         end
-      )
-      : this.fallbackRange(start, end);
+      );
+      return this._sourceCode.getLocation(range);
+    }
+    return this.fallbackRange(start, end);
   }
 
   matchAt(index: number, length: number): TextMatch {
@@ -202,7 +162,7 @@ export class TextScanner {
       const charLength = char.length;
       let range: ReturnType<TextScanner['sourceRange']> | undefined;
       const getRange = () => {
-        range ??= this._sourceMap
+        range ??= this._sourceCode
           ? this.sourceRange(charIndex, charIndex + charLength)
           : {
               start: this.fallbackPointAtLinear(charIndex),
@@ -210,8 +170,6 @@ export class TextScanner {
             };
         return range;
       };
-      // Position lookup is deliberately lazy. Most rules inspect the character
-      // first and only need a source range after deciding to report it.
       const pos = Object.defineProperties({}, {
         line: { enumerable: true, get: () => getRange().start.line },
         column: { enumerable: true, get: () => getRange().start.column },

@@ -15,7 +15,7 @@ export const createFixer = () => {
    * @param index 索引的开始点
    * @param text 文本内容
    */
-  const insertTextAt = (index: number, text: string) => {
+  const insertTextAt = (index: number, text: string): { range: TextRange; text: string } => {
     return {
       range: [index, index],
       text

@@ -31,7 +31,7 @@ const noFullWidthNumber: LintMdRule = {
             .join('');
 
           context.report({
-            loc: m.loc,
+            range: m.absoluteRange,
             message: '不能用全角数字，请使用半角数字',
             fix: fixer => fixer.replaceTextRange(m.absoluteRange, replacement)
           });

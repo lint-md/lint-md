@@ -25,7 +25,7 @@ const spaceAroundAlphabet: LintMdRule = {
           if (nextCharacter && isChineseEnglishBoundary(char, nextCharacter)) {
             const match = scanner.matchAt(index, char.length + nextCharacter.length);
             context.report({
-              loc: match.loc,
+              range: match.absoluteRange,
               message: '中英文之间需要添加空格',
               fix: fixer => fixer.insertTextAt(pos.endOffset, ' ')
             });

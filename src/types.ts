@@ -71,6 +71,12 @@ export interface ReportOption {
   fix?: (fixer: ReturnType<typeof createFixer>) => FixConfig
 }
 
+/** 选择器调用 report() 时传入的参数：接受 loc 或 range，二者选一 */
+export type RuleReportInput = Omit<ReportOption, 'content' | 'name' | 'loc'> & (
+  | { loc: ReportOption['loc'] }
+  | { range: TextRange }
+);
+
 /** Source code and mapping service for the current lint document */
 export interface LintSourceCode {
   /** Complete original Markdown input */
@@ -106,7 +112,7 @@ export interface LintSourceCode {
 
 /** rules 上下文 */
 export interface LintMdRuleContext {
-  report: (option: Omit<ReportOption, 'content' | 'name'>) => void
+  report: (option: RuleReportInput) => void
   options: Record<string, any>
   ast: PositionedMarkdownRoot
   markdown: string

@@ -94,7 +94,7 @@ const noHalfWidthPunctuation: LintMdRule = {
           if (shouldConvert) {
             const match = scanner.matchAt(i, 1);
             context.report({
-              loc: match.loc,
+              range: match.absoluteRange,
               message: `不应在中文中使用半角标点"${char}"，请使用全角"${fullChar}"`,
               fix: fixer => fixer.replaceTextRange(match.absoluteRange, fullChar)
             });

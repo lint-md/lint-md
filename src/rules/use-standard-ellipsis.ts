@@ -23,7 +23,7 @@ const useStandardEllipsis: LintMdRule = {
 
         allMatches.forEach((m) => {
           context.report({
-            loc: m.loc,
+            range: m.absoluteRange,
             message: '请使用标准规范的省略号',
             fix: fixer => fixer.replaceTextRange(m.absoluteRange, '……')
           });

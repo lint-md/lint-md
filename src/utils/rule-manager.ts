@@ -2,7 +2,8 @@ import type {
   LintMdRuleContext,
   LintMdRuleWithOptions,
   ReportOption,
-  ReportPosition
+  ReportPosition,
+  RuleReportInput
 } from '../types';
 import type { createRuleErrorCollector } from './rule-execution-errors';
 import { createFixer } from './fixer';
@@ -91,24 +92,28 @@ export const createRuleManager = (
     };
 
     // 上报方法，供选择器内部调用
-    const report = (option: Omit<ReportOption, 'content' | 'name'>) => {
-      // 任一端 offset 缺失/非法即计一次兜底（按报告计数，不重复计起止两端）。
+    const report = (option: RuleReportInput) => {
+      const loc: ReportOption['loc'] = 'range' in option
+        ? sourceCode.getLocation(option.range)
+        : option.loc;
+
       const needsFallback
-        = !isValidOffset(option.loc.start.offset) || !isValidOffset(option.loc.end.offset);
+        = !isValidOffset(loc.start.offset) || !isValidOffset(loc.end.offset);
       if (needsFallback) {
         fallbackHits++;
       }
 
-      const startOffset = resolveReportOffset(option.loc.start, resolveOffset);
-      const endOffset = resolveReportOffset(option.loc.end, resolveOffset);
+      const startOffset = resolveReportOffset(loc.start, resolveOffset);
+      const endOffset = resolveReportOffset(loc.end, resolveOffset);
       const markStart = Math.max(0, startOffset - 5);
       const markEnd = Math.min(appliedMarkdown.length, endOffset + 5);
 
       allReportedData.push({
         ...option,
+        loc,
         content: appliedMarkdown.slice(markStart, markEnd),
         name: rule.meta.name
-      });
+      } as ReportOption);
     };
 
     return {

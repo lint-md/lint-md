@@ -75,17 +75,22 @@ describe('LintSourceCode', () => {
   });
 
   test('getTextRange maps entity to complete source range', () => {
+    expect.assertions(2);
+
     const rule: LintMdRule = {
       meta: { name: 'entity-range-test' },
       create: (context: LintMdRuleContext) => ({
         text: node => {
-          if (node.type === 'text') {
-            const ampIndex = node.value.indexOf('&');
-            if (ampIndex === -1) return;
-            const range = context.sourceCode.getTextRange(node, ampIndex, ampIndex + 1);
-            // complete &#40; must be [2, 7] (6-char entity + preceding Chinese)
-            expect(range).toStrictEqual([2, 7]);
+          if (node.type !== 'text') {
+            return;
           }
+
+          const index = node.value.indexOf('(');
+          expect(index).toBe(2);
+
+          const range = context.sourceCode.getTextRange(node, index, index + 1);
+          // &#40; is 5 source characters spanning [2, 7)
+          expect(range).toStrictEqual([2, 7]);
         }
       })
     };

@@ -17,6 +17,8 @@ describe('test space-around-alphabet', () => {
   test.each([
     ['中文abc', 1, '中文 abc'],
     ['abc中文', 1, 'abc 中文'],
+    ['𠀀English', 1, '𠀀 English'],
+    ['English𠀀', 1, 'English 𠀀'],
   ])('%s → %i report, fix to "%s"', (input, expectedReports, expectedFix) => {
     const { lintResult, fixedResult } = fixer(input);
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(expectedReports);
@@ -47,32 +49,32 @@ describe('test space-around-alphabet', () => {
   test.each(['\n', '\r\n'])(
     'preserves list continuation when alphabet and number fixes share a text node',
     (lineEnding) => {
-    const input = [
-      '- 中文English',
-      '  表示资源可以被缓存1小时。'
-    ].join(lineEnding);
-    const expected = [
-      '- 中文 English',
-      '  表示资源可以被缓存 1 小时。'
-    ].join(lineEnding);
-    const combinedFixer = createFixer([
-      { rule: spaceAroundAlphabet },
-      { rule: spaceAroundNumber }
-    ]);
+      const input = [
+        '- 中文English',
+        '  表示资源可以被缓存1小时。'
+      ].join(lineEnding);
+      const expected = [
+        '- 中文 English',
+        '  表示资源可以被缓存 1 小时。'
+      ].join(lineEnding);
+      const combinedFixer = createFixer([
+        { rule: spaceAroundAlphabet },
+        { rule: spaceAroundNumber }
+      ]);
 
-    const first = combinedFixer(input);
-    expect(first.fixedResult?.result).toBe(expected);
-    expect(first.lintResult.ruleManager.getReportData().map(report => report.name))
-      .toEqual(expect.arrayContaining([
-        'space-around-alphabet',
-        'space-around-number'
-      ]));
-    expect(combinedFixer(first.fixedResult!.result).lintResult.ruleManager.getReportData())
-      .toHaveLength(0);
+      const first = combinedFixer(input);
+      expect(first.fixedResult?.result).toBe(expected);
+      expect(first.lintResult.ruleManager.getReportData().map(report => report.name))
+        .toEqual(expect.arrayContaining([
+          'space-around-alphabet',
+          'space-around-number'
+        ]));
+      expect(combinedFixer(first.fixedResult!.result).lintResult.ruleManager.getReportData())
+        .toHaveLength(0);
     }
   );
 
-  test('fixes the complete Markdown from issue 103', () => {
+  test('preserves the complete Markdown from issue 103', () => {
     const input = [
       '- Cache-Control：这是最重要的缓存头部字段，它提供了关于如何缓存响应的指令。例如，`Cache-Control: max-age=3600` ',
       '  表示资源可以被缓存1小时。'

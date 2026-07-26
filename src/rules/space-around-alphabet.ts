@@ -18,7 +18,10 @@ const spaceAroundAlphabet: LintMdRule = {
         const { value } = scanner;
 
         scanner.forEachChar((char, index, pos) => {
-          const nextCharacter = value[index + char.length];
+          const nextCodePoint = value.codePointAt(index + char.length);
+          const nextCharacter = nextCodePoint === undefined
+            ? undefined
+            : String.fromCodePoint(nextCodePoint);
           if (nextCharacter && isChineseEnglishBoundary(char, nextCharacter)) {
             const match = scanner.matchAt(index, char.length + nextCharacter.length);
             context.report({

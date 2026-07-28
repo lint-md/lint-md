@@ -14,6 +14,7 @@ export const applyFix = (content: string, fixes: FixConfig[]) => {
   // 初始化数据
   let result = '';
   let currentIndex = Number.NEGATIVE_INFINITY;
+  let lastAppliedWasInsertion = false;
 
   // 未被处理的 fix
   const notAppliedFixes: FixConfig[] = [];
@@ -26,8 +27,9 @@ export const applyFix = (content: string, fixes: FixConfig[]) => {
       return;
     }
 
-    // 如果新的 fix 的起始点在当前节点的前面（这是多个 fix 重合导致的，我们会跳过它，并在下一次 fix 中尝试去 fix 它）
-    if (currentIndex >= start) {
+    // A fix overlaps when it starts before the last applied range ends.
+    // An insertion owns its offset. This rule keeps same-offset fixes deterministic.
+    if (currentIndex > start || (currentIndex === start && lastAppliedWasInsertion)) {
       notAppliedFixes.push(fix);
       return;
     }
@@ -38,6 +40,7 @@ export const applyFix = (content: string, fixes: FixConfig[]) => {
     result += fix.text;
     // 将当前索引指向 fix range 的末尾
     currentIndex = end;
+    lastAppliedWasInsertion = start === end;
   };
 
   for (const fix of fixes) {

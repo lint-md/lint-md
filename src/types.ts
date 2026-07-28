@@ -65,7 +65,11 @@ export interface RuleFixConfig extends FixConfig {
   targetRule: string
 }
 
-/** A fix that the engine skipped because it conflicts with another fix. */
+/**
+ * A fix that the engine skipped because it conflicts with another fix.
+ * `targetRule` and `reason` are JSON-compatible strings.
+ * The inherited `data` field remains rule-defined and might not support JSON serialization.
+ */
 export interface NotAppliedFix extends RuleFixConfig {
   reason: FixNotAppliedReason
 }
@@ -280,8 +284,9 @@ export interface FixedResult {
   /** 修复后的完整 Markdown 文本 */
   result: string
   /**
-   * 最终轮次中因冲突等原因未能应用的修复项。
-   * range 基于 result 文本的坐标，可直接用于 result。
+   * Fixes that conflict during the final fix round.
+   * Each range uses the input coordinates from that round.
+   * A range is not guaranteed to apply directly to result.
    */
   notAppliedFixes: NotAppliedFix[]
   /** 收敛状态，调用方可据此判断质量而非盲用文本（兼容扩展，历史构造方式仍可用） */

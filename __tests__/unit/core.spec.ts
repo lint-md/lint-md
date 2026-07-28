@@ -183,12 +183,17 @@ Some **importance**, and \`code\`.
     expect(res.fixedResult).not.toBeNull();
     expect(res.fixedResult!.result).toBe('X');
     const unappliedFix: NotAppliedFix = res.fixedResult!.notAppliedFixes[0];
-    expect(JSON.parse(JSON.stringify(unappliedFix))).toStrictEqual({
+    expect(unappliedFix).toStrictEqual({
       range: [0, 3],
       text: 'Y',
       targetRule: 'replace-to-y',
       reason: 'overlap'
     });
+    const serializableMetadata = {
+      targetRule: unappliedFix.targetRule,
+      reason: unappliedFix.reason
+    };
+    expect(JSON.parse(JSON.stringify(serializableMetadata))).toStrictEqual(serializableMetadata);
   });
 
   test('notAppliedFixes empty when no conflicts', () => {

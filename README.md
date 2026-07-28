@@ -67,16 +67,19 @@ lintMarkdown(
 
 Each `notAppliedFixes` item contains these fields:
 
-- `range`: The fix range for the final fix round.
+- `range`: The range is relative to the input of the final fix round.
 - `text`: The replacement text.
 - `targetRule`: The source `rule.meta.name`.
 - `reason`: A stable conflict code.
 
+The range is not necessarily relative to the returned `result`.
 The `reason` value is `overlap` or `same-offset`.
 `overlap` means that the fix starts inside an applied range.
 `same-offset` means that an earlier insertion owns the same offset.
 The result contains only conflicts from the final fix round.
 The new `targetRule` and `reason` fields use JSON-compatible strings.
+The optional `data` field remains rule-defined.
+The API does not guarantee that `data` supports JSON serialization.
 
 下面是一个最小示例，可直接作为接入起点：
 

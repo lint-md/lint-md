@@ -82,12 +82,18 @@ export const createRuleManager = (
       let offset = 0;
       let currentLine = 1;
       while (currentLine < line && offset < appliedMarkdown.length) {
-        const next = appliedMarkdown.indexOf('\n', offset);
-        if (next === -1) {
-          break;
+        const char = appliedMarkdown[offset];
+        if (char === '\r') {
+          offset += appliedMarkdown[offset + 1] === '\n' ? 2 : 1;
+          currentLine += 1;
         }
-        offset = next + 1;
-        currentLine += 1;
+        else if (char === '\n') {
+          offset += 1;
+          currentLine += 1;
+        }
+        else {
+          offset += 1;
+        }
       }
       return Math.min(appliedMarkdown.length, offset + Math.max(0, column - 1));
     };

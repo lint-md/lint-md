@@ -5,7 +5,7 @@ const addReason = <T extends FixConfig>(
   fix: T,
   reason: FixNotAppliedReason
 ): T & { reason: FixNotAppliedReason } =>
-  ({ ...fix, reason }) as T & { reason: FixNotAppliedReason };
+    ({ ...fix, reason }) as T & { reason: FixNotAppliedReason };
 
 /**
  * 基于多个 fix 来修复一个字符串，关于 fix 的数据结构请查看相关类型定义

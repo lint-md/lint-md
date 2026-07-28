@@ -38,7 +38,7 @@ export interface FixedResult {
     // (undocumented)
     metrics?: FixMetrics;
     // (undocumented)
-    notAppliedFixes: FixConfig[];
+    notAppliedFixes: NotAppliedFix[];
     // (undocumented)
     result: string;
     // (undocumented)
@@ -53,6 +53,14 @@ export interface FixMetrics {
     rounds: number;
     // (undocumented)
     wallTime: number;
+}
+
+// @public (undocumented)
+export enum FixNotAppliedReason {
+    // (undocumented)
+    OVERLAP = "overlap",
+    // (undocumented)
+    SAME_OFFSET = "same-offset"
 }
 
 // @public (undocumented)
@@ -235,6 +243,12 @@ export const noSpaceInLink: LintMdRule;
 export const noSpecialCharacters: LintMdRule;
 
 // @public (undocumented)
+export interface NotAppliedFix extends RuleFixConfig {
+    // (undocumented)
+    reason: FixNotAppliedReason;
+}
+
+// @public (undocumented)
 export type PositionedBlockquoteNode = Extract<PositionedMarkdownNode, {
     type: 'blockquote';
 }>;
@@ -345,6 +359,12 @@ export class RuleExecutionFailure extends Error {
 
 // @public (undocumented)
 export type RuleExecutionPhase = 'create' | 'selector' | 'fix';
+
+// @public (undocumented)
+export interface RuleFixConfig extends FixConfig {
+    // (undocumented)
+    targetRule: string;
+}
 
 // @public (undocumented)
 export type RuleReportInput = Omit<ReportOption, 'content' | 'name' | 'loc'> & ({

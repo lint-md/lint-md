@@ -3,6 +3,7 @@ import type {
   LintMdRuleWithOptions,
   ReportOption,
   ReportPosition,
+  RuleFixConfig,
   RuleReportInput
 } from '../types';
 import type { createRuleErrorCollector } from './rule-execution-errors';
@@ -49,7 +50,7 @@ export const createRuleManager = (
   // 暴露 collector 中已收集的规则执行错误（含 fix 阶段），供单测与上层聚合读取。
   const getExecutionErrors = () => collector?.getErrors() ?? [];
 
-  const getAllFixes = () =>
+  const getAllFixes = (): RuleFixConfig[] =>
     allReportedData.flatMap((item) => {
       if (typeof item.fix === 'function') {
         try {

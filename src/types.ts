@@ -54,6 +54,22 @@ export interface FixConfig {
   data?: Record<string, unknown>
 }
 
+/** Stable reason code for an unapplied fix. */
+export enum FixNotAppliedReason {
+  OVERLAP = 'overlap',
+  SAME_OFFSET = 'same-offset'
+}
+
+/** A fix with its source rule ID. */
+export interface RuleFixConfig extends FixConfig {
+  targetRule: string
+}
+
+/** A fix that the engine skipped because it conflicts with another fix. */
+export interface NotAppliedFix extends RuleFixConfig {
+  reason: FixNotAppliedReason
+}
+
 /** 上报信息配置 */
 export interface ReportOption {
   name: string
@@ -267,7 +283,7 @@ export interface FixedResult {
    * 最终轮次中因冲突等原因未能应用的修复项。
    * range 基于 result 文本的坐标，可直接用于 result。
    */
-  notAppliedFixes: FixConfig[]
+  notAppliedFixes: NotAppliedFix[]
   /** 收敛状态，调用方可据此判断质量而非盲用文本（兼容扩展，历史构造方式仍可用） */
   convergence?: FixConvergence
   /** 实际执行的 runLint 轮数（兼容扩展，历史构造方式仍可用） */

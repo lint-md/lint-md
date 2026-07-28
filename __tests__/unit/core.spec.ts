@@ -3,7 +3,7 @@ import noEmptyCode from '../../src/rules/no-empty-code';
 import { getExample } from '../utils/test-utils';
 import { runLint } from '../../src/core/run-lint';
 import { lintMarkdownInternal } from '../../src/core/lint-markdown';
-import type { LintMdRule } from '../../src/types';
+import type { LintMdRule, NotAppliedFix } from '../../src/types';
 
 describe('test core methods for lint-markdown', () => {
   afterEach(() => {
@@ -182,9 +182,13 @@ Some **importance**, and \`code\`.
 
     expect(res.fixedResult).not.toBeNull();
     expect(res.fixedResult!.result).toBe('X');
-    // ruleB's fix conflicts with ruleA's — should be in notAppliedFixes
-    expect(res.fixedResult!.notAppliedFixes.length).toBe(1);
-    expect(res.fixedResult!.notAppliedFixes[0].text).toBe('Y');
+    const unappliedFix: NotAppliedFix = res.fixedResult!.notAppliedFixes[0];
+    expect(JSON.parse(JSON.stringify(unappliedFix))).toStrictEqual({
+      range: [0, 3],
+      text: 'Y',
+      targetRule: 'replace-to-y',
+      reason: 'overlap'
+    });
   });
 
   test('notAppliedFixes empty when no conflicts', () => {

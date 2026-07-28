@@ -58,14 +58,16 @@ describe('test apply fix', () => {
           1,
           3
         ],
-        text: '不太喜欢'
+        text: '不太喜欢',
+        reason: 'overlap'
       },
       {
         range: [
           1,
           3
         ],
-        text: '不怎么喜欢'
+        text: '不怎么喜欢',
+        reason: 'overlap'
       }
     ]);
   });
@@ -125,7 +127,10 @@ describe('test apply fix', () => {
 
     expect(applyFix('abcd', fixes)).toStrictEqual({
       result: 'aB-cd',
-      notAppliedFixes: [skippedFix]
+      notAppliedFixes: [{
+        ...skippedFix,
+        reason: 'same-offset'
+      }]
     });
   });
 
@@ -144,7 +149,10 @@ describe('test apply fix', () => {
 
     expect(applyFix('abcde', fixes)).toStrictEqual({
       result: 'aXde',
-      notAppliedFixes: [skippedFix]
+      notAppliedFixes: [{
+        ...skippedFix,
+        reason: 'overlap'
+      }]
     });
   });
 
@@ -163,7 +171,10 @@ describe('test apply fix', () => {
 
     expect(applyFix('abc', fixes)).toStrictEqual({
       result: 'aXbc',
-      notAppliedFixes: [skippedFix]
+      notAppliedFixes: [{
+        ...skippedFix,
+        reason: 'same-offset'
+      }]
     });
   });
 

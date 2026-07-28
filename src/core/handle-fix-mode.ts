@@ -1,4 +1,4 @@
-import type { FixConfig, FixMetrics, LintMdRuleWithOptions } from '../types';
+import type { FixMetrics, LintMdRuleWithOptions, NotAppliedFix } from '../types';
 import { FixConvergence } from '../types';
 import { MAX_LINT_AND_FIX_CALL_TIMES } from '../common/constant';
 import { applyFix } from '../utils/apply-fix';
@@ -16,7 +16,7 @@ export const handleFixMode = (
   const allExecutionErrors: ReturnType<typeof runLint>['executionErrors'] = [];
 
   let current = markdown;
-  let lastNotAppliedFixes: FixConfig[] = [];
+  let lastNotAppliedFixes: NotAppliedFix[] = [];
 
   // 记录已处理过的文本状态，用于检测振荡循环（如 A -> B -> A）。
   const seenTexts = new Set<string>();

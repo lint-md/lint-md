@@ -70,6 +70,103 @@ describe('test apply fix', () => {
     ]);
   });
 
+  test('applies adjacent replacement ranges in one round', () => {
+    const fixes: FixConfig[] = [
+      {
+        text: 'B',
+        range: [1, 2]
+      },
+      {
+        text: 'C',
+        range: [2, 3]
+      }
+    ];
+
+    expect(applyFix('abcd', fixes)).toStrictEqual({
+      result: 'aBCd',
+      notAppliedFixes: []
+    });
+  });
+
+  test('applies an insertion at the end of a replacement', () => {
+    const fixes: FixConfig[] = [
+      {
+        text: 'B',
+        range: [1, 2]
+      },
+      {
+        text: '-',
+        range: [2, 2]
+      }
+    ];
+
+    expect(applyFix('abcd', fixes)).toStrictEqual({
+      result: 'aB-cd',
+      notAppliedFixes: []
+    });
+  });
+
+  test('an insertion blocks a replacement at the same offset', () => {
+    const skippedFix: FixConfig = {
+      text: 'C',
+      range: [2, 3]
+    };
+    const fixes: FixConfig[] = [
+      {
+        text: 'B',
+        range: [1, 2]
+      },
+      {
+        text: '-',
+        range: [2, 2]
+      },
+      skippedFix
+    ];
+
+    expect(applyFix('abcd', fixes)).toStrictEqual({
+      result: 'aB-cd',
+      notAppliedFixes: [skippedFix]
+    });
+  });
+
+  test('skips a truly overlapping replacement range', () => {
+    const skippedFix: FixConfig = {
+      text: 'Y',
+      range: [2, 4]
+    };
+    const fixes: FixConfig[] = [
+      {
+        text: 'X',
+        range: [1, 3]
+      },
+      skippedFix
+    ];
+
+    expect(applyFix('abcde', fixes)).toStrictEqual({
+      result: 'aXde',
+      notAppliedFixes: [skippedFix]
+    });
+  });
+
+  test('keeps the first insertion at the same offset', () => {
+    const skippedFix: FixConfig = {
+      text: 'Y',
+      range: [1, 1]
+    };
+    const fixes: FixConfig[] = [
+      {
+        text: 'X',
+        range: [1, 1]
+      },
+      skippedFix
+    ];
+
+    expect(applyFix('abc', fixes)).toStrictEqual({
+      result: 'aXbc',
+      notAppliedFixes: [skippedFix]
+    });
+  });
+
   test('test the fixes will be sorted by range', () => {
     const content = 'hello world! Do you like JavaScript?';
     const fixes: FixConfig[] = [

@@ -109,6 +109,39 @@ describe('rule-manager offset contract: resolveOffset fallback slices correctly 
     expect(data[0].content.length).toBeLessThan(md.length);
     expect(data[0].content).toContain('加粗 中文');
   });
+
+  test.each([
+    ['LF', '\n'],
+    ['CRLF', '\r\n'],
+    ['CR', '\r']
+  ])('fallback resolves start and end offsets after %s line endings', (_label, lineEnding) => {
+    const md = ['first', 'second', 'third TARGET tail'].join(lineEnding);
+    const target = 'TARGET';
+    const start = md.indexOf(target);
+    const end = start + target.length;
+    const rule: LintMdRule = {
+      meta: { name: 'line-ending-fallback' },
+      create: context => ({
+        root: () => {
+          context.report({
+            loc: {
+              start: { line: 3, column: 7 },
+              end: { line: 3, column: 13 }
+            },
+            message: 'report without offsets'
+          });
+        }
+      })
+    };
+
+    const { data, fallbackHits } = runRule(md, rule);
+
+    expect(fallbackHits).toBe(1);
+    expect(data).toHaveLength(1);
+    expect(data[0].content).toBe(
+      md.slice(Math.max(0, start - 5), Math.min(md.length, end + 5))
+    );
+  });
 });
 
 describe('rule-manager offset contract: invalid offsets trigger fallback (#180 P2)', () => {

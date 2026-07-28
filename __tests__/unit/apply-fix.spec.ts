@@ -106,6 +106,29 @@ describe('test apply fix', () => {
     });
   });
 
+  test('an insertion blocks a replacement at the same offset', () => {
+    const skippedFix: FixConfig = {
+      text: 'C',
+      range: [2, 3]
+    };
+    const fixes: FixConfig[] = [
+      {
+        text: 'B',
+        range: [1, 2]
+      },
+      {
+        text: '-',
+        range: [2, 2]
+      },
+      skippedFix
+    ];
+
+    expect(applyFix('abcd', fixes)).toStrictEqual({
+      result: 'aB-cd',
+      notAppliedFixes: [skippedFix]
+    });
+  });
+
   test('skips a truly overlapping replacement range', () => {
     const skippedFix: FixConfig = {
       text: 'Y',

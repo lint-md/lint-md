@@ -391,7 +391,7 @@ export const spaceAroundAlphabet: LintMdRule;
 export const spaceAroundNumber: LintMdRule;
 
 // @public (undocumented)
-export type TextRange = number[];
+export type TextRange = [number, number];
 
 // @public (undocumented)
 export function toALEOutput(diagnostics: LintDiagnostic[], filePath: string): string;

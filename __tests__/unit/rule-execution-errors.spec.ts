@@ -1,7 +1,7 @@
 import { RuleExecutionFailure, createRuleErrorCollector, normalizeErrorMessage } from '../../src/utils/rule-execution-errors';
 import { runLint } from '../../src/core/run-lint';
 import { handleFixMode } from '../../src/core/handle-fix-mode';
-import type { LintMdRule } from '../../src/types';
+import type { FixConfig, LintMdRule } from '../../src/types';
 
 const makeThrowingRule = (name: string, fn: () => void): LintMdRule => ({
   meta: { name },
@@ -11,7 +11,7 @@ const makeThrowingRule = (name: string, fn: () => void): LintMdRule => ({
 // 一个 selector 正常 report 一个 fix 的规则（fix 回调抛错可控）。fix() 仅在 getAllFixes() 时执行。
 const makeFixRule = (
   name: string,
-  fixImpl: () => { range: number[]; text: string }
+  fixImpl: () => FixConfig
 ): LintMdRule => ({
   meta: { name },
   create: context => ({

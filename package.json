@@ -12,6 +12,7 @@
     "test": "jest --no-cache",
     "lint": "eslint --ext .ts,.mjs src/ __tests__/ scripts/",
     "typecheck": "tsc --noEmit",
+    "typecheck:tests": "tsc -p tsconfig.test.json --noEmit",
     "lib:cjs": "tsc -p tsconfig.json --target ESNext --module commonjs --outDir lib",
     "lib:esm": "tsc -p tsconfig.json --target ESNext --module ESNext --outDir esm",
     "build": "rm -rf lib esm && run-p lib:*",
@@ -21,7 +22,7 @@
     "smoke-test": "node scripts/benchmark-memory-smoke.mjs",
     "api:report": "npm run build && api-extractor run --local",
     "api:check": "api-extractor run",
-    "prepublishOnly": "npm run lint && npm run typecheck && npm run build && npm run package-contract && npm test",
+    "prepublishOnly": "npm run lint && npm run typecheck && npm run typecheck:tests && npm run build && npm run package-contract && npm test",
     "release": "npm publish"
   },
   "files": [

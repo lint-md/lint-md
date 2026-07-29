@@ -1,6 +1,15 @@
 name: downstream compatibility
 
 on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig*.json"
+      - "etc/core.api.md"
+      - "scripts/check-package-contract.mjs"
+      - ".github/workflows/downstream-compatibility.yml"
   push:
     branches:
       - master
@@ -45,6 +54,7 @@ jobs:
         uses: actions/checkout@v6.0.2
         with:
           repository: lint-md/cli
+          ref: master
           path: downstream/cli
 
       - name: Install candidate in CLI
@@ -63,9 +73,36 @@ jobs:
           INSTALLED_HASH=$(sha256sum downstream/cli/node_modules/@lint-md/core/lib/index.js | cut -d ' ' -f 1)
           test "$CORE_HASH" = "$INSTALLED_HASH"
 
-      - name: Test CLI compatibility
+      - name: Lint CLI
         working-directory: downstream/cli
         run: |
+          echo "COMPATIBILITY_COMMAND=npm run lint" >> "$GITHUB_ENV"
           npm run lint
+
+      - name: Test CLI
+        working-directory: downstream/cli
+        run: |
+          echo "COMPATIBILITY_COMMAND=npm test" >> "$GITHUB_ENV"
           npm test
+
+      - name: Test CLI package
+        working-directory: downstream/cli
+        run: |
+          echo "COMPATIBILITY_COMMAND=npm run test:package" >> "$GITHUB_ENV"
           npm run test:package
+
+      - name: Write compatibility summary
+        if: always()
+        working-directory: downstream/cli
+        run: |
+          {
+            echo "## Core × CLI compatibility"
+            echo
+            echo "- Core commit: \`${{ github.sha }}\`"
+            echo "- CLI commit: \`$(git rev-parse HEAD)\`"
+            echo "- Candidate package: \`$(basename \"$CORE_TARBALL\")\`"
+            echo "- Node.js: \`$(node --version)\`"
+            echo "- Consumer: \`lint-md/cli@master\`"
+            echo "- Last compatibility command: \`${COMPATIBILITY_COMMAND:-not reached}\`"
+            echo "- Job status: \`${{ job.status }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"

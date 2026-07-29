@@ -1,16 +1,16 @@
 import { handleFixMode } from '../../src/core/handle-fix-mode';
 import { MAX_LINT_AND_FIX_CALL_TIMES } from '../../src/common/constant';
-import type { LintMdRule, LintMdRuleContext, FixConfig } from '../../src/types';
+import type { LintMdRule, LintMdRuleContext } from '../../src/types';
 import { FixConvergence } from '../../src/types';
 
 function makeRule(config: {
-  name: string;
-  selector: string;
-  reportFn: (ctx: LintMdRuleContext, node: any) => void;
+  name: string
+  selector: string
+  reportFn: (ctx: LintMdRuleContext, node: any) => void
 }): LintMdRule {
   return {
     meta: { name: config.name },
-    create: (ctx) => ({
+    create: ctx => ({
       [config.selector]: (node: any) => config.reportFn(ctx, node)
     })
   };
@@ -195,7 +195,7 @@ describe('handleFixMode', () => {
       name: 'double-a',
       selector: 'text',
       reportFn: (ctx, node) => {
-        if (node.value === 'a'.repeat(Math.pow(2, callCount))) {
+        if (node.value === 'a'.repeat(2 ** callCount)) {
           callCount++;
           ctx.report({
             loc: node.position,
@@ -212,7 +212,7 @@ describe('handleFixMode', () => {
     const result = handleFixMode('a', [{ rule }]);
     // Should hit MAX guard, not exit early
     expect(callCount).toBe(MAX_LINT_AND_FIX_CALL_TIMES);
-    expect(result.fixedResult.result).toBe('a'.repeat(Math.pow(2, MAX_LINT_AND_FIX_CALL_TIMES)));
+    expect(result.fixedResult.result).toBe('a'.repeat(2 ** MAX_LINT_AND_FIX_CALL_TIMES));
   });
 
   test('initialLintResult reflects first round', () => {
@@ -466,7 +466,7 @@ describe('handleFixMode', () => {
       });
     });
 
-    const result = handleFixMode(states[0], rules.map((rule) => ({ rule })));
+    const result = handleFixMode(states[0], rules.map(rule => ({ rule })));
     expect(result.fixedResult.rounds).toBe(MAX_LINT_AND_FIX_CALL_TIMES);
     expect(result.fixedResult.convergence).toBe(FixConvergence.CYCLE_DETECTED);
   });
@@ -477,7 +477,7 @@ describe('handleFixMode', () => {
       name: 'double-a',
       selector: 'text',
       reportFn: (ctx, node) => {
-        if (node.value === 'a'.repeat(Math.pow(2, callCount))) {
+        if (node.value === 'a'.repeat(2 ** callCount)) {
           callCount++;
           ctx.report({ loc: node.position, message: 'double', fix: () => ({ range: [node.position.start.offset, node.position.end.offset], text: node.value + node.value }) });
         }
@@ -513,5 +513,4 @@ describe('handleFixMode', () => {
     expect(result.fixedResult.metrics!.rounds).toBe(result.fixedResult.rounds);
     expect(result.fixedResult.metrics!.perRound).toHaveLength(result.fixedResult.rounds);
   });
-
 });

@@ -160,7 +160,7 @@ describe('test no-half-width-punctuation', () => {
     expect(fixedResult?.result).toStrictEqual('中文（test）中文');
   });
 
-  test.each(['&copy', '&amp'])('keep non-terminated entity-like text aligned: %s', entity => {
+  test.each(['&copy', '&amp'])('keep non-terminated entity-like text aligned: %s', (entity) => {
     const md = `中文${entity}(test)中文`;
     const { fixedResult, lintResult } = fixer(md);
     expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
@@ -170,7 +170,7 @@ describe('test no-half-width-punctuation', () => {
   test.each([
     '<https://example.com/?a&amp;b>',
     'www.example.com/?a&amp;b'
-  ])('does not reinterpret entities inside an autolink: %s', md => {
+  ])('does not reinterpret entities inside an autolink: %s', (md) => {
     const { executionErrors, lintResult } = fixer(md);
     expect(executionErrors).toHaveLength(0);
     expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
@@ -179,7 +179,7 @@ describe('test no-half-width-punctuation', () => {
   test.each([
     '&#00000049;',
     '&#x0000028;'
-  ])('keeps overlong numeric entity-like text aligned: %s', entity => {
+  ])('keeps overlong numeric entity-like text aligned: %s', (entity) => {
     const md = `中文${entity}(test)中文`;
     const { executionErrors, fixedResult, lintResult } = fixer(md);
     expect(executionErrors).toHaveLength(0);
@@ -194,7 +194,7 @@ describe('test no-half-width-punctuation', () => {
     '&#128;',
     '&#xFDD0;',
     '&#xFFFF;'
-  ])('aligns numeric entities normalized to replacement character: %s', entity => {
+  ])('aligns numeric entities normalized to replacement character: %s', (entity) => {
     const md = `中文${entity}(test)中文`;
     const { executionErrors, fixedResult, lintResult } = fixer(md);
     expect(executionErrors).toHaveLength(0);

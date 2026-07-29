@@ -30,7 +30,8 @@ function generateMatches(text, count) {
   for (let i = 0; i < count; i++) {
     const idx = step * (i + 1);
     const len = Math.min(5, text.length - idx);
-    if (len > 0) matches.push({ index: idx, length: len });
+    if (len > 0)
+      matches.push({ index: idx, length: len });
   }
   return matches;
 }
@@ -43,7 +44,8 @@ function positionAtLinear(value, startLine, startColumn, startOffset, index) {
     if (value[i] === '\n') {
       line++;
       column = 1;
-    } else {
+    }
+    else {
       column++;
     }
   }
@@ -58,12 +60,14 @@ function matchAtLinear(value, startLine, startColumn, startOffset, index, length
     if (value[index + i] === '\n') {
       endLine++;
       endColumn = 1;
-    } else {
+    }
+    else {
       endColumn++;
     }
   }
   return {
-    index, length,
+    index,
+    length,
     loc: { start: { line: start.line, column: start.column, offset: start.offset }, end: { line: endLine, column: endColumn, offset: start.offset + length } },
     absoluteRange: [start.offset, start.offset + length]
   };
@@ -73,7 +77,8 @@ function matchAtLinear(value, startLine, startColumn, startOffset, index, length
 function buildLineBreakIndices(value) {
   const indices = [];
   for (let i = 0; i < value.length; i++) {
-    if (value[i] === '\n') indices.push(i);
+    if (value[i] === '\n')
+      indices.push(i);
   }
   return indices;
 }
@@ -84,7 +89,8 @@ function positionAtBinary(lineBreakIndices, startLine, startColumn, startOffset,
   let hi = lb.length;
   while (lo < hi) {
     const mid = (lo + hi) >> 1;
-    if (lb[mid] < index) lo = mid + 1;
+    if (lb[mid] < index)
+      lo = mid + 1;
     else hi = mid;
   }
   const line = startLine + lo;
@@ -98,7 +104,8 @@ function matchAtBinary(lineBreakIndices, startLine, startColumn, startOffset, in
   const start = positionAtBinary(lineBreakIndices, startLine, startColumn, startOffset, index);
   const end = positionAtBinary(lineBreakIndices, startLine, startColumn, startOffset, index + length);
   return {
-    index, length,
+    index,
+    length,
     loc: { start: { line: start.line, column: start.column, offset: start.offset }, end: { line: end.line, column: end.column, offset: start.offset + length } },
     absoluteRange: [start.offset, start.offset + length]
   };
@@ -131,9 +138,12 @@ function bench(label, fn, iterations, runs) {
 const args = process.argv.slice(2);
 const opts = { lines: 1000, matches: 500, runs: 5 };
 for (let i = 0; i < args.length; i += 2) {
-  if (args[i] === '--lines') opts.lines = parseInt(args[i + 1], 10);
-  if (args[i] === '--matches') opts.matches = parseInt(args[i + 1], 10);
-  if (args[i] === '--runs') opts.runs = parseInt(args[i + 1], 10);
+  if (args[i] === '--lines')
+    opts.lines = parseInt(args[i + 1], 10);
+  if (args[i] === '--matches')
+    opts.matches = parseInt(args[i + 1], 10);
+  if (args[i] === '--runs')
+    opts.runs = parseInt(args[i + 1], 10);
 }
 
 const text = generateText(opts.lines, 60);
@@ -177,7 +187,8 @@ bench('binary (lazy pre-compute)', () => {
   // New: first matchAt triggers O(n) constructor, then O(log k) per call
   let lb = null;
   for (const m of matches) {
-    if (!lb) lb = buildLineBreakIndices(text);
+    if (!lb)
+      lb = buildLineBreakIndices(text);
     matchAtBinary(lb, 1, 1, 0, m.index, m.length);
   }
 }, Math.round(iterations / 10), opts.runs);
@@ -186,16 +197,22 @@ bench('binary (lazy pre-compute)', () => {
 console.log('\n=== forEachChar simulation (no positionAt calls) ===');
 bench('linear (old constructor)', () => {
   // Old: O(1) constructor, then O(n) forEachChar
-  let line = 1, column = 1;
+  let line = 1;
+  let column = 1;
   for (let i = 0; i < text.length; i++) {
-    if (text[i] === '\n') { line++; column = 1; } else { column++; }
+    if (text[i] === '\n') { line++; column = 1; }
+    else { column++; }
   }
+  return line + column;
 }, iterations, opts.runs);
 bench('binary (new lazy constructor)', () => {
   // New: O(1) constructor (lazy), then O(n) forEachChar
   // Simulate: no positionAt called, so buildLineBreakIndices is never called
-  let line = 1, column = 1;
+  let line = 1;
+  let column = 1;
   for (let i = 0; i < text.length; i++) {
-    if (text[i] === '\n') { line++; column = 1; } else { column++; }
+    if (text[i] === '\n') { line++; column = 1; }
+    else { column++; }
   }
+  return line + column;
 }, iterations, opts.runs);

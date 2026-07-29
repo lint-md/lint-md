@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "test": "jest --no-cache",
-    "lint": "eslint src/",
+    "lint": "eslint --ext .ts,.mjs src/ __tests__/ scripts/",
     "typecheck": "tsc --noEmit",
     "lib:cjs": "tsc -p tsconfig.json --target ESNext --module commonjs --outDir lib",
     "lib:esm": "tsc -p tsconfig.json --target ESNext --module ESNext --outDir esm",

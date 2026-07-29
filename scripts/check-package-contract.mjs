@@ -21,7 +21,7 @@ const require = createRequire(import.meta.url);
 
 const cjs = require(path.join(root, 'lib', 'index.js'));
 if (typeof cjs.RuleExecutionFailure !== 'function') {
-  throw new Error('CJS entry does not export RuleExecutionFailure');
+  throw new TypeError('CJS entry does not export RuleExecutionFailure');
 }
 
 const esmEntry = await readFile(path.join(root, 'esm', 'index.js'), 'utf8');

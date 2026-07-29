@@ -1,4 +1,4 @@
-import { createRuleErrorCollector, RuleExecutionFailure, normalizeErrorMessage } from '../../src/utils/rule-execution-errors';
+import { RuleExecutionFailure, createRuleErrorCollector, normalizeErrorMessage } from '../../src/utils/rule-execution-errors';
 import { runLint } from '../../src/core/run-lint';
 import { handleFixMode } from '../../src/core/handle-fix-mode';
 import type { LintMdRule } from '../../src/types';
@@ -14,7 +14,7 @@ const makeFixRule = (
   fixImpl: () => { range: number[]; text: string }
 ): LintMdRule => ({
   meta: { name },
-  create: (context) => ({
+  create: context => ({
     text: (node: any) => {
       context.report({
         loc: node.position,
@@ -96,7 +96,7 @@ describe('rule-execution-errors', () => {
     const bad: LintMdRule = makeThrowingRule('bad-text', () => { throw new Error('bad'); });
     const good: LintMdRule = {
       meta: { name: 'good-text' },
-      create: (context) => ({
+      create: context => ({
         text: (node: any) => {
           context.report({ loc: node.position, message: 'ok' });
           goodReported = true;
@@ -160,7 +160,7 @@ describe('rule-execution-errors', () => {
     let bFixCalls = 0;
     const fixRule: LintMdRule = {
       meta: { name: 'B' },
-      create: (context) => ({
+      create: context => ({
         text: (node: any) => {
           context.report({
             loc: node.position,

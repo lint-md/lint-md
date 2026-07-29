@@ -1,5 +1,5 @@
 import { overrideDefaultRules } from '../../../src/utils/override-default-rules';
-import { RULE_SEVERITY, type LintMdRule } from '../../../src/types';
+import { type LintMdRule, RULE_SEVERITY } from '../../../src/types';
 
 const createMockRule = (name: string): LintMdRule => ({
   meta: { name },
@@ -106,7 +106,7 @@ describe('overrideDefaultRules', () => {
     const rules = JSON.parse('{"__proto__": 2}') as any;
 
     expect(() => overrideDefaultRules(defaultRules, rules)).toThrow(/未知规则/);
-    expect(Object.prototype.hasOwnProperty.call(Object.prototype, 'severity')).toBe(false);
+    expect(Object.hasOwn(Object.prototype, 'severity')).toBe(false);
   });
 
   it('should store third-party rule whose meta.name is a prototype key as plain key without pollution (issue #177)', () => {
@@ -117,10 +117,9 @@ describe('overrideDefaultRules', () => {
       'proto-alias': [protoRule, RULE_SEVERITY.WARN, {}]
     });
 
-    expect(Object.prototype.hasOwnProperty.call(Object.prototype, 'severity')).toBe(false);
-    expect((result as any)['__proto__']).toBeDefined();
-    expect((result as any)['__proto__'].rule).toBe(protoRule);
+    expect(Object.hasOwn(Object.prototype, 'severity')).toBe(false);
+    const protoEntry = Object.getOwnPropertyDescriptor(result, '__proto__')?.value;
+    expect(protoEntry).toBeDefined();
+    expect(protoEntry.rule).toBe(protoRule);
   });
 });
-
-

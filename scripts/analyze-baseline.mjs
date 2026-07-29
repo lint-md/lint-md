@@ -18,39 +18,49 @@ import { readFileSync } from 'node:fs';
 // ---------------------------------------------------------------------------
 
 function median(values) {
-  if (values.length === 0) return null;
+  if (values.length === 0)
+    return null;
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
   return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
 function safeMin(values) {
-  if (values.length === 0) return null;
+  if (values.length === 0)
+    return null;
   return Math.min(...values);
 }
 
 function safeMax(values) {
-  if (values.length === 0) return null;
+  if (values.length === 0)
+    return null;
   return Math.max(...values);
 }
 
 function formatBytes(n) {
-  if (n === null || n === undefined) return 'N/A';
-  if (n === 0) return '0 B';
+  if (n === null || n === undefined)
+    return 'N/A';
+  if (n === 0)
+    return '0 B';
   const abs = Math.abs(n);
-  if (abs >= 1024 * 1024 * 1024) return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GiB`;
-  if (abs >= 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(2)} MiB`;
-  if (abs >= 1024) return `${(n / 1024).toFixed(2)} KiB`;
+  if (abs >= 1024 * 1024 * 1024)
+    return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GiB`;
+  if (abs >= 1024 * 1024)
+    return `${(n / (1024 * 1024)).toFixed(2)} MiB`;
+  if (abs >= 1024)
+    return `${(n / 1024).toFixed(2)} KiB`;
   return `${n} B`;
 }
 
 function formatMs(n) {
-  if (n === null || n === undefined) return 'N/A';
+  if (n === null || n === undefined)
+    return 'N/A';
   return `${Math.round(n)} ms`;
 }
 
 function formatPct(n) {
-  if (n === null || n === undefined) return 'N/A';
+  if (n === null || n === undefined)
+    return 'N/A';
   return `${n.toFixed(1)}%`;
 }
 
@@ -75,7 +85,8 @@ function main() {
   const groups = new Map();
   for (const line of lines) {
     const key = `${line.shape}|${line.bytes}|${line.case}|${line.rule || ''}`;
-    if (!groups.has(key)) groups.set(key, []);
+    if (!groups.has(key))
+      groups.set(key, []);
     groups.get(key).push(line);
   }
 
@@ -108,8 +119,10 @@ function main() {
   // Sort: same shape together, then ascending bytes, then standard case order
   const caseOrder = ['noop', 'input-only', 'parser-only', 'parse-traverse', 'single-rule', 'all-rules', 'fix-mode'];
   rows.sort((a, b) => {
-    if (a.shape !== b.shape) return a.shape.localeCompare(b.shape);
-    if (a.bytes !== b.bytes) return a.bytes - b.bytes;
+    if (a.shape !== b.shape)
+      return a.shape.localeCompare(b.shape);
+    if (a.bytes !== b.bytes)
+      return a.bytes - b.bytes;
     return caseOrder.indexOf(a.caseName) - caseOrder.indexOf(b.caseName) || a.rule.localeCompare(b.rule);
   });
 
@@ -144,10 +157,12 @@ function main() {
   const combos = new Map();
   for (const r of rows) {
     const key = `${r.shape}|${r.bytes}`;
-    if (!combos.has(key)) combos.set(key, { shape: r.shape, bytes: r.bytes, cases: {} });
+    if (!combos.has(key))
+      combos.set(key, { shape: r.shape, bytes: r.bytes, cases: {} });
     const c = combos.get(key);
     if (r.caseName === 'single-rule') {
-      if (!c.singleRuleRows) c.singleRuleRows = [];
+      if (!c.singleRuleRows)
+        c.singleRuleRows = [];
       c.singleRuleRows.push(r);
     }
     c.cases[r.caseName] = r;
@@ -171,7 +186,8 @@ function main() {
 
     // %total is always relative to (allRules - inputOnly); guard against 0/NaN
     const calcPct = (delta) => {
-      if (Math.abs(totalDelta) < 1) return null;
+      if (Math.abs(totalDelta) < 1)
+        return null;
       return delta / totalDelta * 100;
     };
 
@@ -204,7 +220,8 @@ function main() {
       rows2.push({ label: 'fix-mode          ', delta: fixMode.rssMedian - allRulesBase, pct: calcPct(fixMode.rssMedian - allRulesBase), wall: fixMode.wallMedian - allRules.wallMedian, formula: 'fix-mode − all-rules' });
     }
 
-    if (rows2.length === 0) continue;
+    if (rows2.length === 0)
+      continue;
 
     // Print total
     console.log(`  total (all-rules − input-only): ${formatBytes(totalDelta)} ${formatMs(allRules ? allRules.wallMedian : 0)}`);
@@ -212,12 +229,12 @@ function main() {
 
     const col2w = [28, 12, 8, 12];
     const header2 = ['layer', 'rssΔ', '%total', 'wallΔ'].map((s, i) => pad(s, col2w[i])).join(' | ');
-    console.log('  ' + header2);
-    console.log('  ' + '-'.repeat(header2.length));
+    console.log(`  ${header2}`);
+    console.log(`  ${'-'.repeat(header2.length)}`);
 
     for (const r2 of rows2) {
       const vals = [r2.label, formatBytes(r2.delta), formatPct(r2.pct), formatMs(r2.wall)];
-      console.log('  ' + vals.map((s, i) => pad(s, col2w[i])).join(' | '));
+      console.log(`  ${vals.map((s, i) => pad(s, col2w[i])).join(' | ')}`);
     }
 
     // Decision guidance
@@ -225,7 +242,8 @@ function main() {
     if (inputOnly && parserOnly && allRules) {
       if (Math.abs(totalDelta) < 1024 * 1024) {
         console.log('  → Decision: total RSS delta too small/noisy → collect more runs or inspect profiles');
-      } else {
+      }
+      else {
         const parserPct = (parserBase - inputBase) / totalDelta * 100;
         const rulesPct = (allRulesBase - traverseBase) / totalDelta * 100;
         console.log(`  → parser contributes ${parserPct.toFixed(0)}% of total delta`);
@@ -233,9 +251,11 @@ function main() {
 
         if (parserPct >= 70) {
           console.log('  → Decision: parser dominates → Phase 3B (parser optimization)');
-        } else if (rulesPct >= 20) {
+        }
+        else if (rulesPct >= 20) {
           console.log('  → Decision: rules dominate → Phase 3A (text-rule optimization)');
-        } else {
+        }
+        else {
           console.log('  → Decision: evenly distributed → profile both before deciding');
         }
       }

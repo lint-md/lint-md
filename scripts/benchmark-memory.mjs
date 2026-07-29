@@ -68,7 +68,8 @@ if (process.env.BENCHMARK_CHILD === '1') {
   }
 
   function runInputOnly() {
-    return { reportCount: input.slice(0).length, fixCount: 0, runLintCalls: 0 };
+    input.slice(0);
+    return { reportCount: 0, fixCount: 0, runLintCalls: 0 };
   }
 
   function runParserOnly() {

@@ -1,7 +1,9 @@
 name: downstream compatibility
 
 on:
-  pull_request:
+  push:
+    branches:
+      - master
     paths:
       - "src/**"
       - "package.json"

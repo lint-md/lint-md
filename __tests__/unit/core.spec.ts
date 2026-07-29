@@ -140,7 +140,7 @@ Some **importance**, and \`code\`.
   test('notAppliedFixes accessible via lintMarkdown public API', () => {
     const ruleA: LintMdRule = {
       meta: { name: 'replace-to-x' },
-      create: (ctx) => ({
+      create: ctx => ({
         text: (node: any) => {
           if (node.value === 'abc') {
             ctx.report({
@@ -158,7 +158,7 @@ Some **importance**, and \`code\`.
 
     const ruleB: LintMdRule = {
       meta: { name: 'replace-to-y' },
-      create: (ctx) => ({
+      create: ctx => ({
         text: (node: any) => {
           if (node.value === 'abc') {
             ctx.report({
@@ -199,7 +199,7 @@ Some **importance**, and \`code\`.
   test('notAppliedFixes empty when no conflicts', () => {
     const ruleA: LintMdRule = {
       meta: { name: 'replace-foo' },
-      create: (ctx) => ({
+      create: ctx => ({
         text: (node: any) => {
           if (node.value === 'foo') {
             ctx.report({

@@ -7,7 +7,7 @@ describe('LintSourceCode', () => {
   test('exposes sourceCode on rule context', () => {
     const rule: LintMdRule = {
       meta: { name: 'source-code-test' },
-      create: context => {
+      create: (context) => {
         expect(context.sourceCode).toBeDefined();
         expect(context.sourceCode.text).toBe('中文');
         expect(context.sourceCode.ast).toBe(context.ast);
@@ -22,7 +22,7 @@ describe('LintSourceCode', () => {
     const rule: LintMdRule = {
       meta: { name: 'source-code-range-test' },
       create: (context: LintMdRuleContext) => ({
-        text: node => {
+        text: (node) => {
           if (node.type === 'text') {
             const index = node.value.indexOf('(');
             if (index === -1) {
@@ -48,7 +48,7 @@ describe('LintSourceCode', () => {
 
     const makeRule = (name: string): LintMdRule => ({
       meta: { name },
-      create: context => {
+      create: (context) => {
         instances.push(context.sourceCode);
         return {};
       }
@@ -63,7 +63,7 @@ describe('LintSourceCode', () => {
     let capturedContext: LintMdRuleContext | undefined;
     const rule: LintMdRule = {
       meta: { name: 'getraw-test' },
-      create: context => {
+      create: (context) => {
         capturedContext = context;
         return {};
       }
@@ -81,7 +81,7 @@ describe('LintSourceCode', () => {
     const rule: LintMdRule = {
       meta: { name: 'entity-range-test' },
       create: (context: LintMdRuleContext) => ({
-        text: node => {
+        text: (node) => {
           if (node.type !== 'text') {
             return;
           }
@@ -101,7 +101,7 @@ describe('LintSourceCode', () => {
   test('context still exposes legacy ast and markdown fields', () => {
     const rule: LintMdRule = {
       meta: { name: 'legacy-fields-test' },
-      create: context => {
+      create: (context) => {
         expect(context.markdown).toBe('中文');
         expect(context.ast.type).toBe('root');
         expect(context.options).toEqual({});

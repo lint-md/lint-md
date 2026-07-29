@@ -4,12 +4,12 @@ import type { LintMdRule, LintMdRulesConfig, PositionedTextNode } from '../../sr
 import { RULE_SEVERITY } from '../../src/types';
 
 const makeMockRule = (opts: {
-  name: string;
-  withFix: boolean;
-  matchesText?: string;
+  name: string
+  withFix: boolean
+  matchesText?: string
 }): LintMdRule => ({
   meta: { name: opts.name },
-  create: (context) => ({
+  create: context => ({
     text: (node: PositionedTextNode) => {
       if (opts.matchesText !== undefined && node.value !== opts.matchesText) {
         return;
@@ -19,7 +19,7 @@ const makeMockRule = (opts: {
         message: `mock report from ${opts.name}`,
         ...(opts.withFix
           ? {
-              fix: (fixer) => fixer.replaceTextRange(
+              fix: fixer => fixer.replaceTextRange(
                 [node.position.start.offset, node.position.end.offset],
                 'X'
               )
@@ -32,7 +32,7 @@ const makeMockRule = (opts: {
 
 const disableAllInternal = (): LintMdRulesConfig =>
   Object.fromEntries(
-    Object.values(internalRules).map((rule) => [rule.meta.name, RULE_SEVERITY.OFF])
+    Object.values(internalRules).map(rule => [rule.meta.name, RULE_SEVERITY.OFF])
   );
 
 describe('lintMarkdown() fixable counts (issue #152)', () => {

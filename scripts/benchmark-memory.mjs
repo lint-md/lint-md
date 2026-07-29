@@ -68,8 +68,7 @@ if (process.env.BENCHMARK_CHILD === '1') {
   }
 
   function runInputOnly() {
-    const s = input.slice(0);
-    void s;
+    input.slice(0);
     return { reportCount: 0, fixCount: 0, runLintCalls: 0 };
   }
 
@@ -93,7 +92,7 @@ if (process.env.BENCHMARK_CHILD === '1') {
       'space-around-number',
       'no-special-characters',
     ];
-    const configs = names.map((n) => ({ rule: TEXT_RULE_IMPORTS[n]() }));
+    const configs = names.map(n => ({ rule: TEXT_RULE_IMPORTS[n]() }));
     const result = runLint(input, configs);
     const reports = result.ruleManager.getReportData();
     const fixes = result.ruleManager.getAllFixes();
@@ -102,7 +101,8 @@ if (process.env.BENCHMARK_CHILD === '1') {
 
   function runSingleRule() {
     const ruleFactory = TEXT_RULE_IMPORTS[ruleName];
-    if (!ruleFactory) throw new Error(`Unknown rule: ${ruleName}`);
+    if (!ruleFactory)
+      throw new Error(`Unknown rule: ${ruleName}`);
     const result = runLint(input, [{ rule: ruleFactory() }]);
     const reports = result.ruleManager.getReportData();
     const fixes = result.ruleManager.getAllFixes();
@@ -135,7 +135,7 @@ if (process.env.BENCHMARK_CHILD === '1') {
   }
 
   const runners = {
-    noop: runNoop,
+    'noop': runNoop,
     'input-only': runInputOnly,
     'parser-only': runParserOnly,
     'parse-traverse': runParseTraverse,
@@ -146,13 +146,15 @@ if (process.env.BENCHMARK_CHILD === '1') {
   };
 
   const runner = runners[caseName];
-  if (!runner) throw new Error(`Unknown case: ${caseName}`);
+  if (!runner)
+    throw new Error(`Unknown case: ${caseName}`);
 
   // Warmup 完成后清零，只统计正式测量（见 #176 评审：避免诊断累计 warmup 而分母仅正式运行）。
   // Warmup
   for (let i = 0; i < warmupCount; i++) {
     runner();
-    if (typeof global.gc === 'function') global.gc();
+    if (typeof global.gc === 'function')
+      global.gc();
   }
 
   // Measure
@@ -195,7 +197,7 @@ if (process.env.BENCHMARK_CHILD === '1') {
     timestamp: new Date().toISOString(),
   };
 
-  process.stdout.write(JSON.stringify(result) + '\n');
+  process.stdout.write(`${JSON.stringify(result)}\n`);
   process.exit(0);
 }
 
@@ -230,13 +232,17 @@ function parseArgs() {
   const opts = { bytes: 65536, shape: 'long-paragraph', runs: 5, warmup: 2, all: false };
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
-    case '-h': case '--help': printHelp(); process.exit(0);
-    case '--bytes': opts.bytes = parseInt(args[++i], 10); break;
-    case '--shape': opts.shape = args[++i]; break;
-    case '--runs': opts.runs = parseInt(args[++i], 10); break;
-    case '--warmup': opts.warmup = parseInt(args[++i], 10); break;
-    case '--all': opts.all = true; break;
-    default: console.error(`Unknown flag: ${args[i]}\n`); printHelp(); process.exit(1);
+      case '-h':
+      case '--help':
+        printHelp();
+        process.exit(0);
+        return opts;
+      case '--bytes': opts.bytes = parseInt(args[++i], 10); break;
+      case '--shape': opts.shape = args[++i]; break;
+      case '--runs': opts.runs = parseInt(args[++i], 10); break;
+      case '--warmup': opts.warmup = parseInt(args[++i], 10); break;
+      case '--all': opts.all = true; break;
+      default: console.error(`Unknown flag: ${args[i]}\n`); printHelp(); process.exit(1);
     }
   }
   return opts;
@@ -269,7 +275,8 @@ function runChildCase(opts) {
     child.stdout.on('data', (chunk) => { stdout += chunk; });
     child.on('error', reject);
     child.on('close', (code) => {
-      if (code !== 0) reject(new Error(`Child exited with code ${code}`));
+      if (code !== 0)
+        reject(new Error(`Child exited with code ${code}`));
       else {
         try { resolve(JSON.parse(stdout.trim())); }
         catch (e) { reject(new Error(`Failed to parse child output: ${e.message}\n${stdout}`)); }
@@ -317,8 +324,8 @@ function repeatToSize(base, targetBytes) {
 }
 
 function generateLongParagraph(targetBytes) {
-  const base = '这是用于性能测试的长段落文本，包含中英文混合内容 test content and numbers 1234567890 以及标点符号。' +
-    CHINESE_CHARS.repeat(10) + ' ' + ENGLISH_WORDS.slice(0, 20).join(' ') + '。';
+  const base = `这是用于性能测试的长段落文本，包含中英文混合内容 test content and numbers 1234567890 以及标点符号。${
+    CHINESE_CHARS.repeat(10)} ${ENGLISH_WORDS.slice(0, 20).join(' ')}。`;
   return repeatToSize(base, targetBytes);
 }
 
@@ -328,8 +335,8 @@ function generateManyParagraphs(targetBytes) {
   let acc = 0;
   let i = 0;
   while (acc < targetBytes) {
-    const p = `## 第${i + 1}个段落标题\n\n这是第${i + 1}个段落的正文内容。` +
-      `包含一些中文文本和 English words mixed together。\n\n`;
+    const p = `## 第${i + 1}个段落标题\n\n这是第${i + 1}个段落的正文内容。`
+      + '包含一些中文文本和 English words mixed together。\n\n';
     const buf = Buffer.from(p, 'utf8');
     if (acc + buf.length > targetBytes) {
       parts.push(buf.slice(0, targetBytes - acc));
@@ -369,20 +376,20 @@ function generateMixedMarkdown(targetBytes) {
 
 function generateHighMatchDensity(targetBytes) {
   // Lots of Chinese + English adjacent text to trigger space-around-alphabet etc.
-  const base = '中文English中文123中文abc测试中文x' + CHINESE_CHARS.slice(0, 5);
+  const base = `中文English中文123中文abc测试中文x${CHINESE_CHARS.slice(0, 5)}`;
   return repeatToSize(base, targetBytes);
 }
 
 function generateLowMatchDensity(targetBytes) {
   // Plain English text — most Chinese rules won't fire.
-  const base = 'This is plain English text for low match density testing. ' +
-    ENGLISH_WORDS.join(' ') + '. ';
+  const base = `This is plain English text for low match density testing. ${
+    ENGLISH_WORDS.join(' ')}. `;
   return repeatToSize(base, targetBytes);
 }
 
 function generateOverlappingFixes(targetBytes) {
   // Content that triggers fixes whose ranges may overlap (e.g. many space insertions).
-  const base = '中文English中文123中文,测试中文;测试中文:测试中文(测试)中文！测试？测试。' + CHINESE_CHARS.slice(0, 5);
+  const base = `中文English中文123中文,测试中文;测试中文:测试中文(测试)中文！测试？测试。${CHINESE_CHARS.slice(0, 5)}`;
   return repeatToSize(base, targetBytes);
 }
 
@@ -408,7 +415,8 @@ function generateInput(shape, bytes) {
     'escape-dense': generateEscapeDense,
   };
   const gen = generators[shape];
-  if (!gen) throw new Error(`Unknown shape: ${shape}`);
+  if (!gen)
+    throw new Error(`Unknown shape: ${shape}`);
   return { input: gen(bytes), shape, bytes };
 }
 
@@ -433,16 +441,17 @@ async function main() {
                 shape, bytes, caseName, ruleName, warmup: opts.warmup,
               });
               result.run = run + 1;
-              process.stdout.write(JSON.stringify(result) + '\n');
+              process.stdout.write(`${JSON.stringify(result)}\n`);
             }
           }
-        } else {
+        }
+        else {
           for (let run = 0; run < opts.runs; run++) {
             const result = await runChildCase({
               shape, bytes, caseName, ruleName: '', warmup: opts.warmup,
             });
             result.run = run + 1;
-            process.stdout.write(JSON.stringify(result) + '\n');
+            process.stdout.write(`${JSON.stringify(result)}\n`);
           }
         }
       }

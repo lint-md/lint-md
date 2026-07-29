@@ -1,11 +1,11 @@
+import { parseMdWithSourceMap } from '@lint-md/parser';
 import { runLint } from '../../src/core/run-lint';
 import { lintMarkdownInternal } from '../../src/core/lint-markdown';
 import { RuleExecutionFailure } from '../../src/utils/rule-execution-errors';
-import { parseMdWithSourceMap } from '@lint-md/parser';
 import { TextScanner } from '../../src/utils/text-scanner';
 import { createLintSourceCode } from '../../src/utils/source-code';
 import noHalfWidthPunctuation from '../../src/rules/no-half-width-punctuation';
-import type { LintMdRule, LintSourceCode } from '../../src/types';
+import type { LintMdRule } from '../../src/types';
 
 const halfWidthConfig = [{ rule: noHalfWidthPunctuation }];
 
@@ -43,7 +43,7 @@ describe('parser source-map integration', () => {
     });
     expect(getTextRange).not.toHaveBeenCalled();
     expect(getLocation).not.toHaveBeenCalled();
-    positions.forEach(pos => void pos.endOffset);
+    expect(positions.map(pos => pos.endOffset)).toEqual([1, 2, 3]);
     expect(getTextRange).toHaveBeenCalledTimes(3);
     expect(getLocation).toHaveBeenCalledTimes(3);
     expect(getTextRange.mock.calls.map(([, start, end]) => [start, end]))
@@ -67,7 +67,7 @@ describe('parser source-map integration', () => {
     const inlineCodeRule: LintMdRule = {
       meta: { name: 'inline-code-source-map' },
       create: context => ({
-        inlineCode: node => {
+        inlineCode: (node) => {
           const match = new TextScanner(node as any, context.sourceCode).matchAt(0, 1);
           context.report({
             loc: match.loc,
@@ -148,7 +148,7 @@ describe('parser source-map integration', () => {
     const atomicRule: LintMdRule = {
       meta: { name: 'atomic-entity' },
       create: context => ({
-        text: node => {
+        text: (node) => {
           const scanner = new TextScanner(node as any, context.sourceCode);
           scanner.forEachChar((char, index) => {
             if (char === '𝔄') {
@@ -172,7 +172,7 @@ describe('parser source-map integration', () => {
     const mutatingRule: LintMdRule = {
       meta: { name: 'mutate-text-node' },
       create: context => ({
-        text: node => {
+        text: (node) => {
           (node as { value: string }).value = 'changed';
           new TextScanner(node as any, context.sourceCode).matchAt(0, 1);
           context.report({ loc: node.position, message: 'unreachable' });

@@ -192,6 +192,8 @@ npm run typecheck
 npm run build
 ```
 
+`npm run lint` checks TypeScript and MJS files in `src/`, `__tests__/`, and `scripts/`.
+
 ### 维护公共 API
 
 项目使用 [API Extractor](https://api-extractor.com/) 跟踪 `@lint-md/core` 的公开类型接口。API 基线保存在 `etc/core.api.md`，该文件由工具生成，请勿手动编辑。

@@ -10,6 +10,8 @@
   ],
   "scripts": {
     "test": "jest --no-cache",
+    "test:unit": "jest --no-cache --testPathIgnorePatterns=/benchmark/",
+    "test:benchmark": "jest --no-cache __tests__/benchmark",
     "lint": "eslint --ext .ts,.mjs src/ __tests__/ scripts/",
     "typecheck": "tsc --noEmit",
     "typecheck:tests": "tsc -p tsconfig.test.json --noEmit",

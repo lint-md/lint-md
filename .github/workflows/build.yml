@@ -1,8 +1,6 @@
 name: build
 
 on:
-  schedule:
-    - cron: '0 0 * * 1'
   push:
     branches: [master]
   pull_request:
@@ -12,7 +10,6 @@ permissions:
 
 jobs:
   build:
-    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -53,6 +50,7 @@ jobs:
 
   benchmark:
     name: Benchmark (Node 22)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6.0.2

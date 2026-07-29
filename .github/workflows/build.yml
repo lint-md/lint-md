@@ -9,6 +9,40 @@ permissions:
   contents: read
 
 jobs:
+  quality:
+    name: Quality (Node 22)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Typecheck tests
+        run: npm run typecheck:tests
+
+      - name: Build
+        run: npm run build
+
+      - name: API report check
+        run: npm run api:check
+
+      - name: Package contract check
+        run: |
+          npm run package-contract
+          npm pack --dry-run
+
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -25,28 +59,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Typecheck tests
-        run: npm run typecheck:tests
-
       - name: Unit test
         run: npm run test:unit
 
       - name: Build
         run: npm run build
-
-      - name: API report check
-        run: npm run api:check
-
-      - name: Package contract check
-        run: |
-          npm run package-contract
-          npm pack --dry-run
 
   benchmark:
     name: Benchmark (Node 22)

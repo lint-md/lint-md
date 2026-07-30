@@ -1,7 +1,9 @@
-import { parseMdWithSourceMap } from '@lint-md/parser';
+import {
+  SourceMapConsistencyError,
+  parseMdWithSourceMap
+} from '@lint-md/parser';
 import { runLint } from '../../src/core/run-lint';
 import { lintMarkdownInternal } from '../../src/core/lint-markdown';
-import { RuleExecutionFailure } from '../../src/utils/rule-execution-errors';
 import { TextScanner } from '../../src/utils/text-scanner';
 import { createLintSourceCode } from '../../src/utils/source-code';
 import noHalfWidthPunctuation from '../../src/rules/no-half-width-punctuation';
@@ -168,7 +170,7 @@ describe('parser source-map integration', () => {
     expect(result.fixedResult?.result).toBe('中文A中文');
   });
 
-  test('source-map consistency errors are collected and do not produce fixes', () => {
+  test('source-map consistency errors escape rule error collection', () => {
     const mutatingRule: LintMdRule = {
       meta: { name: 'mutate-text-node' },
       create: context => ({
@@ -180,13 +182,51 @@ describe('parser source-map integration', () => {
       })
     };
     const input = '中文(test)中文';
-    const result = runLint(input, [{ rule: mutatingRule }]);
-    expect(result.executionErrors).toEqual([
-      expect.objectContaining({ ruleName: 'mutate-text-node', phase: 'selector' })
-    ]);
-    expect(result.ruleManager.getAllFixes()).toEqual([]);
+
+    expect(() => runLint(input, [{ rule: mutatingRule }]))
+      .toThrow(SourceMapConsistencyError);
     expect(input).toBe('中文(test)中文');
     expect(() => runLint(input, [{ rule: mutatingRule }], { ruleErrorPolicy: 'strict' }))
-      .toThrow(RuleExecutionFailure);
+      .toThrow(SourceMapConsistencyError);
+  });
+
+  test('source-map errors escape the rule create phase', () => {
+    const mutatingRule: LintMdRule = {
+      meta: { name: 'mutate-during-create' },
+      create: (context) => {
+        const paragraph = context.ast.children[0] as any;
+        const node = paragraph.children[0];
+        node.value = 'changed';
+        context.sourceCode.getTextRange(node, 0, 1);
+        return {};
+      }
+    };
+
+    expect(() => runLint('text', [{ rule: mutatingRule }]))
+      .toThrow(SourceMapConsistencyError);
+  });
+
+  test('source-map errors escape the rule fix phase', () => {
+    const mutatingRule: LintMdRule = {
+      meta: { name: 'mutate-during-fix' },
+      create: context => ({
+        text: (node) => {
+          context.report({
+            loc: node.position,
+            message: 'trigger mapped fix',
+            fix: () => {
+              (node as { value: string }).value = 'changed';
+              const range = context.sourceCode.getTextRange(node as any, 0, 1);
+              return { range, text: 'x' };
+            }
+          });
+        }
+      })
+    };
+    const { ruleManager } = runLint('text', [{ rule: mutatingRule }]);
+
+    expect(() => ruleManager.getAllFixes())
+      .toThrow(SourceMapConsistencyError);
+    expect(ruleManager.getExecutionErrors()).toEqual([]);
   });
 });

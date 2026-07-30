@@ -7,6 +7,9 @@
 import type { ParsedPoint } from '@lint-md/parser';
 import type { PositionedMarkdownNode as PositionedMarkdownNode_2 } from '@lint-md/parser';
 import type { PositionedMarkdownRoot as PositionedMarkdownRoot_2 } from '@lint-md/parser';
+import { SourceMapConsistencyError } from '@lint-md/parser';
+import { SourceMapError } from '@lint-md/parser';
+import { SourceMapUnavailableError } from '@lint-md/parser';
 
 // @public (undocumented)
 export const correctTitleTrailingPunctuation: LintMdRule;
@@ -61,6 +64,11 @@ export enum FixNotAppliedReason {
     OVERLAP = "overlap",
     // (undocumented)
     SAME_OFFSET = "same-offset"
+}
+
+// @public (undocumented)
+export class InvalidRuleRangeError extends RangeError {
+    constructor(message: string);
 }
 
 // @public (undocumented)
@@ -384,6 +392,12 @@ export interface RunLintOptions {
     ruleErrorPolicy?: RuleErrorPolicy;
 }
 
+export { SourceMapConsistencyError }
+
+export { SourceMapError }
+
+export { SourceMapUnavailableError }
+
 // @public (undocumented)
 export const spaceAroundAlphabet: LintMdRule;
 
@@ -391,7 +405,7 @@ export const spaceAroundAlphabet: LintMdRule;
 export const spaceAroundNumber: LintMdRule;
 
 // @public (undocumented)
-export type TextRange = [number, number];
+export type TextRange = readonly [number, number];
 
 // @public (undocumented)
 export function toALEOutput(diagnostics: LintDiagnostic[], filePath: string): string;

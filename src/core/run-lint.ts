@@ -5,6 +5,7 @@ import { createTraverser } from '../utils/traverser';
 import { createRuleManager } from '../utils/rule-manager';
 import { createRuleErrorCollector } from '../utils/rule-execution-errors';
 import { createLintSourceCode } from '../utils/source-code';
+import { isSourceMapError } from '../utils/source-code-errors';
 
 /**
  * 基于各种 rules 对 Markdown 文本进行校验
@@ -64,6 +65,10 @@ export const runLint = (
       ruleSelectors = rule.create(ruleContext);
     }
     catch (e) {
+      // Source-map errors are infrastructure failures.
+      if (isSourceMapError(e)) {
+        throw e;
+      }
       collector.collect(rule.meta.name, 'create', e);
       continue;
     }
@@ -76,6 +81,10 @@ export const runLint = (
           originalSelector(node);
         }
         catch (error) {
+          // Source-map errors are infrastructure failures.
+          if (isSourceMapError(error)) {
+            throw error;
+          }
           // 严格模式会在 collect 内抛出 RuleExecutionFailure，向上传递。
           collector.collect(ruleName, 'selector', error, node.type);
         }

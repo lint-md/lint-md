@@ -1,7 +1,12 @@
+import {
+  SourceMapUnavailableError,
+  parseMdWithSourceMap
+} from '@lint-md/parser';
 import type { LintMdRule, LintMdRuleContext, LintSourceCode } from '../../src/types';
 import { lintMarkdownInternal } from '../../src/core/lint-markdown';
 import { runLint } from '../../src/core/run-lint';
 import { createLintSourceCode } from '../../src/utils/source-code';
+import { InvalidRuleRangeError } from '../../src/utils/source-code-errors';
 
 describe('LintSourceCode', () => {
   test('exposes sourceCode on rule context', () => {
@@ -98,6 +103,31 @@ describe('LintSourceCode', () => {
     runLint('中文&#40;', [{ rule }]);
   });
 
+  test('getTextRange rejects invalid normalized ranges', () => {
+    const markdown = 'abc';
+    const { ast, sourceMap } = parseMdWithSourceMap(markdown);
+    const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
+    const node = (ast.children[0] as any).children[0];
+
+    expect(() => sourceCode.getTextRange(node, -1, 1))
+      .toThrow(InvalidRuleRangeError);
+    expect(() => sourceCode.getTextRange(node, 2, 1))
+      .toThrow(InvalidRuleRangeError);
+    expect(() => sourceCode.getTextRange(node, 0, 4))
+      .toThrow(InvalidRuleRangeError);
+  });
+
+  test('getTextRange identifies non-contiguous source ranges', () => {
+    const markdown = '> a\n> b';
+    const { ast, sourceMap } = parseMdWithSourceMap(markdown);
+    const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
+    const blockquote = ast.children[0] as any;
+    const node = blockquote.children[0].children[0];
+
+    expect(() => sourceCode.getTextRange(node, 0, node.value.length))
+      .toThrow(SourceMapUnavailableError);
+  });
+
   test('context still exposes legacy ast and markdown fields', () => {
     const rule: LintMdRule = {
       meta: { name: 'legacy-fields-test' },
@@ -166,16 +196,16 @@ describe('LintSourceCode', () => {
     });
 
     test('throws on negative offset', () => {
-      expect(() => sc.getPosition(-1)).toThrow(RangeError);
+      expect(() => sc.getPosition(-1)).toThrow(InvalidRuleRangeError);
     });
 
     test('throws on non-integer offset', () => {
-      expect(() => sc.getPosition(1.5)).toThrow(RangeError);
-      expect(() => sc.getPosition(NaN)).toThrow(RangeError);
+      expect(() => sc.getPosition(1.5)).toThrow(InvalidRuleRangeError);
+      expect(() => sc.getPosition(NaN)).toThrow(InvalidRuleRangeError);
     });
 
     test('throws on offset beyond text length', () => {
-      expect(() => sc.getPosition(100)).toThrow(RangeError);
+      expect(() => sc.getPosition(100)).toThrow(InvalidRuleRangeError);
     });
   });
 
@@ -205,19 +235,19 @@ describe('LintSourceCode', () => {
     });
 
     test('throws on end < start', () => {
-      expect(() => sc.getLocation([5, 0])).toThrow(RangeError);
+      expect(() => sc.getLocation([5, 0])).toThrow(InvalidRuleRangeError);
     });
 
     test('throws on negative start', () => {
-      expect(() => sc.getLocation([-1, 1])).toThrow(RangeError);
+      expect(() => sc.getLocation([-1, 1])).toThrow(InvalidRuleRangeError);
     });
 
     test('throws on non-integer range element', () => {
-      expect(() => sc.getLocation([0, 1.5])).toThrow(RangeError);
+      expect(() => sc.getLocation([0, 1.5])).toThrow(InvalidRuleRangeError);
     });
 
     test('throws on range beyond text length', () => {
-      expect(() => sc.getLocation([0, 100])).toThrow(RangeError);
+      expect(() => sc.getLocation([0, 100])).toThrow(InvalidRuleRangeError);
     });
   });
 });

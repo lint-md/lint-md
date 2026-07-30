@@ -3,7 +3,9 @@ import type {
   MarkdownSourceMap,
   MarkdownTextNode as ParserMarkdownTextNode
 } from '@lint-md/parser';
+import { SourceMapUnavailableError } from '@lint-md/parser';
 import type { LintSourceCode, MarkdownPosition, PositionedInlineCodeNode, PositionedMarkdownNode, PositionedMarkdownRoot, PositionedTextNode, TextRange } from '../types';
+import { InvalidRuleRangeError, isSourceMapError } from './source-code-errors';
 
 interface SourceCodeOptions {
   text: string
@@ -31,17 +33,37 @@ export const createLintSourceCode = ({
       valueStart: number,
       valueEnd: number
     ): TextRange {
-      const range = sourceMap.getSourceRange(
-        node as unknown as ParserMarkdownTextNode | MarkdownInlineCodeNode,
-        valueStart,
-        valueEnd
-      );
-      return [range.start.offset, range.end.offset];
+      if (!Number.isInteger(valueStart) || !Number.isInteger(valueEnd)
+        || valueStart < 0 || valueStart > valueEnd || valueEnd > node.value.length) {
+        throw new InvalidRuleRangeError(
+          `getTextRange: range must satisfy 0 <= start <= end <= ${node.value.length}, got [${valueStart}, ${valueEnd}]`
+        );
+      }
+
+      try {
+        const range = sourceMap.getSourceRange(
+          node as unknown as ParserMarkdownTextNode | MarkdownInlineCodeNode,
+          valueStart,
+          valueEnd
+        );
+        return [range.start.offset, range.end.offset];
+      }
+      catch (error) {
+        if (isSourceMapError(error)) {
+          throw error;
+        }
+        if (error instanceof RangeError) {
+          throw new SourceMapUnavailableError(error.message);
+        }
+        throw error;
+      }
     },
 
     getPosition(offset: number): MarkdownPosition {
       if (!Number.isInteger(offset) || offset < 0 || offset > text.length) {
-        throw new RangeError(`getPosition: offset must be an integer in [0, ${text.length}], got ${offset}`);
+        throw new InvalidRuleRangeError(
+          `getPosition: offset must be an integer in [0, ${text.length}], got ${offset}`
+        );
       }
       return offsetToPosition(lineStarts, offset);
     },
@@ -50,7 +72,7 @@ export const createLintSourceCode = ({
       const [start, end] = range;
       if (!Number.isInteger(start) || !Number.isInteger(end)
         || start < 0 || start > end || end > text.length) {
-        throw new RangeError(
+        throw new InvalidRuleRangeError(
           `getLocation: range must satisfy 0 <= start <= end <= ${text.length}, got [${start}, ${end}]`
         );
       }

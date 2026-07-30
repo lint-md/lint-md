@@ -8,6 +8,7 @@ import type {
 } from '../types';
 import type { createRuleErrorCollector } from './rule-execution-errors';
 import { createFixer } from './fixer';
+import { isSourceMapError } from './source-code-errors';
 
 /** 合法 offset 必须是有限非负整数：排除 NaN / Infinity / 负数，避免第三方规则传入非法值绕过兜底。 */
 export const isValidOffset = (value: unknown): value is number =>
@@ -58,6 +59,10 @@ export const createRuleManager = (
           return [{ ...fix, targetRule: item.name }];
         }
         catch (e) {
+          // Source-map errors are infrastructure failures.
+          if (isSourceMapError(e)) {
+            throw e;
+          }
           if (collector) {
             // 严格模式会在 collect 内抛 RuleExecutionFailure，向上传递。
             collector.collect(item.name, 'fix', e);

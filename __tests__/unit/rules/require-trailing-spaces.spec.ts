@@ -26,6 +26,8 @@ describe('require-trailing-spaces', () => {
     ['已有两个空格', '第一行  \n第二行'],
     ['使用反斜杠换行', '第一行\\\n第二行'],
     ['没有软换行', '只有一行'],
+    ['行内代码中的换行', '`第一行\n第二行`'],
+    ['文档末尾换行', '只有一行\n'],
     ['代码块内换行', '```\n第一行\n第二行\n```']
   ])('%s 时不报告', (_name, markdown) => {
     const { fixedResult, lintResult } = fixer(markdown);

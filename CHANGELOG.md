@@ -90,7 +90,7 @@
 - **build**: replace npm-run-all with npm-run-all2 (#147)
 - **build**: replace yarn with npm and add push trigger (#134)
 - **run-lint**: replace console.log with console.error to surface rule execution failures (#141)
-- **B2**: 消除 @ts-expect-error、as any、隐式 any，提升类型安全 （#139）
+- **B2**: 消除 @ts-expect-error、as any、隐式 any，提升类型安全 (#139)
 - detect percent suffix of number in space-around-number (#129)
 - no-space-in-inline-code backtick handling & correct-title-trailing (#127)
 - replace while(true) with clean exec() loop, fix premature break (#126)

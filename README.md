@@ -117,7 +117,8 @@ const result = lintMarkdown(markdown, {
   'space-around-number': 2,
   'no-long-code': [1, { length: 100, exclude: [] }],
   'require-trailing-spaces': 2,
-  'space-around-link': 2
+  'space-around-link': 2,
+  'no-multiple-blank-lines': 2
 }, true);
 
 console.log(result.lintResult);
@@ -153,7 +154,7 @@ lintMarkdown(markdown, rules, false, {
 
 ## 📏 书写规则列表
 
-目前内置 19 个规则，覆盖大部分的中文规则。
+目前内置 20 个规则，覆盖大部分的中文规则。
 
 | 规则名 | 说明 | 可配置 | 可修复 |
 | --- | --- | --- | --- |
@@ -176,15 +177,25 @@ lintMarkdown(markdown, rules, false, {
 | `no-half-width-punctuation` | 中文语境下应使用全角标点符号 | 否 | 是 |
 | `require-trailing-spaces` | 软换行前需要两个空格 | 否 | 是 |
 | `space-around-link` | 链接与正文之间需要空格 | 否 | 是 |
+| `no-multiple-blank-lines` | 连续空白行最多保留一行 | 否 | 是 |
 
-`require-trailing-spaces` 和 `space-around-link` 默认关闭。CLI 用户可以在项目根目录的
-`.lintmdrc` 中启用这些规则：
+`require-trailing-spaces`、`space-around-link` 和 `no-multiple-blank-lines` 默认关闭。
+CLI 用户可以在项目根目录的 `.lintmdrc` 中启用这些规则：
+
+| 规则级别 | 含义 |
+| --- | --- |
+| `0` | 关闭规则 |
+| `1` | 生成警告 |
+| `2` | 生成错误 |
+
+下面的示例将三条规则设置为错误级别：
 
 ```json
 {
   "rules": {
     "require-trailing-spaces": 2,
-    "space-around-link": 2
+    "space-around-link": 2,
+    "no-multiple-blank-lines": 2
   }
 }
 ```
@@ -201,7 +212,8 @@ const result = lintMarkdown(
   markdown,
   {
     'require-trailing-spaces': RULE_SEVERITY.ERROR,
-    'space-around-link': RULE_SEVERITY.ERROR
+    'space-around-link': RULE_SEVERITY.ERROR,
+    'no-multiple-blank-lines': RULE_SEVERITY.ERROR
   },
   true
 );
@@ -209,11 +221,15 @@ const result = lintMarkdown(
 console.log(result.fixedResult.result);
 ```
 
-规则级别 `1` 生成警告。规则级别 `2` 生成错误。
+`RULE_SEVERITY.ERROR` 等同于规则级别 `2`。
 第三个参数为 `true` 时，Core 自动修复文本。设置为 `false` 时，Core 只返回检查结果。
 
 `space-around-link` 处理普通链接、自动链接和引用链接。它不处理独立图片。
 全角标点、其他 Unicode 标点、已有空白和块边界不需要空格。连续链接之间只添加一个空格。
+
+`no-multiple-blank-lines` 将连续空白行修复为一个空白行。
+它删除文档开头的空白行。它保留文档末尾的一个换行。
+空格和 Tab 组成的行也算空白行。代码块内部内容不受影响。
 
 欢迎大家提交需求，或者提交 PR 新增规则。
 

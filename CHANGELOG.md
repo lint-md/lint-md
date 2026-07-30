@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.3.0](https://github.com/lint-md/lint-md/compare/v2.2.1...v2.3.0) - 2026-07-30
+
+### Features
+
+- **api**: add the explicit `fixMarkdown()` API (#235)
+- **no-multiple-blank-lines**: limit block gaps to one blank line (#228)
+- **space-around-link**: add spaces between links and adjacent text (#227)
+- **require-trailing-spaces**: add trailing spaces for soft line breaks (#226)
+
+### Refactoring
+
+- **source-code**: require source maps for text ranges and export range error classes (#225)
+
 ## [2.2.1](https://github.com/lint-md/lint-md/compare/v2.1.6...v2.2.1) - 2026-07-29
 
 ### Features

@@ -1,43 +1,31 @@
+import { parseMdWithSourceMap } from '@lint-md/parser';
 import { TextScanner } from '../../../src/utils/text-scanner';
-import type { MarkdownTextNode } from '../../../src/utils/get-text-nodes';
+import { createLintSourceCode } from '../../../src/utils/source-code';
+import { InvalidRuleRangeError } from '../../../src/utils/source-code-errors';
+import type { PositionedTextNode } from '../../../src/types';
 
-const createTextNode = (
-  value: string,
-  startLine = 1,
-  startColumn = 1,
-  startOffset = 0
-): MarkdownTextNode => ({
-  type: 'text',
-  value,
-  position: {
-    start: { line: startLine, column: startColumn, offset: startOffset },
-    end: {
-      line: startLine,
-      column: startColumn + value.length,
-      offset: startOffset + value.length
-    }
-  }
-} as unknown as MarkdownTextNode);
+const createScanner = (markdown: string): TextScanner => {
+  const { ast, sourceMap } = parseMdWithSourceMap(markdown);
+  const parent = ast.children[0] as { children: PositionedTextNode[] };
+  const node = parent.children[0];
+  const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
+  return new TextScanner(node, sourceCode);
+};
 
 describe('TextScanner', () => {
   describe('constructor and getters', () => {
-    it('should expose value', () => {
-      const node = createTextNode('hello');
-      const scanner = new TextScanner(node);
-      expect(scanner.value).toBe('hello');
-    });
+    it('exposes the normalized value and source node', () => {
+      const scanner = createScanner('hello');
 
-    it('should expose node', () => {
-      const node = createTextNode('hello');
-      const scanner = new TextScanner(node);
-      expect(scanner.node).toBe(node);
+      expect(scanner.value).toBe('hello');
+      expect(scanner.node.value).toBe('hello');
     });
   });
 
   describe('matchAt', () => {
-    it('should match simple text', () => {
-      const scanner = new TextScanner(createTextNode('hello world'));
-      const match = scanner.matchAt(0, 5);
+    it('resolves a simple text range', () => {
+      const match = createScanner('hello world').matchAt(0, 5);
+
       expect(match).toEqual({
         index: 0,
         length: 5,
@@ -49,190 +37,142 @@ describe('TextScanner', () => {
       });
     });
 
-    it('should handle match at end of text', () => {
-      const scanner = new TextScanner(createTextNode('hello'));
-      const match = scanner.matchAt(5, 0);
-      expect(match.index).toBe(5);
-      expect(match.length).toBe(0);
+    it('resolves an empty range at the value end', () => {
+      const match = createScanner('hello').matchAt(5, 0);
+
+      expect(match.loc.start).toEqual({ line: 1, column: 6, offset: 5 });
+      expect(match.loc.end).toEqual({ line: 1, column: 6, offset: 5 });
       expect(match.absoluteRange).toEqual([5, 5]);
     });
 
-    it('should handle match spanning newlines', () => {
-      const scanner = new TextScanner(createTextNode('a\nb\nc'));
-      const match = scanner.matchAt(0, 3);
+    it('resolves a range across line endings', () => {
+      const match = createScanner('a\nb\nc').matchAt(0, 3);
+
       expect(match.loc.start).toEqual({ line: 1, column: 1, offset: 0 });
-      expect(match.loc.end.line).toBe(2);
-      expect(match.loc.end.column).toBe(2);
+      expect(match.loc.end).toEqual({ line: 2, column: 2, offset: 3 });
       expect(match.absoluteRange).toEqual([0, 3]);
     });
 
-    it('should handle non-1/1/0 start position with multi-line text', () => {
-      const scanner = new TextScanner(createTextNode('ab\ncd\nef', 3, 5, 100));
-      // ab\ncd\nef (8 chars)
-      const match = scanner.matchAt(0, 8);
-      expect(match.loc.start).toEqual({ line: 3, column: 5, offset: 100 });
-      // After 'f' at line 5 col 2 → end is line 5 col 3
-      expect(match.loc.end).toEqual({ line: 5, column: 3, offset: 108 });
-    });
+    it('uses the source node start position', () => {
+      const match = createScanner('# abc').matchAt(0, 3);
 
-    it('should hit middle of second/third line', () => {
-      const scanner = new TextScanner(createTextNode('line1\nline2\nline3'));
-      // 'line1\nline2\nline3'
-      //  01234 567890 1234567
-      const match = scanner.matchAt(8, 1); // 'i' in line2
-      expect(match.loc.start).toEqual({ line: 2, column: 3, offset: 8 });
-      expect(match.loc.end).toEqual({ line: 2, column: 4, offset: 9 });
-    });
-
-    it('should handle matchAt spanning 3+ lines', () => {
-      const scanner = new TextScanner(createTextNode('a\nb\nc\nd'));
-      const match = scanner.matchAt(0, 6); // 'a\nb\nc' (6 chars)
-      expect(match.loc.start).toEqual({ line: 1, column: 1, offset: 0 });
-      // After 'c' at line 3 col 1 → end is line 3 col 2? No — 6 chars means position at index 6 = 'd' at (4,1)
-      // Actually: indices 0-5 are 'a','\n','b','\n','c','\n'. index 6 is 'd' at (4,1)
-      expect(match.loc.end).toEqual({ line: 4, column: 1, offset: 6 });
-    });
-
-    it('should handle matchAt at value.length with length=0', () => {
-      const scanner = new TextScanner(createTextNode('hello'));
-      const match = scanner.matchAt(5, 0);
-      expect(match.loc.start).toEqual({ line: 1, column: 6, offset: 5 });
+      expect(match.loc.start).toEqual({ line: 1, column: 3, offset: 2 });
       expect(match.loc.end).toEqual({ line: 1, column: 6, offset: 5 });
     });
 
-    it('should handle empty text matchAt(0, 0)', () => {
-      const scanner = new TextScanner(createTextNode(''));
-      const match = scanner.matchAt(0, 0);
+    it('resolves CRLF positions from SourceCode', () => {
+      const match = createScanner('a\r\nb').matchAt(0, 4);
+
       expect(match.loc.start).toEqual({ line: 1, column: 1, offset: 0 });
-      expect(match.loc.end).toEqual({ line: 1, column: 1, offset: 0 });
+      expect(match.loc.end).toEqual({ line: 2, column: 2, offset: 4 });
     });
 
-    it('should handle CRLF text: \\r counted in column, \\n triggers newline', () => {
-      const scanner = new TextScanner(createTextNode('a\r\nb'));
-      // 'a' = index 0, '\r' = index 1, '\n' = index 2, 'b' = index 3
-      const match = scanner.matchAt(0, 4);
-      expect(match.loc.start).toEqual({ line: 1, column: 1, offset: 0 });
-      // '\r' at index 1 → column 2; '\n' at index 2 → line 2, column 1; 'b' at index 3 → column 2
-      expect(match.loc.end).toEqual({ line: 2, column: 2, offset: 4 });
+    it.each([
+      [-1, 1],
+      [2, -1],
+      [1, 10],
+      [0.5, 1]
+    ])('rejects an invalid range at index %s with length %s', (index, length) => {
+      expect(() => createScanner('abc').matchAt(index, length))
+        .toThrow(InvalidRuleRangeError);
     });
   });
 
   describe('findAllMatches', () => {
-    it('should find all matches with global flag', () => {
-      const scanner = new TextScanner(createTextNode('hello world hello'));
-      const matches = scanner.findAllMatches(/hello/g);
-      expect(matches).toHaveLength(2);
-      expect(matches[0].index).toBe(0);
-      expect(matches[1].index).toBe(12);
+    it('finds all matches with a global flag', () => {
+      const matches = createScanner('hello world hello').findAllMatches(/hello/g);
+
+      expect(matches.map(match => match.index)).toEqual([0, 12]);
     });
 
-    it('should auto-add global flag if missing', () => {
-      const scanner = new TextScanner(createTextNode('hello world hello'));
-      const matches = scanner.findAllMatches(/hello/);
+    it('adds the global flag when it is absent', () => {
+      const matches = createScanner('hello world hello').findAllMatches(/hello/);
+
       expect(matches).toHaveLength(2);
     });
 
-    it('should handle zero-length matches without infinite loop', () => {
-      const scanner = new TextScanner(createTextNode('abc'));
-      const matches = scanner.findAllMatches(/(\b)/g);
+    it('ignores zero-length matches', () => {
+      const matches = createScanner('abc').findAllMatches(/(\b)/g);
+
       expect(matches).toEqual([]);
     });
 
-    it('should return empty array when no matches', () => {
-      const scanner = new TextScanner(createTextNode('hello'));
-      const matches = scanner.findAllMatches(/xyz/g);
+    it('returns no matches for an absent value', () => {
+      const matches = createScanner('hello').findAllMatches(/xyz/g);
+
       expect(matches).toEqual([]);
     });
 
-    it('should have accurate loc for high-density matches', () => {
-      const scanner = new TextScanner(createTextNode('aaa'));
-      const matches = scanner.findAllMatches(/a/g);
-      expect(matches).toHaveLength(3);
-      expect(matches[0]).toMatchObject({ index: 0, length: 1, loc: { start: { line: 1, column: 1 }, end: { line: 1, column: 2 } } });
-      expect(matches[1]).toMatchObject({ index: 1, length: 1, loc: { start: { line: 1, column: 2 }, end: { line: 1, column: 3 } } });
-      expect(matches[2]).toMatchObject({ index: 2, length: 1, loc: { start: { line: 1, column: 3 }, end: { line: 1, column: 4 } } });
+    it('resolves dense matches through SourceCode', () => {
+      const matches = createScanner('aaa').findAllMatches(/a/g);
+
+      expect(matches.map(match => match.absoluteRange))
+        .toEqual([[0, 1], [1, 2], [2, 3]]);
     });
 
-    it('should have accurate loc across newlines', () => {
-      const scanner = new TextScanner(createTextNode('ab\ncd'));
-      // Use /[\s\S]/ to match each char including newline
-      const matches = scanner.findAllMatches(/[\s\S]/g);
-      expect(matches).toHaveLength(5);
-      expect(matches[2]).toMatchObject({ index: 2, loc: { start: { line: 1, column: 3 }, end: { line: 2, column: 1 } } }); // '\n'
-      expect(matches[3]).toMatchObject({ index: 3, loc: { start: { line: 2, column: 1 }, end: { line: 2, column: 2 } } }); // 'c'
-      expect(matches[4]).toMatchObject({ index: 4, loc: { start: { line: 2, column: 2 }, end: { line: 2, column: 3 } } }); // 'd'
+    it('resolves matches across newlines', () => {
+      const matches = createScanner('ab\ncd').findAllMatches(/[\s\S]/g);
+
+      expect(matches[2].loc).toEqual({
+        start: { line: 1, column: 3, offset: 2 },
+        end: { line: 2, column: 1, offset: 3 }
+      });
+      expect(matches[3].loc.start).toEqual({ line: 2, column: 1, offset: 3 });
     });
   });
 
   describe('findAllOccurrences', () => {
-    it('should find all occurrences', () => {
-      const scanner = new TextScanner(createTextNode('aXaXa'));
-      const matches = scanner.findAllOccurrences('X');
-      expect(matches).toHaveLength(2);
-      expect(matches[0].index).toBe(1);
-      expect(matches[1].index).toBe(3);
+    it('finds all occurrences', () => {
+      const matches = createScanner('aXaXa').findAllOccurrences('X');
+
+      expect(matches.map(match => match.index)).toEqual([1, 3]);
     });
 
-    it('should find overlapping occurrences', () => {
-      const scanner = new TextScanner(createTextNode('aaa'));
-      const matches = scanner.findAllOccurrences('aa');
-      expect(matches).toHaveLength(2);
-      expect(matches[0].index).toBe(0);
-      expect(matches[0].absoluteRange).toEqual([0, 2]);
-      expect(matches[1].index).toBe(1);
-      expect(matches[1].absoluteRange).toEqual([1, 3]);
+    it('finds overlapping occurrences', () => {
+      const matches = createScanner('aaa').findAllOccurrences('aa');
+
+      expect(matches.map(match => match.absoluteRange))
+        .toEqual([[0, 2], [1, 3]]);
     });
 
-    it('should return empty array for empty search string', () => {
-      const scanner = new TextScanner(createTextNode('hello'));
-      const matches = scanner.findAllOccurrences('');
-      expect(matches).toEqual([]);
+    it('returns no matches for an empty search string', () => {
+      expect(createScanner('hello').findAllOccurrences('')).toEqual([]);
     });
 
-    it('should return empty array when string not found', () => {
-      const scanner = new TextScanner(createTextNode('hello'));
-      const matches = scanner.findAllOccurrences('xyz');
-      expect(matches).toEqual([]);
-    });
+    it('resolves occurrences across newlines', () => {
+      const matches = createScanner('aa\naa').findAllOccurrences('aa');
 
-    it('should have accurate positions for overlapping occurrences across newlines', () => {
-      const scanner = new TextScanner(createTextNode('aa\naa'));
-      const matches = scanner.findAllOccurrences('aa');
-      expect(matches).toHaveLength(2);
-      expect(matches[0]).toMatchObject({ index: 0, absoluteRange: [0, 2], loc: { start: { line: 1, column: 1 }, end: { line: 1, column: 3 } } });
-      expect(matches[1]).toMatchObject({ index: 3, absoluteRange: [3, 5], loc: { start: { line: 2, column: 1 }, end: { line: 2, column: 3 } } });
+      expect(matches.map(match => match.absoluteRange))
+        .toEqual([[0, 2], [3, 5]]);
+      expect(matches[1].loc.start).toEqual({ line: 2, column: 1, offset: 3 });
     });
   });
 
   describe('forEachChar', () => {
-    it('should iterate over each character', () => {
-      const scanner = new TextScanner(createTextNode('abc'));
+    it('iterates through Unicode code points', () => {
       const chars: string[] = [];
-      scanner.forEachChar((char) => {
-        chars.push(char);
-      });
-      expect(chars).toEqual(['a', 'b', 'c']);
+
+      createScanner('a𝔄b').forEachChar(char => chars.push(char));
+
+      expect(chars).toEqual(['a', '𝔄', 'b']);
     });
 
-    it('should track line and column for newlines', () => {
-      const scanner = new TextScanner(createTextNode('a\nb'));
-      const positions: Array<{ line: number; column: number }> = [];
-      scanner.forEachChar((_char, _i, pos) => {
-        positions.push({ line: pos.line, column: pos.column });
-      });
-      expect(positions[0]).toEqual({ line: 1, column: 1 });
-      expect(positions[1]).toEqual({ line: 1, column: 2 });
-      expect(positions[2]).toEqual({ line: 2, column: 1 });
-    });
+    it('resolves positions only when a callback reads them', () => {
+      const positions: Array<{ line: number; column: number; offset: number }> = [];
 
-    it('should use start position from node', () => {
-      const node = createTextNode('abc', 5, 3, 10);
-      const scanner = new TextScanner(node);
-      const positions: number[] = [];
-      scanner.forEachChar((_char, _i, pos) => {
-        positions.push(pos.offset);
+      createScanner('a\nb').forEachChar((_char, _index, position) => {
+        positions.push({
+          line: position.line,
+          column: position.column,
+          offset: position.offset
+        });
       });
-      expect(positions).toEqual([10, 11, 12]);
+
+      expect(positions).toEqual([
+        { line: 1, column: 1, offset: 0 },
+        { line: 1, column: 2, offset: 1 },
+        { line: 2, column: 1, offset: 2 }
+      ]);
     });
   });
 });

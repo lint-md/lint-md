@@ -34,6 +34,30 @@ core 遵循「纯引擎 + 薄适配器」设计：
 - **集成做 I/O**：CLI、编辑器插件等适配器只负责输入输出和格式转换，不包含规则逻辑
 - **标准诊断**：`LintDiagnostic` 统一诊断格式，core 提供格式转换器（`toALEOutput`），适配器无需自行实现映射
 
+### SourceCode 范围
+
+每次 lint 执行创建一个 `SourceCode` 实例。
+规则通过 `context.sourceCode` 读取原文和 AST。
+规则也通过该实例转换文本范围。
+
+```ts
+const range = context.sourceCode.getTextRange(node, start, end);
+
+context.report({
+  range,
+  message: '发现不规范文本'
+});
+```
+
+所有范围使用 JavaScript UTF-16 索引。
+范围采用 `[start, end)` 语义。
+`TextRange` 是只读的二元组。
+
+无效范围会抛出 `InvalidRuleRangeError`。
+映射缺失会抛出 `SourceMapUnavailableError`。
+节点被修改后，映射会抛出 `SourceMapConsistencyError`。
+映射错误不会进入 `executionErrors`。
+
 ## 🚀 快速使用
 
 从 API 到结果处理，核心只需要一个方法即可完成 lint/fix。当前对外仅提供 **1 个核心 API**：`lintMarkdown`。

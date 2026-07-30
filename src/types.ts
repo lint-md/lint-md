@@ -34,7 +34,7 @@ export type PositionedTextNode = Extract<PositionedMarkdownNode, { type: 'text' 
 export type PositionedBlockquoteNode = Extract<PositionedMarkdownNode, { type: 'blockquote' }>;
 
 /** 文本范围信息 */
-export type TextRange = [number, number];
+export type TextRange = readonly [number, number];
 
 /** 修复器配置 */
 export interface FixConfig {

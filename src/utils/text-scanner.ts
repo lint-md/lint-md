@@ -1,4 +1,9 @@
-import type { LintSourceCode, PositionedInlineCodeNode, PositionedTextNode } from '../types';
+import type {
+  LintSourceCode,
+  PositionedInlineCodeNode,
+  PositionedTextNode,
+  TextRange
+} from '../types';
 import type { MarkdownTextNode } from './get-text-nodes';
 
 export interface TextMatch {
@@ -8,7 +13,7 @@ export interface TextMatch {
     start: { line: number; column: number; offset: number }
     end: { line: number; column: number; offset: number }
   }
-  absoluteRange: [number, number]
+  absoluteRange: TextRange
 }
 
 export interface CharPosition {
@@ -19,17 +24,14 @@ export interface CharPosition {
 }
 
 /**
- * Scans a normalized text node and resolves every diagnostic/fix range through
- * the document SourceCode service.  Falls back to node-position arithmetic
- * when no source code is provided.
+ * Scans normalized text through the document SourceCode service.
  */
 export class TextScanner {
   private readonly _value: string;
   private readonly _node: MarkdownTextNode;
-  private readonly _sourceCode?: LintSourceCode;
-  private _lineBreakIndices?: number[];
+  private readonly _sourceCode: LintSourceCode;
 
-  constructor(node: MarkdownTextNode, sourceCode?: LintSourceCode) {
+  constructor(node: MarkdownTextNode, sourceCode: LintSourceCode) {
     this._node = node;
     this._value = node.value;
     this._sourceCode = sourceCode;
@@ -43,73 +45,13 @@ export class TextScanner {
     return this._node;
   }
 
-  private get lineBreakIndices(): number[] {
-    if (!this._lineBreakIndices) {
-      const indices: number[] = [];
-      for (let i = 0; i < this._value.length; i++) {
-        if (this._value[i] === '\n') {
-          indices.push(i);
-        }
-      }
-      this._lineBreakIndices = indices;
-    }
-    return this._lineBreakIndices;
-  }
-
-  private fallbackRange(start: number, end: number) {
-    const pointAt = (index: number) => {
-      const breaks = this.lineBreakIndices;
-      let lo = 0;
-      let hi = breaks.length;
-      while (lo < hi) {
-        const mid = (lo + hi) >> 1;
-        if (breaks[mid] < index) {
-          lo = mid + 1;
-        }
-        else {
-          hi = mid;
-        }
-      }
-      return {
-        line: this._node.position.start.line + lo,
-        column: lo === 0
-          ? this._node.position.start.column + index
-          : index - breaks[lo - 1],
-        offset: this._node.position.start.offset + index
-      };
-    };
-    return { start: pointAt(start), end: pointAt(end) };
-  }
-
-  private fallbackPointAtLinear(index: number) {
-    let line = this._node.position.start.line;
-    let column = this._node.position.start.column;
-    for (let i = 0; i < index; i++) {
-      if (this._value[i] === '\n') {
-        line++;
-        column = 1;
-      }
-      else {
-        column++;
-      }
-    }
-    return { line, column, offset: this._node.position.start.offset + index };
-  }
-
   private sourceRange(start: number, end: number) {
-    if (!Number.isInteger(start) || !Number.isInteger(end)
-      || start < 0 || end < start || end > this._value.length) {
-      throw new RangeError(`TextScanner range out of bounds: [${start}, ${end}]`);
-    }
-    if (this._sourceCode) {
-      const range = this._sourceCode.getTextRange(
-        this._node as MarkdownTextNode as PositionedTextNode | PositionedInlineCodeNode,
-        start,
-        end
-      );
-      return this._sourceCode.getLocation(range);
-    }
-    return this.fallbackRange(start, end);
+    const range = this._sourceCode.getTextRange(
+      this._node as MarkdownTextNode as PositionedTextNode | PositionedInlineCodeNode,
+      start,
+      end
+    );
+    return this._sourceCode.getLocation(range);
   }
 
   matchAt(index: number, length: number): TextMatch {
@@ -162,12 +104,7 @@ export class TextScanner {
       const charLength = char.length;
       let range: ReturnType<TextScanner['sourceRange']> | undefined;
       const getRange = () => {
-        range ??= this._sourceCode
-          ? this.sourceRange(charIndex, charIndex + charLength)
-          : {
-              start: this.fallbackPointAtLinear(charIndex),
-              end: this.fallbackPointAtLinear(charIndex + charLength)
-            };
+        range ??= this.sourceRange(charIndex, charIndex + charLength);
         return range;
       };
       const pos = Object.defineProperties({}, {

@@ -115,7 +115,8 @@ const markdown = '中文English 123';
 const result = lintMarkdown(markdown, {
   'space-around-alphabet': 2,
   'space-around-number': 2,
-  'no-long-code': [1, { length: 100, exclude: [] }]
+  'no-long-code': [1, { length: 100, exclude: [] }],
+  'require-trailing-spaces': 2
 }, true);
 
 console.log(result.lintResult);
@@ -151,7 +152,7 @@ lintMarkdown(markdown, rules, false, {
 
 ## 📏 书写规则列表
 
-目前内置 17 个规则，覆盖大部分的中文规则。
+目前内置 18 个规则，覆盖大部分的中文规则。
 
 | 规则名 | 说明 | 可配置 | 可修复 |
 | --- | --- | --- | --- |
@@ -172,6 +173,9 @@ lintMarkdown(markdown, rules, false, {
 | `no-space-in-inline-code` | 行内代码内容前后不能有空格 | 否 | 是 |
 | `no-long-code` | 代码块行长度不能超过限制 | 是 | 否 |
 | `no-half-width-punctuation` | 中文语境下应使用全角标点符号 | 否 | 是 |
+| `require-trailing-spaces` | 软换行前需要两个空格 | 否 | 是 |
+
+`require-trailing-spaces` 默认关闭。将规则级别设置为 `1` 或 `2` 可启用该规则。
 
 欢迎大家提交需求，或者提交 PR 新增规则。
 

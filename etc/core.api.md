@@ -332,6 +332,9 @@ export interface ReportPosition {
 }
 
 // @public (undocumented)
+export const requireTrailingSpaces: LintMdRule;
+
+// @public (undocumented)
 export enum RULE_SEVERITY {
     // (undocumented)
     ERROR = 2,

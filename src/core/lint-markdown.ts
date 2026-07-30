@@ -10,6 +10,7 @@ import type {
   RegisteredRules
 } from '../types';
 import * as internalRuleConfig from '../rules';
+import { DEFAULT_RULE_SEVERITIES } from '../rules/default-rule-severities';
 import { overrideDefaultRules } from '../utils/override-default-rules';
 import { RULE_SEVERITY } from '../types';
 import { runLint } from './run-lint';
@@ -57,7 +58,11 @@ export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixM
 export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: boolean, options?: LintExecutionOptions): LintMdResult;
 export function lintMarkdown(markdown: string, rules: LintMdRulesConfig = {}, isFixMode = true, options: LintExecutionOptions = {}): LintMdResult {
   // 基于用户配置覆盖默认配置
-  const registeredRules = overrideDefaultRules(internalRuleConfig, rules);
+  const registeredRules = overrideDefaultRules(
+    internalRuleConfig,
+    rules,
+    DEFAULT_RULE_SEVERITIES
+  );
 
   const registeredRuleEntries = Object.entries(registeredRules);
 

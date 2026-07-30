@@ -34,6 +34,27 @@ describe('overrideDefaultRules', () => {
     expect(result['rule-a'].options).toEqual({});
   });
 
+  it('should use configured default severities', () => {
+    const result = overrideDefaultRules(
+      defaultRules,
+      {},
+      { 'rule-b': RULE_SEVERITY.OFF }
+    );
+
+    expect(result['rule-a'].severity).toBe(RULE_SEVERITY.ERROR);
+    expect(result['rule-b'].severity).toBe(RULE_SEVERITY.OFF);
+  });
+
+  it('should let user config override a configured default severity', () => {
+    const result = overrideDefaultRules(
+      defaultRules,
+      { 'rule-b': RULE_SEVERITY.WARN },
+      { 'rule-b': RULE_SEVERITY.OFF }
+    );
+
+    expect(result['rule-b'].severity).toBe(RULE_SEVERITY.WARN);
+  });
+
   it('should override severity and options with tuple config', () => {
     const result = overrideDefaultRules(defaultRules, {
       'rule-a': [RULE_SEVERITY.OFF, { foo: 'bar' }]

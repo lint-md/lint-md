@@ -63,6 +63,10 @@ const noMultipleBlankLines: LintMdRule = {
             message: '文档开头不能有空白行',
             fix: fixer => fixer.removeRange([0, end])
           });
+
+          if (/^---[ \t]*(?:\r\n|\r|\n)/u.test(source.slice(end))) {
+            return;
+          }
         }
 
         const trailingBlankLines = leadingBlankLines?.[0].length === source.length

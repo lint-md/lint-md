@@ -65,6 +65,30 @@ describe('no-multiple-blank-lines', () => {
     expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
   });
 
+  test('删除 YAML 前导空行但保留 block scalar 空白行', () => {
+    const markdown = [
+      '',
+      '---',
+      'description: |-',
+      '  第一段',
+      '',
+      '',
+      '  第二段',
+      '---'
+    ].join('\n');
+    const expected = [
+      '---',
+      'description: |-',
+      '  第一段',
+      '',
+      '',
+      '  第二段',
+      '---'
+    ].join('\n');
+
+    expect(fixer(markdown).fixedResult?.result).toBe(expected);
+  });
+
   test('不修改 pre HTML 内的空白行', () => {
     const markdown = '<pre>\n第一行\n\n\n第二行\n</pre>';
     const { fixedResult, lintResult } = fixer(markdown);

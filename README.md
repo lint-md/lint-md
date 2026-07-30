@@ -175,17 +175,27 @@ lintMarkdown(markdown, rules, false, {
 | `no-half-width-punctuation` | 中文语境下应使用全角标点符号 | 否 | 是 |
 | `require-trailing-spaces` | 软换行前需要两个空格 | 否 | 是 |
 
-`require-trailing-spaces` 默认关闭。在 `lintMarkdown()` 的 `rules` 参数中启用该规则：
+`require-trailing-spaces` 默认关闭。CLI 用户可以在项目根目录的 `.lintmdrc` 中启用该规则：
+
+```json
+{
+  "rules": {
+    "require-trailing-spaces": 2
+  }
+}
+```
+
+CLI 默认读取 `./.lintmdrc`。也可以使用 `lint-md --config <文件路径>` 指定配置文件。
+
+直接使用 Core API 时，在 `lintMarkdown()` 的第二个参数中配置该规则：
 
 ```ts
-import { lintMarkdown, RULE_SEVERITY } from '@lint-md/core';
-
-const result = lintMarkdown(markdown, {
-  'require-trailing-spaces': RULE_SEVERITY.ERROR
+lintMarkdown(markdown, {
+  'require-trailing-spaces': 2
 });
 ```
 
-`RULE_SEVERITY.WARN`（`1`）生成警告。`RULE_SEVERITY.ERROR`（`2`）生成错误。
+规则级别 `1` 生成警告。规则级别 `2` 生成错误。
 
 欢迎大家提交需求，或者提交 PR 新增规则。
 

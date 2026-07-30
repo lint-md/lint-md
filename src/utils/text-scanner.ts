@@ -5,7 +5,6 @@ import type {
   TextRange
 } from '../types';
 import type { MarkdownTextNode } from './get-text-nodes';
-import { InvalidRuleRangeError } from './source-code-errors';
 
 export interface TextMatch {
   index: number
@@ -47,12 +46,6 @@ export class TextScanner {
   }
 
   private sourceRange(start: number, end: number) {
-    if (!Number.isInteger(start) || !Number.isInteger(end)
-      || start < 0 || end < start || end > this._value.length) {
-      throw new InvalidRuleRangeError(
-        `TextScanner range out of bounds: [${start}, ${end}]`
-      );
-    }
     const range = this._sourceCode.getTextRange(
       this._node as MarkdownTextNode as PositionedTextNode | PositionedInlineCodeNode,
       start,

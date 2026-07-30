@@ -175,7 +175,7 @@ describe('parser source-map integration', () => {
       meta: { name: 'mutate-text-node' },
       create: context => ({
         text: (node) => {
-          (node as { value: string }).value = 'changed';
+          (node as { value: string }).value = '';
           new TextScanner(node as any, context.sourceCode).matchAt(0, 1);
           context.report({ loc: node.position, message: 'unreachable' });
         }
@@ -196,7 +196,7 @@ describe('parser source-map integration', () => {
       create: (context) => {
         const paragraph = context.ast.children[0] as any;
         const node = paragraph.children[0];
-        node.value = 'changed';
+        node.value = '';
         context.sourceCode.getTextRange(node, 0, 1);
         return {};
       }
@@ -215,7 +215,7 @@ describe('parser source-map integration', () => {
             loc: node.position,
             message: 'trigger mapped fix',
             fix: () => {
-              (node as { value: string }).value = 'changed';
+              (node as { value: string }).value = '';
               const range = context.sourceCode.getTextRange(node as any, 0, 1);
               return { range, text: 'x' };
             }

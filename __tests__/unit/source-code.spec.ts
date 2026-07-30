@@ -1,4 +1,5 @@
 import {
+  SourceMapConsistencyError,
   SourceMapUnavailableError,
   parseMdWithSourceMap
 } from '@lint-md/parser';
@@ -115,6 +116,18 @@ describe('LintSourceCode', () => {
       .toThrow(InvalidRuleRangeError);
     expect(() => sourceCode.getTextRange(node, 0, 4))
       .toThrow(InvalidRuleRangeError);
+  });
+
+  test('getTextRange identifies shortened mapped nodes', () => {
+    const markdown = 'text';
+    const { ast, sourceMap } = parseMdWithSourceMap(markdown);
+    const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
+    const node = (ast.children[0] as any).children[0];
+
+    node.value = '';
+
+    expect(() => sourceCode.getTextRange(node, 0, 1))
+      .toThrow(SourceMapConsistencyError);
   });
 
   test('getTextRange identifies non-contiguous source ranges', () => {

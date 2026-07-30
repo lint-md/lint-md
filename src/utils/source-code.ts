@@ -33,8 +33,7 @@ export const createLintSourceCode = ({
       valueStart: number,
       valueEnd: number
     ): TextRange {
-      if (!Number.isInteger(valueStart) || !Number.isInteger(valueEnd)
-        || valueStart < 0 || valueStart > valueEnd || valueEnd > node.value.length) {
+      if (!Number.isInteger(valueStart) || !Number.isInteger(valueEnd)) {
         throw new InvalidRuleRangeError(
           `getTextRange: range must satisfy 0 <= start <= end <= ${node.value.length}, got [${valueStart}, ${valueEnd}]`
         );
@@ -53,6 +52,11 @@ export const createLintSourceCode = ({
           throw error;
         }
         if (error instanceof RangeError) {
+          if (valueStart < 0 || valueStart > valueEnd || valueEnd > node.value.length) {
+            throw new InvalidRuleRangeError(
+              `getTextRange: range must satisfy 0 <= start <= end <= ${node.value.length}, got [${valueStart}, ${valueEnd}]`
+            );
+          }
           throw new SourceMapUnavailableError(error.message);
         }
         throw error;

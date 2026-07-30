@@ -106,6 +106,13 @@ lintMarkdown(
 - `fixedResult`：开启修复模式时返回 `{ result, notAppliedFixes }`（`result` 为修复后的文本，`notAppliedFixes` 为因冲突等原因未能应用的修复项），否则为 `null`
 - `executionErrors`：规则执行失败的结构化列表。非空时，`diagnostics` 与 `lintResult` 可能只是部分结果；CLI 和编辑器 Adapter 应据此标记本次检查不完整。
 
+In fix mode, `lintResult`, `diagnostics`, and both fixable counts describe the original Markdown.
+`fixedResult.result` contains the final Markdown.
+`fixedResult.notAppliedFixes` uses coordinates from the final relevant fix round.
+`executionErrors` aggregates failures from all fix rounds.
+`fixedResult.convergence`, `rounds`, and `metrics` describe the complete fix process.
+Do not apply original diagnostic positions to `fixedResult.result`.
+
 ### Unapplied fix contract
 
 Each `notAppliedFixes` item contains these fields:

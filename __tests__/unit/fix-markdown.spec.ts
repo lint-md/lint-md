@@ -17,6 +17,9 @@ describe('fixMarkdown', () => {
     expect(result.fixedResult.result).toBe('第一段\n\n第二段');
     expect(result.lintResult).toHaveLength(1);
     expect(result.lintResult[0].name).toBe('no-multiple-blank-lines');
+    expect(result.diagnostics).toHaveLength(1);
+    expect(result.diagnostics[0].ruleId).toBe('no-multiple-blank-lines');
+    expect(result.fixableErrorCount).toBe(1);
   });
 
   test('forwards the strict rule error policy', () => {

@@ -190,12 +190,22 @@ CLI 默认读取 `./.lintmdrc`。也可以使用 `lint-md --config <文件路径
 直接使用 Core API 时，在 `lintMarkdown()` 的第二个参数中配置该规则：
 
 ```ts
-lintMarkdown(markdown, {
-  'require-trailing-spaces': 2
-});
+import { lintMarkdown, RULE_SEVERITY } from '@lint-md/core';
+
+const markdown = '第一行\n第二行';
+const result = lintMarkdown(
+  markdown,
+  {
+    'require-trailing-spaces': RULE_SEVERITY.ERROR
+  },
+  true
+);
+
+console.log(result.fixedResult.result);
 ```
 
 规则级别 `1` 生成警告。规则级别 `2` 生成错误。
+第三个参数为 `true` 时，Core 自动修复文本。设置为 `false` 时，Core 只返回检查结果。
 
 欢迎大家提交需求，或者提交 PR 新增规则。
 

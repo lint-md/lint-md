@@ -17,3 +17,4 @@ export { default as noEmptyBlockquote } from './no-empty-blockquote';
 export { default as noHalfWidthPunctuation } from './no-half-width-punctuation';
 export { default as requireTrailingSpaces } from './require-trailing-spaces';
 export { default as spaceAroundLink } from './space-around-link';
+export { default as noMultipleBlankLines } from './no-multiple-blank-lines';

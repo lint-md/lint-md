@@ -239,6 +239,9 @@ export const noHalfWidthPunctuation: LintMdRule;
 export const noLongCode: LintMdRule;
 
 // @public (undocumented)
+export const noMultipleBlankLines: LintMdRule;
+
+// @public (undocumented)
 export const noMultipleSpaceBlockquote: LintMdRule;
 
 // @public (undocumented)

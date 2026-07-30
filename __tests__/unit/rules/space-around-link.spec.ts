@@ -32,6 +32,28 @@ describe('space-around-link', () => {
     expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
   });
 
+  test.each([
+    [
+      '左侧字符实体正文',
+      '&#20013;[文档](url)',
+      '&#20013; [文档](url)'
+    ],
+    [
+      '右侧字符实体正文',
+      '[文档](url)&#20013;',
+      '[文档](url) &#20013;'
+    ],
+    [
+      '补充平面 Unicode 标点',
+      '𐄀[文档](url)',
+      '𐄀[文档](url)'
+    ]
+  ])('%s', (_name, markdown, expected) => {
+    const { fixedResult } = fixer(markdown);
+
+    expect(fixedResult?.result).toBe(expected);
+  });
+
   test('独立图片不属于链接空格规则', () => {
     const markdown = '正文![图片](image.png)内容';
     const { fixedResult, lintResult } = fixer(markdown);

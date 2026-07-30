@@ -126,10 +126,30 @@ const spaceAroundLink: LintMdRule = {
       node: PositionedMarkdownNode,
       side: 'start' | 'end'
     ): string | undefined => {
+      if (node.type === 'image' || node.type === 'break') {
+        return undefined;
+      }
+
       if (node.type !== 'text') {
-        return node.type === 'image' || node.type === 'break'
-          ? undefined
-          : 'a';
+        const children = getChildren(node);
+
+        if (children.length > 0) {
+          const orderedChildren = side === 'start'
+            ? [...children].reverse()
+            : children;
+
+          for (const child of orderedChildren) {
+            const character = getVisibleTextCharacter(child, side);
+
+            if (character !== undefined) {
+              return character;
+            }
+          }
+
+          return undefined;
+        }
+
+        return 'a';
       }
 
       let value = node.value;
@@ -155,23 +175,36 @@ const spaceAroundLink: LintMdRule = {
       return side === 'start' ? characters.at(-1) : characters[0];
     };
 
+    const getRawBoundaryCharacter = (
+      side: 'start' | 'end',
+      offset: number
+    ): string | undefined => {
+      const text = side === 'start'
+        ? context.sourceCode.text.slice(Math.max(0, offset - 2), offset)
+        : context.sourceCode.text.slice(offset, offset + 2);
+      const characters = Array.from(text);
+
+      return side === 'start' ? characters.at(-1) : characters[0];
+    };
+
     const getBoundaryCharacter = (
       link: PositionedLinkLikeNode,
       side: 'start' | 'end',
       offset: number
     ): string => {
-      const character = side === 'start'
-        ? context.sourceCode.text[offset - 1]
-        : context.sourceCode.text[offset];
+      const adjacentNode = getAdjacentNode(link, side);
+      const visibleCharacter = adjacentNode
+        ? getVisibleTextCharacter(adjacentNode, side)
+        : undefined;
 
-      if (!TRANSPARENT_MARKER_CHARACTER.test(character)) {
-        return character;
+      if (
+        visibleCharacter !== undefined
+        && !TRANSPARENT_MARKER_CHARACTER.test(visibleCharacter)
+      ) {
+        return visibleCharacter;
       }
 
-      const adjacentNode = getAdjacentNode(link, side);
-      return adjacentNode
-        ? getVisibleTextCharacter(adjacentNode, side) ?? character
-        : character;
+      return getRawBoundaryCharacter(side, offset) ?? visibleCharacter ?? '';
     };
 
     for (const link of links) {

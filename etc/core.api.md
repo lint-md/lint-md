@@ -405,6 +405,9 @@ export { SourceMapUnavailableError }
 export const spaceAroundAlphabet: LintMdRule;
 
 // @public (undocumented)
+export const spaceAroundLink: LintMdRule;
+
+// @public (undocumented)
 export const spaceAroundNumber: LintMdRule;
 
 // @public (undocumented)

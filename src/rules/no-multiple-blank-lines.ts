@@ -1,17 +1,26 @@
 import type { LintMdRule } from '../types';
 import { createTraverser } from '../utils/traverser';
 
+const PROTECTED_NODE_TYPES = new Set([
+  'code',
+  'inlineCode',
+  'yaml',
+  'html',
+  'math',
+  'inlineMath'
+]);
+
 const noMultipleBlankLines: LintMdRule = {
   meta: {
     name: 'no-multiple-blank-lines'
   },
   create(context) {
-    const codeRanges: Array<[number, number]> = [];
+    const protectedRanges: Array<[number, number]> = [];
 
     createTraverser({
       onEnter(node) {
-        if (node.type === 'code') {
-          codeRanges.push([
+        if (PROTECTED_NODE_TYPES.has(node.type)) {
+          protectedRanges.push([
             node.position.start.offset,
             node.position.end.offset
           ]);
@@ -19,13 +28,34 @@ const noMultipleBlankLines: LintMdRule = {
       }
     }).traverse(context.ast, null);
 
+    const overlapsProtectedRange = (start: number, end: number): boolean => {
+      return protectedRanges.some(([protectedStart, protectedEnd]) => {
+        return start < protectedEnd && end > protectedStart;
+      });
+    };
+
     return {
       root() {
         const source = context.sourceCode.text;
+
+        if (/^[ \t]*$/u.test(source)) {
+          if (source.length > 0) {
+            context.report({
+              range: [0, source.length],
+              message: '空白文档应为空文档',
+              fix: fixer => fixer.removeRange([0, source.length])
+            });
+          }
+          return;
+        }
+
         const leadingBlankLines
           = /^(?:[ \t]*(?:\r\n|\r|\n))+/.exec(source);
 
-        if (leadingBlankLines) {
+        if (
+          leadingBlankLines
+          && !overlapsProtectedRange(0, leadingBlankLines[0].length)
+        ) {
           const end = leadingBlankLines[0].length;
 
           context.report({
@@ -42,6 +72,10 @@ const noMultipleBlankLines: LintMdRule = {
         if (
           trailingBlankLines
           && trailingBlankLines[0] !== trailingBlankLines[1]
+          && !overlapsProtectedRange(
+            trailingBlankLines.index,
+            source.length
+          )
         ) {
           const start = trailingBlankLines.index;
           const end = source.length;
@@ -63,12 +97,8 @@ const noMultipleBlankLines: LintMdRule = {
           const end = start + match[0].length;
           const replacement = `${match[1]}${match[1]}`;
 
-          const isInCodeBlock = codeRanges.some(([codeStart, codeEnd]) => {
-            return start < codeEnd && end > codeStart;
-          });
-
           if (
-            !isInCodeBlock
+            !overlapsProtectedRange(start, end)
             && end <= (trailingBlankLines?.index ?? source.length)
           ) {
             context.report({

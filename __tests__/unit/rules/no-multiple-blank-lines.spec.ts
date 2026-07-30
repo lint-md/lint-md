@@ -49,6 +49,38 @@ describe('no-multiple-blank-lines', () => {
     expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
   });
 
+  test('不修改 YAML block scalar 内的空白行', () => {
+    const markdown = [
+      '---',
+      'description: |-',
+      '  第一段',
+      '',
+      '',
+      '  第二段',
+      '---'
+    ].join('\n');
+    const { fixedResult, lintResult } = fixer(markdown);
+
+    expect(fixedResult?.result).toBe(markdown);
+    expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
+  });
+
+  test('不修改 pre HTML 内的空白行', () => {
+    const markdown = '<pre>\n第一行\n\n\n第二行\n</pre>';
+    const { fixedResult, lintResult } = fixer(markdown);
+
+    expect(fixedResult?.result).toBe(markdown);
+    expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
+  });
+
+  test('不修改数学块内的空白行', () => {
+    const markdown = '$$\na\n\n\nb\n$$';
+    const { fixedResult, lintResult } = fixer(markdown);
+
+    expect(fixedResult?.result).toBe(markdown);
+    expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
+  });
+
   test('删除文档开头的空白行', () => {
     const markdown = '\n \t\n# 标题';
     const { fixedResult, lintResult } = fixer(markdown);
@@ -59,6 +91,14 @@ describe('no-multiple-blank-lines', () => {
 
   test('只包含空白行的文档修复为空文档', () => {
     const markdown = '\n \t\n';
+    const { fixedResult, lintResult } = fixer(markdown);
+
+    expect(fixedResult?.result).toBe('');
+    expect(lintResult.ruleManager.getReportData()).toHaveLength(1);
+  });
+
+  test('无换行的纯空格文档修复为空文档', () => {
+    const markdown = ' \t';
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe('');

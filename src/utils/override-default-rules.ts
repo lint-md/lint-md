@@ -6,8 +6,14 @@ import { RULE_SEVERITY } from '../types';
  *
  * @author YuZhanglong <loveyzl1123@gmail.com>
  */
-export const overrideDefaultRules = (defaultRules: Record<string, LintMdRule>, ruleConfig: LintMdRulesConfig) => {
-  // 默认所有的内部 rules 都会被初始化，等级为 Error，参数为空
+export const overrideDefaultRules = (
+  defaultRules: Record<string, LintMdRule>,
+  ruleConfig: LintMdRulesConfig,
+  defaultRuleSeverities: Readonly<
+    Partial<Record<string, RULE_SEVERITY>>
+  > = {}
+) => {
+  // 默认内部规则为 Error，个别规则可通过 defaultRuleSeverities 覆盖。
   // 使用无原型对象，避免 __proto__/constructor/toString 等键从原型链误读，
   // 防止原型污染（见 issue #177 后续反馈）。
   const registeredRules = Object.create(null) as RegisteredRules;
@@ -17,7 +23,8 @@ export const overrideDefaultRules = (defaultRules: Record<string, LintMdRule>, r
     registeredRules[ruleValue.meta.name] = {
       rule: ruleValue,
       options: {},
-      severity: RULE_SEVERITY.ERROR
+      severity:
+        defaultRuleSeverities[ruleValue.meta.name] ?? RULE_SEVERITY.ERROR
     };
   }
 

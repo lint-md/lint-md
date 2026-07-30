@@ -60,7 +60,26 @@ context.report({
 
 ## 🚀 快速使用
 
-从 API 到结果处理，核心只需要一个方法即可完成 lint/fix。当前对外仅提供 **1 个核心 API**：`lintMarkdown`。
+Core 提供明确的修复 API：`fixMarkdown`。
+
+```ts
+fixMarkdown(
+  markdown: string,
+  options?: {
+    rules?: LintMdRulesConfig,
+    ruleErrorPolicy?: 'collect' | 'strict'
+  }
+)
+```
+
+`rules` 配置本次修复使用的规则。
+`ruleErrorPolicy` 配置规则执行失败策略。
+
+`fixMarkdown()` 返回 `LintMdFixResult`。
+其中 `lintResult` 描述原始输入。
+`fixedResult.result` 包含最终修复文本。
+
+现有 `lintMarkdown` API 保持兼容：
 
 ```ts
 lintMarkdown(
@@ -87,6 +106,13 @@ lintMarkdown(
 - `fixedResult`：开启修复模式时返回 `{ result, notAppliedFixes }`（`result` 为修复后的文本，`notAppliedFixes` 为因冲突等原因未能应用的修复项），否则为 `null`
 - `executionErrors`：规则执行失败的结构化列表。非空时，`diagnostics` 与 `lintResult` 可能只是部分结果；CLI 和编辑器 Adapter 应据此标记本次检查不完整。
 
+In fix mode, `lintResult`, `diagnostics`, and both fixable counts describe the original Markdown.
+`fixedResult.result` contains the final Markdown.
+`fixedResult.notAppliedFixes` uses coordinates from the final relevant fix round.
+`executionErrors` aggregates failures from all fix rounds.
+`fixedResult.convergence`, `rounds`, and `metrics` describe the complete fix process.
+Do not apply original diagnostic positions to `fixedResult.result`.
+
 ### Unapplied fix contract
 
 Each `notAppliedFixes` item contains these fields:
@@ -108,18 +134,20 @@ The API does not guarantee that `data` supports JSON serialization.
 下面是一个最小示例，可直接作为接入起点：
 
 ```ts
-import { lintMarkdown } from '@lint-md/core';
+import { fixMarkdown } from '@lint-md/core';
 
 const markdown = '中文English 123';
 
-const result = lintMarkdown(markdown, {
-  'space-around-alphabet': 2,
-  'space-around-number': 2,
-  'no-long-code': [1, { length: 100, exclude: [] }],
-  'require-trailing-spaces': 2,
-  'space-around-link': 2,
-  'no-multiple-blank-lines': 2
-}, true);
+const result = fixMarkdown(markdown, {
+  rules: {
+    'space-around-alphabet': 2,
+    'space-around-number': 2,
+    'no-long-code': [1, { length: 100, exclude: [] }],
+    'require-trailing-spaces': 2,
+    'space-around-link': 2,
+    'no-multiple-blank-lines': 2
+  }
+});
 
 console.log(result.lintResult);
 console.log(result.fixedResult.result);
@@ -202,27 +230,26 @@ CLI 用户可以在项目根目录的 `.lintmdrc` 中启用这些规则：
 
 CLI 默认读取 `./.lintmdrc`。也可以使用 `lint-md --config <文件路径>` 指定配置文件。
 
-直接使用 Core API 时，在 `lintMarkdown()` 的第二个参数中配置该规则：
+直接使用 Core API 时，在 `fixMarkdown()` 的 `rules` 中配置规则：
 
 ```ts
-import { lintMarkdown, RULE_SEVERITY } from '@lint-md/core';
+import { fixMarkdown, RULE_SEVERITY } from '@lint-md/core';
 
 const markdown = '第一行\n第二行';
-const result = lintMarkdown(
-  markdown,
-  {
+const result = fixMarkdown(markdown, {
+  rules: {
     'require-trailing-spaces': RULE_SEVERITY.ERROR,
     'space-around-link': RULE_SEVERITY.ERROR,
     'no-multiple-blank-lines': RULE_SEVERITY.ERROR
-  },
-  true
-);
+  }
+});
 
 console.log(result.fixedResult.result);
 ```
 
 `RULE_SEVERITY.ERROR` 等同于规则级别 `2`。
-第三个参数为 `true` 时，Core 自动修复文本。设置为 `false` 时，Core 只返回检查结果。
+`fixMarkdown()` 始终执行自动修复。
+只检查时，继续使用 `lintMarkdown(markdown, rules, false)`。
 
 `space-around-link` 处理普通链接、自动链接和引用链接。它不处理独立图片。
 全角标点、其他 Unicode 标点、已有空白和块边界不需要空格。连续链接之间只添加一个空格。

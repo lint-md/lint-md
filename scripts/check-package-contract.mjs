@@ -20,11 +20,17 @@ const root = path.resolve(scriptDir, '..');
 const require = createRequire(import.meta.url);
 
 const cjs = require(path.join(root, 'lib', 'index.js'));
+if (typeof cjs.fixMarkdown !== 'function') {
+  throw new TypeError('CJS entry does not export fixMarkdown');
+}
 if (typeof cjs.RuleExecutionFailure !== 'function') {
   throw new TypeError('CJS entry does not export RuleExecutionFailure');
 }
 
 const esmEntry = await readFile(path.join(root, 'esm', 'index.js'), 'utf8');
+if (!/export\s*\{[^}]*\bfixMarkdown\b[^}]*\}/.test(esmEntry)) {
+  throw new Error('ESM entry does not explicitly export fixMarkdown');
+}
 if (!/export\s*\{\s*RuleExecutionFailure\s*\}/.test(esmEntry)) {
   throw new Error('ESM entry does not explicitly export RuleExecutionFailure');
 }

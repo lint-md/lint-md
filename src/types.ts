@@ -258,6 +258,16 @@ export interface LintExecutionOptions {
   ruleErrorPolicy?: RuleErrorPolicy
 }
 
+/**
+ * Options for `fixMarkdown`.
+ *
+ * @public
+ */
+export interface FixMarkdownOptions extends LintExecutionOptions {
+  /** Rule settings for this fix operation. */
+  rules?: LintMdRulesConfig
+}
+
 /** 单条规则执行错误，挂在 LintMdResultBase 上，对 lint-only 与 fix 多轮均适用 */
 export interface RuleExecutionError {
   /** 失败规则名（来自 rule.meta.name） */

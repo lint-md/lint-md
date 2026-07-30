@@ -1,4 +1,4 @@
-import { RuleExecutionFailure } from '../../src';
+import { RuleExecutionFailure, fixMarkdown } from '../../src';
 
 /**
  * 包入口契约：RuleExecutionFailure 必须能从公开入口导入，
@@ -8,6 +8,10 @@ import { RuleExecutionFailure } from '../../src';
  * CI 工作区独立运行；构建产物仍由 CI 的后续 `npm run build` 验证。
  */
 describe('package contract', () => {
+  test('public entry exports fixMarkdown', () => {
+    expect(typeof fixMarkdown).toBe('function');
+  });
+
   test('public entry exports RuleExecutionFailure and strict consumers can catch it', () => {
     expect(typeof RuleExecutionFailure).toBe('function');
     const e = new RuleExecutionFailure({

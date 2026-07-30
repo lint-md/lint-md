@@ -49,6 +49,15 @@ export interface FixedResult {
 }
 
 // @public (undocumented)
+export function fixMarkdown(markdown: string, options?: FixMarkdownOptions): LintMdFixResult;
+
+// @public (undocumented)
+export interface FixMarkdownOptions extends LintExecutionOptions {
+    // (undocumented)
+    rules?: LintMdRulesConfig;
+}
+
+// @public (undocumented)
 export interface FixMetrics {
     // (undocumented)
     perRound: number[];

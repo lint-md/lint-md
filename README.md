@@ -175,7 +175,17 @@ lintMarkdown(markdown, rules, false, {
 | `no-half-width-punctuation` | 中文语境下应使用全角标点符号 | 否 | 是 |
 | `require-trailing-spaces` | 软换行前需要两个空格 | 否 | 是 |
 
-`require-trailing-spaces` 默认关闭。将规则级别设置为 `1` 或 `2` 可启用该规则。
+`require-trailing-spaces` 默认关闭。在 `lintMarkdown()` 的 `rules` 参数中启用该规则：
+
+```ts
+import { lintMarkdown, RULE_SEVERITY } from '@lint-md/core';
+
+const result = lintMarkdown(markdown, {
+  'require-trailing-spaces': RULE_SEVERITY.ERROR
+});
+```
+
+`RULE_SEVERITY.WARN`（`1`）生成警告。`RULE_SEVERITY.ERROR`（`2`）生成错误。
 
 欢迎大家提交需求，或者提交 PR 新增规则。
 

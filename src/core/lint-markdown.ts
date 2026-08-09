@@ -7,12 +7,11 @@ import type {
   LintMdResult,
   LintMdRuleWithOptions,
   LintMdRulesConfig,
-  LintReportItem,
-  RegisteredRules
+  LintReportItem
 } from '../types';
 import * as internalRuleConfig from '../rules';
 import { DEFAULT_RULE_SEVERITIES } from '../rules/default-rule-severities';
-import { overrideDefaultRules } from '../utils/override-default-rules';
+import { normalizeRuleRegistry } from '../utils/normalize-rule-registry';
 import { RULE_SEVERITY } from '../types';
 import { runLint } from './run-lint';
 import { handleFixMode } from './handle-fix-mode';
@@ -46,36 +45,17 @@ export const lintMarkdownInternal = (
 };
 
 const resolveConfiguredRules = (rules: LintMdRulesConfig) => {
-  const registeredRules = overrideDefaultRules(
+  const registry = normalizeRuleRegistry(
     internalRuleConfig,
     rules,
     DEFAULT_RULE_SEVERITIES
   );
-  const seenRecords = new Set<RegisteredRules[string]>();
-  const executableRules = Object.values(registeredRules)
-    .filter((value) => {
-      if (value.severity === RULE_SEVERITY.OFF) {
-        return false;
-      }
-      if (seenRecords.has(value)) {
-        return false;
-      }
-      seenRecords.add(value);
-      return true;
-    })
-    .map(value => ({
-      rule: value.rule,
-      options: value.options
-    }));
 
-  return {
-    registeredRules,
-    executableRules
-  };
+  return [...registry.values()]
+    .filter(value => value.severity !== RULE_SEVERITY.OFF);
 };
 
 const buildLintResult = (
-  registeredRules: RegisteredRules,
   executionResult: ReturnType<typeof lintMarkdownInternal>
 ): LintMdResult => {
   const { fixedResult, lintResult, executionErrors } = executionResult;
@@ -84,7 +64,7 @@ const buildLintResult = (
   let fixableWarningCount = 0;
 
   const reportDataWithSeverity: LintReportItem[] = reportData.map((item) => {
-    const severity = registeredRules[item.name].severity as RULE_SEVERITY;
+    const severity = item.severity as RULE_SEVERITY;
 
     if (typeof item.fix === 'function') {
       if (severity === RULE_SEVERITY.ERROR) {
@@ -132,7 +112,7 @@ function executeMarkdown(
   isFixMode: boolean,
   options: LintExecutionOptions
 ): LintMdResult {
-  const { registeredRules, executableRules } = resolveConfiguredRules(rules);
+  const executableRules = resolveConfiguredRules(rules);
   const policy = options.ruleErrorPolicy ?? 'collect';
   const executionResult = lintMarkdownInternal(
     markdown,
@@ -141,7 +121,7 @@ function executeMarkdown(
     policy
   );
 
-  return buildLintResult(registeredRules, executionResult);
+  return buildLintResult(executionResult);
 }
 
 /**

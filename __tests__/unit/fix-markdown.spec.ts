@@ -44,6 +44,42 @@ describe('fixMarkdown', () => {
     })).toThrow(RuleExecutionFailure);
   });
 
+  test('returns fix callback errors in collect mode', () => {
+    const throwingFixRule: LintMdRule = {
+      meta: { name: 'throwing-fix-rule' },
+      create: context => ({
+        text: (node) => {
+          context.report({
+            loc: node.position,
+            message: 'needs fix',
+            fix: () => {
+              throw new Error('fix failure');
+            }
+          });
+        }
+      })
+    };
+
+    const result = fixMarkdown('text', {
+      rules: {
+        'throwing-fix-rule': [
+          throwingFixRule,
+          RULE_SEVERITY.ERROR,
+          {}
+        ]
+      }
+    });
+
+    expect(result.executionErrors).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        ruleName: 'throwing-fix-rule',
+        phase: 'fix',
+        round: 0
+      })
+    ]));
+    expect(result.fixedResult.result).toBe('text');
+  });
+
   test('matches the legacy fix behavior', () => {
     const markdown = '第一段\n\n\n第二段';
     const rules = {

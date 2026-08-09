@@ -33,6 +33,23 @@ Some **importance**, and \`code\`.
     expect(lintResult.reports.length).toBe(0);
   });
 
+  test('runLint executes selectors for one node in rule registration order', () => {
+    const calls: string[] = [];
+    const makeRule = (name: string): LintMdRule => ({
+      meta: { name },
+      create: () => ({
+        text: () => calls.push(name)
+      })
+    });
+
+    runLint('hello', [
+      { rule: makeRule('first') },
+      { rule: makeRule('second') }
+    ]);
+
+    expect(calls).toEqual(['first', 'second']);
+  });
+
   test('runLint reports include the configured rule severity', () => {
     const result = runLint('```\n\n```', [{
       id: noEmptyCode.meta.name,

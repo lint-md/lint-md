@@ -139,7 +139,7 @@ export interface LintMdRuleContext {
   sourceCode: LintSourceCode
 }
 
-/** rule 选择器签名：emitter 已按 node.type 分发，selector 形参可以用 positioned 具体节点类型 */
+/** rule 选择器签名：执行器按 node.type 分发，selector 形参可以用 positioned 具体节点类型 */
 export type RuleSelector = (node: PositionedMarkdownNode) => void;
 
 /** rule */
@@ -243,7 +243,7 @@ export interface FixMetrics {
 /**
  * 规则执行错误的捕获阶段。
  * - `create`：rule.create() 初始化回调阶段（每条规则在遍历前执行一次）
- * - `selector`：selector 节点回调阶段（emitter 按 node.type 分发后执行）
+ * - `selector`：selector 节点回调阶段（执行器按 node.type 分发后执行）
  * - `fix`：fix() 回调阶段（单轮执行计算修复时执行）
  * 仅覆盖规则自身执行路径，不覆盖 parser / 遍历器等基础设施故障。
  */

@@ -10,27 +10,27 @@ describe('test no-space-in-link', () => {
     const md = '[ JavaScript 高级程序设计, **前端** ](https://book.douban.com/subject/10546125)';
     const { fixedResult, lintResult } = fixer(md);
     expect(fixedResult?.result).toBe('[JavaScript 高级程序设计, **前端**](https://book.douban.com/subject/10546125)');
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(lintResult.reports.length).toStrictEqual(2);
   });
 
   test('fix applied (仅左侧)', () => {
     const md = '[       JavaScript 高级程序设计](https://book.douban.com/subject/10546125)';
     const { fixedResult, lintResult } = fixer(md);
     expect(fixedResult?.result).toBe('[JavaScript 高级程序设计](https://book.douban.com/subject/10546125)');
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(lintResult.reports.length).toStrictEqual(1);
   });
 
   test('fix applied (仅右侧)', () => {
     const md = '[JavaScript 高级程序设计    ](https://book.douban.com/subject/10546125)';
     const { fixedResult, lintResult } = fixer(md);
     expect(fixedResult?.result).toBe('[JavaScript 高级程序设计](https://book.douban.com/subject/10546125)');
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(lintResult.reports.length).toStrictEqual(1);
   });
 
   test('fix issue #98', () => {
     const md = 'only recalculate with [`hotReload` enabled](../../config/theme/basic.md#hotreload)';
     const { fixedResult, lintResult } = fixer(md);
     expect(fixedResult?.result).toStrictEqual('only recalculate with [`hotReload` enabled](../../config/theme/basic.md#hotreload)');
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
+    expect(lintResult.reports.length).toStrictEqual(0);
   });
 });

@@ -10,7 +10,7 @@ describe('test no-empty-url', () => {
     const md = '参考资料：[JavaScript 高级程序设计]()';
     const { lintResult, fixedResult } = fixer(md);
     expect(fixedResult?.result).toStrictEqual('参考资料：[JavaScript 高级程序设计](https://example.com)');
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(lintResult.reports.length).toStrictEqual(1);
   });
 
   test('fix applied (for image)', () => {
@@ -18,12 +18,12 @@ describe('test no-empty-url', () => {
     const { lintResult, fixedResult } = fixer(md);
 
     expect(fixedResult?.result).toStrictEqual('快看看：![JavaScript 高级程序设计](https://example.com)');
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(lintResult.reports.length).toStrictEqual(1);
   });
 
   test('fix applied (链接全部为空格)', () => {
     const md = '快看看：![JavaScript 高级程序设计](    )';
     const { lintResult } = fixer(md);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(lintResult.reports.length).toStrictEqual(1);
   });
 });

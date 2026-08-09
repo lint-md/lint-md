@@ -79,7 +79,7 @@ if (process.env.BENCHMARK_CHILD === '1') {
 
   function runParseTraverse() {
     const result = runLint(input, []);
-    const reports = result.ruleManager.getReportData();
+    const reports = result.reports;
     return { reportCount: reports.length, fixCount: 0, runLintCalls: 1 };
   }
 
@@ -93,9 +93,9 @@ if (process.env.BENCHMARK_CHILD === '1') {
       'no-special-characters',
     ];
     const configs = names.map(n => ({ rule: TEXT_RULE_IMPORTS[n]() }));
-    const result = runLint(input, configs);
-    const reports = result.ruleManager.getReportData();
-    const fixes = result.ruleManager.getAllFixes();
+    const result = runLint(input, configs, { computeFixes: true });
+    const reports = result.reports;
+    const fixes = result.fixes;
     return { reportCount: reports.length, fixCount: fixes.length, runLintCalls: 1 };
   }
 
@@ -103,9 +103,9 @@ if (process.env.BENCHMARK_CHILD === '1') {
     const ruleFactory = TEXT_RULE_IMPORTS[ruleName];
     if (!ruleFactory)
       throw new Error(`Unknown rule: ${ruleName}`);
-    const result = runLint(input, [{ rule: ruleFactory() }]);
-    const reports = result.ruleManager.getReportData();
-    const fixes = result.ruleManager.getAllFixes();
+    const result = runLint(input, [{ rule: ruleFactory() }], { computeFixes: true });
+    const reports = result.reports;
+    const fixes = result.fixes;
     return { reportCount: reports.length, fixCount: fixes.length, runLintCalls: 1 };
   }
 

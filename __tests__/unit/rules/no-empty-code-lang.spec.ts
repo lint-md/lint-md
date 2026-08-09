@@ -14,7 +14,7 @@ describe('test no-empty-code-lang', () => {
     const { fixedResult, lintResult } = fixer(md);
 
     expect(fixedResult?.result).toBe(md);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
+    expect(lintResult.reports.length).toStrictEqual(0);
   });
 
   test('fix applied', () => {
@@ -27,6 +27,6 @@ describe('test no-empty-code-lang', () => {
     expect(fixedResult?.result).toBe('```plain\n'
       + 'const b = 2;\n'
       + '```');
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(lintResult.reports.length).toStrictEqual(1);
   });
 });

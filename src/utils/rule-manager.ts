@@ -27,8 +27,7 @@ const resolveReportOffset = (
  * 初始化全局 rule 管理器
  *
  * @param {string} appliedMarkdown 已经应用了规则的 markdown
- * @param collector 可选的规则执行错误收集器；传入后 getAllFixes 中 fix() 抛错会归入规则执行错误，
- *                 否则（如单测直接 new）fix 阶段错误仍按原生异常抛出。
+ * @param collector The optional collector receives fix callback errors.
  */
 export const createRuleManager = (
   appliedMarkdown: string,
@@ -47,9 +46,6 @@ export const createRuleManager = (
   const getFallbackHits = () => fallbackHits;
 
   const getReportData = () => allReportedData;
-
-  // 暴露 collector 中已收集的规则执行错误（含 fix 阶段），供单测与上层聚合读取。
-  const getExecutionErrors = () => collector?.getErrors() ?? [];
 
   const getAllFixes = (): RuleFixConfig[] =>
     allReportedData.flatMap((item) => {
@@ -139,7 +135,6 @@ export const createRuleManager = (
 
   return {
     getReportData,
-    getExecutionErrors,
     getAllFixes,
     getFallbackHits,
     createRuleContext

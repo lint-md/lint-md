@@ -23,14 +23,14 @@ Some **importance**, and \`code\`.
       }
     ]);
 
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
-    const res = lintResult.ruleManager.getReportData().pop();
+    expect(lintResult.reports.length).toStrictEqual(1);
+    const res = lintResult.reports.pop();
     expect(res?.message).toStrictEqual('代码块内容不能为空，请删除空的代码块，或者填充代码内容');
   });
 
   test('test runLint() with empty rules array', () => {
     const lintResult = runLint('# Hello', []);
-    expect(lintResult.ruleManager.getReportData().length).toBe(0);
+    expect(lintResult.reports.length).toBe(0);
   });
 
   test('test runLint() collects Error thrown by rule (collect policy, structured errors)', () => {
@@ -103,14 +103,14 @@ Some **importance**, and \`code\`.
       })
     };
     const goodRule = noEmptyCode as unknown as LintMdRule;
-    const { ruleManager, executionErrors } = runLint('# Hello\n\n```\n\n```', [
+    const { reports, executionErrors } = runLint('# Hello\n\n```\n\n```', [
       { rule: badRule },
       { rule: goodRule }
     ]);
     // 坏规则失败被记录，好规则仍正常产出报告（部分成功）
     expect(executionErrors).toHaveLength(1);
     expect(executionErrors[0].ruleName).toBe('bad-rule');
-    expect(ruleManager.getReportData().length).toBeGreaterThan(0);
+    expect(reports.length).toBeGreaterThan(0);
   });
 
   test('test lintAndFixInternal() to lint or fix markdown source', () => {

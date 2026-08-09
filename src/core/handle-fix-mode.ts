@@ -32,7 +32,11 @@ export const handleFixMode = (
     // 记录本轮输入文本，供后续判断是否回到历史状态。
     seenTexts.add(current);
 
-    const lintResult = runLint(current, rules, { ruleErrorPolicy: policy, round: lintTimes });
+    const lintResult = runLint(current, rules, {
+      ruleErrorPolicy: policy,
+      round: lintTimes,
+      computeFixes: true
+    });
 
     if (lintTimes === 0) {
       initialLintResult = lintResult;
@@ -40,14 +44,10 @@ export const handleFixMode = (
 
     lintTimes++;
 
-    // 先取 fix 列表：fix() 回调在 getAllFixes() 内执行，其错误已并入 ruleManager 的 collector，
-    // 并反映到 runLint 返回的 executionErrors 中。聚合必须放在 getAllFixes 之后，否则会丢 fix 阶段错误。
-    const fixes = lintResult.ruleManager.getAllFixes();
+    const { fixes } = lintResult;
 
-    // 累加本轮错误（含 create/selector 与 fix 阶段；严格模式下可能已抛 RuleExecutionFailure）。
-    // `runLint().executionErrors` 是调用完成时的快照；fix() 在 getAllFixes()
-    // 中才会执行，因此这里从 manager 重新读取，确保本轮 fix 阶段错误也被聚合。
-    allExecutionErrors.push(...lintResult.ruleManager.getExecutionErrors());
+    // The round result includes create, selector, and fix errors.
+    allExecutionErrors.push(...lintResult.executionErrors);
 
     // 无 fix 可应用 => 正常收敛。
     if (!fixes.length) {

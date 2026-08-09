@@ -11,7 +11,7 @@ describe('test no-empty-list', () => {
       + '2.';
     const { fixedResult, lintResult } = fixer(md);
     expect(fixedResult?.result.trim()).toStrictEqual('');
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(lintResult.reports.length).toStrictEqual(2);
   });
 
   test('fix applied for common list', () => {
@@ -19,6 +19,6 @@ describe('test no-empty-list', () => {
       + '-         ';
     const { fixedResult, lintResult } = fixer(md);
     expect(fixedResult?.result.trim()).toStrictEqual('- 测试');
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(lintResult.reports.length).toStrictEqual(1);
   });
 });

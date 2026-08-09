@@ -11,13 +11,13 @@ describe('test no-full-width-number', () => {
 
     const { fixedResult, lintResult } = fixer(md);
     expect(fixedResult?.result).toStrictEqual('> 这件蛋糕只卖 1000 元。\n这个 10 哈哈');
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(lintResult.reports.length).toStrictEqual(2);
   });
 
   test('reports correct line for match on second line', () => {
     const md = '第一行\n第二行有１００';
     const { lintResult } = fixer(md);
-    const reports = lintResult.ruleManager.getReportData();
+    const reports = lintResult.reports;
     expect(reports.length).toStrictEqual(1);
     expect(reports[0].loc.start.line).toStrictEqual(2);
     expect(reports[0].loc.start.column).toStrictEqual(5);
@@ -26,7 +26,7 @@ describe('test no-full-width-number', () => {
   test('reports correct line for match on third line', () => {
     const md = '第一行\n第二行\n第三行有１００';
     const { lintResult } = fixer(md);
-    const reports = lintResult.ruleManager.getReportData();
+    const reports = lintResult.reports;
     expect(reports.length).toStrictEqual(1);
     expect(reports[0].loc.start.line).toStrictEqual(3);
   });

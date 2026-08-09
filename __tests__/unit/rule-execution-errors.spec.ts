@@ -8,7 +8,7 @@ const makeThrowingRule = (name: string, fn: () => void): LintMdRule => ({
   create: () => ({ text: fn })
 });
 
-// 一个 selector 正常 report 一个 fix 的规则（fix 回调抛错可控）。fix() 仅在 getAllFixes() 时执行。
+// This rule reports one fix. The test controls the fix callback result.
 const makeFixRule = (
   name: string,
   fixImpl: () => FixConfig
@@ -103,36 +103,47 @@ describe('rule-execution-errors', () => {
         }
       })
     };
-    const { ruleManager, executionErrors } = runLint('hello world', [{ rule: bad }, { rule: good }]);
+    const { reports, executionErrors } = runLint('hello world', [{ rule: bad }, { rule: good }]);
     expect(goodReported).toBe(true);
-    expect(ruleManager.getReportData().some(d => d.name === 'good-text')).toBe(true);
+    expect(reports.some(d => d.name === 'good-text')).toBe(true);
     expect(executionErrors).toHaveLength(1);
     expect(executionErrors[0]).toMatchObject({ ruleName: 'bad-text', phase: 'selector' });
   });
 
-  test('collect: manager wired with collector — fix() throwing is collected with phase=fix', () => {
-    // fix() 只在 getAllFixes() 时执行；验证 runLint 已将 collector 传给 ruleManager（P1 修复点）。
+  test('collect: the round returns fix errors with phase=fix', () => {
     const rule = makeFixRule('fix-throw', () => { throw new Error('fix failed'); });
-    const { ruleManager } = runLint('single', [{ rule }]);
-    const fixes = ruleManager.getAllFixes();
+    const { fixes, executionErrors } = runLint('single', [{ rule }], { computeFixes: true });
     expect(fixes).toEqual([]); // 抛错不产生 fix
-    const errs = ruleManager.getExecutionErrors();
-    expect(errs).toHaveLength(1);
-    expect(errs[0]).toMatchObject({ ruleName: 'fix-throw', phase: 'fix', round: 0, message: 'fix failed' });
+    expect(executionErrors).toHaveLength(1);
+    expect(executionErrors[0]).toMatchObject({ ruleName: 'fix-throw', phase: 'fix', round: 0, message: 'fix failed' });
   });
 
-  test('strict: manager wired with collector — fix() throwing throws RuleExecutionFailure', () => {
+  test('strict: the round throws when a fix callback fails', () => {
     const rule = makeFixRule('fix-strict', () => { throw new Error('fix failed'); });
-    const { ruleManager } = runLint('single', [{ rule }], { ruleErrorPolicy: 'strict' });
     let thrown: unknown;
     try {
-      ruleManager.getAllFixes();
+      runLint('single', [{ rule }], {
+        ruleErrorPolicy: 'strict',
+        computeFixes: true
+      });
     }
     catch (e) {
       thrown = e;
     }
     expect(thrown).toBeInstanceOf(RuleExecutionFailure);
     expect((thrown as RuleExecutionFailure).error).toMatchObject({ ruleName: 'fix-strict', phase: 'fix' });
+  });
+
+  test('lint-only: the round does not run fix callbacks', () => {
+    const fixImpl = jest.fn(() => ({ range: [0, 1] as [number, number], text: 'x' }));
+    const rule = makeFixRule('fix-skipped', fixImpl);
+
+    const result = runLint('single', [{ rule }]);
+
+    expect(result.reports).toHaveLength(1);
+    expect(result.fixes).toEqual([]);
+    expect(result.executionErrors).toEqual([]);
+    expect(fixImpl).not.toHaveBeenCalled();
   });
 
   test('fix-mode: fix() error aggregated into executionErrors with phase=fix, not rethrown', () => {

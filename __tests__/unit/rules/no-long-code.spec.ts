@@ -21,7 +21,7 @@ describe('test no-long-code', () => {
     const { fixedResult, lintResult } = fixer(md);
 
     expect(fixedResult?.result).toBe(md);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
+    expect(lintResult.reports.length).toStrictEqual(0);
   });
 
   test('test fix applied', () => {
@@ -33,7 +33,7 @@ describe('test no-long-code', () => {
     ].join('\n');
 
     const { lintResult } = fixer(md);
-    const options = lintResult.ruleManager.getReportData().pop();
+    const options = lintResult.reports.pop();
 
     // 精确校验 offset 落在对应代码行，而非仅断言为 number
     expect(options?.loc.start.offset).toBe(md.indexOf(longCode));
@@ -56,7 +56,7 @@ describe('test no-long-code', () => {
     ].join('\r\n');
 
     const { lintResult } = fixer(md);
-    const options = lintResult.ruleManager.getReportData().pop();
+    const options = lintResult.reports.pop();
 
     // CRLF 下 offset 仍应精确落在代码行（基于原始文档坐标）
     expect(options?.loc.start.offset).toBe(md.indexOf(longCode));
@@ -74,7 +74,7 @@ describe('test no-long-code', () => {
     ].join('\r\n');
 
     const { lintResult } = fixer(md);
-    const options = lintResult.ruleManager.getReportData().pop();
+    const options = lintResult.reports.pop();
 
     // 代码块不在文档开头时，CRLF 下偏移也不能漂移
     expect(options?.loc.start.offset).toBe(md.indexOf(longCode));
@@ -90,7 +90,7 @@ describe('test no-long-code', () => {
     ].join('\n');
     const { lintResult } = fixer(md);
 
-    const data = lintResult.ruleManager.getReportData();
+    const data = lintResult.reports;
     expect(data.length).toStrictEqual(0);
   });
 
@@ -108,7 +108,7 @@ describe('test no-long-code', () => {
 
     expect(fixedResult?.result).toStrictEqual(md);
     const longLine = 'console.log("code code code code code code code code");';
-    const [r1, r2] = lintResult.ruleManager.getReportData();
+    const [r1, r2] = lintResult.reports;
     expect(r1.loc).toEqual({
       end: expect.objectContaining({ column: 55, line: 3, offset: expect.any(Number) }),
       start: expect.objectContaining({ column: 1, line: 3, offset: expect.any(Number) })
@@ -140,7 +140,7 @@ describe('test no-long-code', () => {
     ].join('\n');
 
     const { lintResult } = fixer(md);
-    const data = lintResult.ruleManager.getReportData();
+    const data = lintResult.reports;
 
     expect(data.length).toBeGreaterThan(0);
     for (const item of data) {
@@ -160,7 +160,7 @@ describe('test no-long-code', () => {
     const md = `    ${longCode}`;
 
     const { lintResult } = fixer(md);
-    const [report] = lintResult.ruleManager.getReportData();
+    const [report] = lintResult.reports;
 
     // 缩进代码块无围栏：offset 应落在实际代码内容（跳过起始缩进）
     expect(report.loc.start.offset).toBe(md.indexOf(longCode));
@@ -172,7 +172,7 @@ describe('test no-long-code', () => {
     const md = ['```js', longCode].join('\n');
 
     const { lintResult } = fixer(md);
-    const [report] = lintResult.ruleManager.getReportData();
+    const [report] = lintResult.reports;
 
     // EOF 未闭合围栏：最后一行是真实代码内容，不应被当成结尾围栏而漏报
     expect(report.loc.start.offset).toBe(md.indexOf(longCode));
@@ -187,7 +187,7 @@ describe('test no-long-code', () => {
     ].join('\n');
 
     const { lintResult } = fixer(md);
-    const [report] = lintResult.ruleManager.getReportData();
+    const [report] = lintResult.reports;
 
     // 多行缩进代码块：offset 应落在实际代码内容（跳过起始缩进），非统一缩进也需准确
     expect(report.loc.start.offset).toBe(md.indexOf(longCode));
@@ -204,7 +204,7 @@ describe('test no-long-code', () => {
     ].join('\n');
 
     const { lintResult } = fixer(md);
-    const [report] = lintResult.ruleManager.getReportData();
+    const [report] = lintResult.reports;
 
     // 缩进不一致时，offset/length 仍应精确对应真实代码内容
     expect(report.loc.start.offset).toBe(md.indexOf(valueLine));

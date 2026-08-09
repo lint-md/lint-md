@@ -12,7 +12,7 @@ describe('no-half-width-punctuation range-based report', () => {
     expect(first.fixedResult?.result).toBe(expected);
 
     const second = lintMarkdownInternal(first.fixedResult!.result, config, false);
-    expect(second.lintResult.ruleManager.getReportData()).toHaveLength(0);
+    expect(second.lintResult.reports).toHaveLength(0);
   });
 
   test('does not remove only the backslash of an escape', () => {
@@ -29,6 +29,6 @@ describe('no-half-width-punctuation range-based report', () => {
 
   test('astral entity is preserved when not a punctuation target', () => {
     const result = lintMarkdownInternal('中文&Afr;test', config, false);
-    expect(result.lintResult.ruleManager.getReportData()).toHaveLength(0);
+    expect(result.lintResult.reports).toHaveLength(0);
   });
 });

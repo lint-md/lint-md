@@ -79,7 +79,7 @@ const buildLintResult = (
   executionResult: ReturnType<typeof lintMarkdownInternal>
 ): LintMdResult => {
   const { fixedResult, lintResult, executionErrors } = executionResult;
-  const reportData = lintResult.ruleManager.getReportData();
+  const reportData = lintResult.reports;
   let fixableErrorCount = 0;
   let fixableWarningCount = 0;
 

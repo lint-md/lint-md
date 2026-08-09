@@ -76,7 +76,7 @@ export const normalizeRuleRegistry = (
     const id = rule.meta.name;
     const existing = registry.get(id);
     if (existing) {
-      throw new TypeError(`[lint-md] 规则别名冲突：${id} 已被配置 ${existing.configKey} 占用`);
+      throw new TypeError(`[lint-md] 规则别名冲突：${id} 已被另一规则占用`);
     }
 
     registry.set(id, {

@@ -1,5 +1,5 @@
 import type { LintMdRule } from '../types';
-import { createTraverser } from '../utils/traverser';
+import { traverseMarkdown } from '../utils/traverser';
 
 const PROTECTED_NODE_TYPES = new Set([
   'code',
@@ -17,8 +17,8 @@ const noMultipleBlankLines: LintMdRule = {
   create(context) {
     const protectedRanges: Array<[number, number]> = [];
 
-    createTraverser({
-      onEnter(node) {
+    traverseMarkdown(context.ast, {
+      enter(node) {
         if (PROTECTED_NODE_TYPES.has(node.type)) {
           protectedRanges.push([
             node.position.start.offset,
@@ -26,7 +26,7 @@ const noMultipleBlankLines: LintMdRule = {
           ]);
         }
       }
-    }).traverse(context.ast, null);
+    });
 
     const overlapsProtectedRange = (start: number, end: number): boolean => {
       return protectedRanges.some(([protectedStart, protectedEnd]) => {

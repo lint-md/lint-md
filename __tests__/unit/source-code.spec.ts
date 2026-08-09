@@ -6,7 +6,7 @@ import {
 import type { LintMdRule, LintMdRuleContext, LintSourceCode } from '../../src/types';
 import { lintMarkdownInternal } from '../../src/core/lint-markdown';
 import { runLint } from '../../src/core/run-lint';
-import { createLintSourceCode } from '../../src/utils/source-code';
+import { createLintSourceCode, isValidOffset } from '../../src/utils/source-code';
 import { InvalidRuleRangeError } from '../../src/utils/source-code-errors';
 
 describe('LintSourceCode', () => {
@@ -288,6 +288,22 @@ describe('LintSourceCode', () => {
       expect(sc.getOffset({ line: 99, column: 99, offset: 2 })).toBe(2);
     });
 
+    test('getOffset accepts an offset at the end of the document', () => {
+      expect(sc.getOffset({ line: 99, column: 99, offset: text.length }))
+        .toBe(text.length);
+    });
+
+    test('getOffset treats an offset beyond the document as missing', () => {
+      expect(sc.getOffset({ line: 4, column: 8, offset: text.length + 1 }))
+        .toBe(text.indexOf('TARGET'));
+    });
+
+    test('isValidOffset applies an optional document length', () => {
+      expect(isValidOffset(text.length, text.length)).toBe(true);
+      expect(isValidOffset(text.length + 1, text.length)).toBe(false);
+      expect(isValidOffset(text.length + 1)).toBe(true);
+    });
+
     test('normalizeReportLocation preserves a legacy loc and resolves its range', () => {
       const loc = {
         start: { line: 4, column: 8 },
@@ -309,6 +325,19 @@ describe('LintSourceCode', () => {
         loc: sc.getLocation(range),
         range,
         usedFallback: false
+      });
+    });
+
+    test('normalizeReportLocation flags offsets beyond the document', () => {
+      const loc = {
+        start: { line: 4, column: 8, offset: text.length + 1 },
+        end: { line: 4, column: 14, offset: text.length + 2 }
+      };
+
+      expect(sc.normalizeReportLocation({ loc })).toEqual({
+        loc,
+        range: [text.indexOf('TARGET'), text.indexOf('TARGET') + 'TARGET'.length],
+        usedFallback: true
       });
     });
 

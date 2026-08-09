@@ -30,9 +30,15 @@ export interface ReportSourceCode extends LintSourceCode {
   getContext(range: TextRange, padding?: number): string
 }
 
-/** A usable offset is a finite, non-negative integer. */
-export const isValidOffset = (value: unknown): value is number =>
-  typeof value === 'number' && Number.isInteger(value) && value >= 0;
+/** A usable offset is a finite, non-negative integer within an optional document length. */
+export const isValidOffset = (
+  value: unknown,
+  length?: number
+): value is number =>
+  typeof value === 'number'
+  && Number.isInteger(value)
+  && value >= 0
+  && (length === undefined || value <= length);
 
 export const createLintSourceCode = ({
   text,
@@ -65,7 +71,7 @@ export const createLintSourceCode = ({
   };
 
   const getOffset = (position: ReportPosition): number => {
-    if (isValidOffset(position.offset)) {
+    if (isValidOffset(position.offset, text.length)) {
       return position.offset;
     }
 
@@ -95,8 +101,8 @@ export const createLintSourceCode = ({
     }
 
     const usedFallback
-      = !isValidOffset(input.loc.start.offset)
-        || !isValidOffset(input.loc.end.offset);
+      = !isValidOffset(input.loc.start.offset, text.length)
+        || !isValidOffset(input.loc.end.offset, text.length);
 
     return {
       loc: input.loc,

@@ -161,6 +161,31 @@ describe('rule-manager offset contract: invalid offsets trigger fallback (#180 P
     expect(fallbackHits).toBe(1);
   });
 
+  test('offset beyond the document uses fallback and preserves public loc', () => {
+    const md = 'prefix TARGET suffix';
+    const startOffset = md.length + 10;
+    const endOffset = md.length + 20;
+    const rule: LintMdRule = {
+      meta: { name: 'oversized-offset' },
+      create: context => ({
+        root: () => context.report({
+          loc: {
+            start: { line: 1, column: 8, offset: startOffset },
+            end: { line: 1, column: 14, offset: endOffset }
+          },
+          message: 'oversized offset'
+        })
+      })
+    };
+
+    const { data, fallbackHits } = runRule(md, rule);
+
+    expect(fallbackHits).toBe(1);
+    expect(data[0].loc.start.offset).toBe(startOffset);
+    expect(data[0].loc.end.offset).toBe(endOffset);
+    expect(data[0].content).toBe('efix TARGET suff');
+  });
+
   test('valid integer offset does not trigger fallback and slices exactly', () => {
     const md = 'aaa\r\nbbbZZccc\r\n';
     const start = md.indexOf('ZZ');

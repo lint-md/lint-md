@@ -4,10 +4,10 @@ import type {
   ReportOption,
   RuleExecutionError,
   RuleFixConfig,
+  RuleSelector,
   RunLintOptions
 } from '../types';
 import { RULE_SEVERITY } from '../types';
-import { createEmitter } from '../utils/emitter';
 import { createTraverser } from '../utils/traverser';
 import { createRuleManager } from '../utils/rule-manager';
 import { createRuleErrorCollector } from '../utils/rule-execution-errors';
@@ -22,6 +22,11 @@ interface RunLintRoundOptions extends RunLintOptions {
 interface RuleExecutionConfig extends LintMdRuleWithOptions {
   readonly id?: string
   readonly severity?: number
+}
+
+interface RegisteredSelector {
+  readonly ruleName: string
+  readonly selector: RuleSelector
 }
 
 export interface RunLintReport extends ReportOption {
@@ -43,7 +48,7 @@ export interface RunLintResult {
  *   不打断同节点其它规则，也不打断后续节点遍历；不写 console.error，错误以
  *   结构化 executionErrors 数组随结果返回。
  * - 严格模式（strict）：首次规则执行失败立即抛 RuleExecutionFailure。
- * 错误按 listener（selector）逐条捕获，而非包住整次 emitter.emit()，
+ * 错误按 selector 逐条捕获，而非包住同一节点的完整分发，
  * 这样才能满足“多个规则失败、部分成功”的验收。
  *
  * @date 2021-12-12 21:48:21
@@ -75,24 +80,14 @@ export const runLint = (
   // The manager holds mutable state only during this execution round.
   const ruleManager = createRuleManager(sourceCode, collector);
 
-  const emitter = createEmitter();
+  const selectorsByType = new Map<string, RegisteredSelector[]>();
 
-  // 遍历器：按节点分发事件。这里不再包 try/catch —— 失败捕获下沉到各 listener。
-  const traverser = createTraverser({
-    onEnter: (node) => {
-      if (node.type) {
-        emitter.emit(node.type, node);
-      }
-    }
-  });
-
-  // 遍历所有的 rules，并拿到它们的选择器，为每一个选择器订阅相关事件。
-  // 注册时逐个包装 selector：同一节点上某坏规则抛错不会阻断其它规则，且能准确记录 ruleName。
+  // Selector order follows rule configuration order for each node type.
   for (const { rule, options: ruleOptions } of allRuleConfigs) {
     const ruleContext = ruleManager.createRuleContext({ rule, options: ruleOptions });
 
     // create 阶段也可能抛错，需在调用 create 处捕获并归入规则执行错误。
-    let ruleSelectors: Record<string, (node: any) => void>;
+    let ruleSelectors: Record<string, RuleSelector>;
     try {
       ruleSelectors = rule.create(ruleContext);
     }
@@ -105,12 +100,30 @@ export const runLint = (
       continue;
     }
 
-    for (const selector of Object.keys(ruleSelectors)) {
-      const originalSelector = ruleSelectors[selector];
-      const ruleName = rule.meta.name;
-      emitter.on(selector, (node) => {
+    for (const nodeType of Object.keys(ruleSelectors)) {
+      const registeredSelector: RegisteredSelector = {
+        ruleName: rule.meta.name,
+        selector: ruleSelectors[nodeType]
+      };
+      const registered = selectorsByType.get(nodeType);
+      if (registered) {
+        registered.push(registeredSelector);
+      }
+      else {
+        selectorsByType.set(nodeType, [registeredSelector]);
+      }
+    }
+  }
+
+  const traverser = createTraverser({
+    onEnter: (node) => {
+      const registered = selectorsByType.get(node.type);
+      if (!registered) {
+        return;
+      }
+      for (const { ruleName, selector } of registered) {
         try {
-          originalSelector(node);
+          selector(node);
         }
         catch (error) {
           // Source-map errors are infrastructure failures.
@@ -120,11 +133,11 @@ export const runLint = (
           // 严格模式会在 collect 内抛出 RuleExecutionFailure，向上传递。
           collector.collect(ruleName, 'selector', error, node.type);
         }
-      });
+      }
     }
-  }
+  });
 
-  // 递归地遍历 ast；selector 失败已在 listener 内逐条处理，此处不再吞错。
+  // 递归地遍历 ast；selector 失败已在分发循环内逐条处理，此处不再吞错。
   traverser.traverse(ast, null);
 
   const fixes = options.computeFixes

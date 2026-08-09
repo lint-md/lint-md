@@ -109,7 +109,8 @@ console.log('!');
     expect(parentNodeQueue.length).toStrictEqual(0);
   });
 
-  test('test legacy traverser compatibility', () => {
+  test('test legacy traverser keeps the explicit parent', () => {
+    const customParent = parseMd('# Parent');
     const traverser = createTraverser({
       onEnter: (node, parent) => {
         nodeQueue.push(node);
@@ -117,8 +118,8 @@ console.log('!');
       }
     });
 
-    traverser.traverse(ast, null);
+    traverser.traverse(ast, customParent);
     expect(nodeQueue[0].type).toStrictEqual('root');
-    expect(parentNodeQueue[0]).toBeNull();
+    expect(parentNodeQueue[0]).toBe(customParent);
   });
 });

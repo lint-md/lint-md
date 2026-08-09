@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Refactoring
+
+- **run-lint**: return reports, fixes, execution errors, and fallback metrics as one round result
+- **rule-registry**: normalize configured rules into one record for each rule ID
+- **source-code**: centralize report offsets, location fallback, and context extraction
+- **run-lint**: replace the generic event emitter with typed selector dispatch
+
 ## [2.3.0](https://github.com/lint-md/lint-md/compare/v2.2.1...v2.3.0) - 2026-07-30
 
 ### Features

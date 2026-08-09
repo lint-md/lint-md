@@ -10,13 +10,13 @@ describe('test no-empty-inline-code', () => {
     const md = '`const a = 0;`';
     const { fixedResult, lintResult } = fixer(md);
     expect(fixedResult?.result).toBe(md);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
+    expect(lintResult.reports.length).toStrictEqual(0);
   });
 
   test('fix applied', () => {
     const md = '- right ` ` 你好';
     const { fixedResult, lintResult } = fixer(md);
     expect(fixedResult?.result).toBe('- right  你好');
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(lintResult.reports.length).toStrictEqual(1);
   });
 });

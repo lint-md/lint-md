@@ -12,7 +12,7 @@ describe('test no-special-characters multi-line', () => {
   test('reports correct line for special char on second line', () => {
     const md = `第一行\n第二行有${HAIR_SPACE}空格`;
     const { lintResult } = fixer(md);
-    const reports = lintResult.ruleManager.getReportData();
+    const reports = lintResult.reports;
     expect(reports.length).toStrictEqual(1);
     expect(reports[0].loc.start.line).toStrictEqual(2);
   });
@@ -20,7 +20,7 @@ describe('test no-special-characters multi-line', () => {
   test('reports correct line for special char on third line', () => {
     const md = `第一行\n第二行\n第三行有${HAIR_SPACE}空格`;
     const { lintResult } = fixer(md);
-    const reports = lintResult.ruleManager.getReportData();
+    const reports = lintResult.reports;
     expect(reports.length).toStrictEqual(1);
     expect(reports[0].loc.start.line).toStrictEqual(3);
   });
@@ -28,7 +28,7 @@ describe('test no-special-characters multi-line', () => {
   test('reports correct column for special char on second line', () => {
     const md = `第一行\n第二行有${HAIR_SPACE}空格`;
     const { lintResult } = fixer(md);
-    const reports = lintResult.ruleManager.getReportData();
+    const reports = lintResult.reports;
     expect(reports[0].loc.start.column).toStrictEqual(5);
   });
 });

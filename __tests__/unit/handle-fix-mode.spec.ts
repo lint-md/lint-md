@@ -139,7 +139,7 @@ describe('handleFixMode', () => {
     expect(result.fixedResult.result).toBe('X');
     expect(result.fixedResult.result).not.toContain('Y');
     // Loop completed in 2 rounds: round 1 applied A, round 2 found no fixes
-    expect(result.lintResult.ruleManager.getReportData().length).toBe(2);
+    expect(result.lintResult.reports.length).toBe(2);
   });
 
   test('text unchanged (all fixes conflict) — exits loop', () => {
@@ -235,8 +235,8 @@ describe('handleFixMode', () => {
 
     const result = handleFixMode('foo', [{ rule }]);
     // initialLintResult is from first round — should have 1 report
-    expect(result.lintResult.ruleManager.getReportData().length).toBe(1);
-    expect(result.lintResult.ruleManager.getReportData()[0].message).toBe('replace foo');
+    expect(result.lintResult.reports.length).toBe(1);
+    expect(result.lintResult.reports[0].message).toBe('replace foo');
   });
 
   test('notAppliedFixes reflects only last round, not historical', () => {

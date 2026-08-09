@@ -19,7 +19,7 @@ describe('require-trailing-spaces', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe(expected);
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(reportCount);
+    expect(lintResult.reports).toHaveLength(reportCount);
   });
 
   test.each([
@@ -33,7 +33,7 @@ describe('require-trailing-spaces', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe(markdown);
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
+    expect(lintResult.reports).toHaveLength(0);
   });
 
   test('默认关闭', () => {

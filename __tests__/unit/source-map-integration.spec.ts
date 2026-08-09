@@ -81,7 +81,7 @@ describe('parser source-map integration', () => {
     };
 
     const result = lintMarkdownInternal('` a `', [{ rule: inlineCodeRule }], true);
-    const [report] = result.lintResult.ruleManager.getReportData();
+    const [report] = result.lintResult.reports;
 
     expect(report.loc).toMatchObject({
       start: { offset: 2 },
@@ -98,7 +98,7 @@ describe('parser source-map integration', () => {
     expect(first.fixedResult?.result).toBe(expected);
 
     const second = lintMarkdownInternal(first.fixedResult!.result, halfWidthConfig, false);
-    expect(second.lintResult.ruleManager.getReportData()).toHaveLength(0);
+    expect(second.lintResult.reports).toHaveLength(0);
   });
 
   test.each([
@@ -120,9 +120,7 @@ describe('parser source-map integration', () => {
 
   test('diagnostic offsets and fix ranges are resolved by the same source-map range', () => {
     const input = '中文&#40;test&#41;中文';
-    const { ruleManager } = runLint(input, halfWidthConfig);
-    const reports = ruleManager.getReportData();
-    const fixes = ruleManager.getAllFixes();
+    const { reports, fixes } = runLint(input, halfWidthConfig, { computeFixes: true });
 
     expect(reports).toHaveLength(2);
     expect(fixes).toHaveLength(2);
@@ -138,9 +136,9 @@ describe('parser source-map integration', () => {
     ['LF', '\n', 4]
   ])('%s uses parser line/column positions and raw fix offsets', (_name, newline, expectedOffset) => {
     const input = `a${newline}中文(test)中文`;
-    const { ruleManager } = runLint(input, halfWidthConfig);
-    const [report] = ruleManager.getReportData();
-    const [fix] = ruleManager.getAllFixes();
+    const { reports, fixes } = runLint(input, halfWidthConfig, { computeFixes: true });
+    const [report] = reports;
+    const [fix] = fixes;
 
     expect(report.loc.start).toMatchObject({ line: 2, column: 3, offset: expectedOffset });
     expect(fix.range).toEqual([report.loc.start.offset, report.loc.end.offset]);
@@ -166,7 +164,7 @@ describe('parser source-map integration', () => {
       })
     };
     const result = lintMarkdownInternal('中文&Afr;中文', [{ rule: atomicRule }], true);
-    expect(result.lintResult.ruleManager.getReportData()).toHaveLength(1);
+    expect(result.lintResult.reports).toHaveLength(1);
     expect(result.fixedResult?.result).toBe('中文A中文');
   });
 
@@ -223,10 +221,7 @@ describe('parser source-map integration', () => {
         }
       })
     };
-    const { ruleManager } = runLint('text', [{ rule: mutatingRule }]);
-
-    expect(() => ruleManager.getAllFixes())
+    expect(() => runLint('text', [{ rule: mutatingRule }], { computeFixes: true }))
       .toThrow(SourceMapConsistencyError);
-    expect(ruleManager.getExecutionErrors()).toEqual([]);
   });
 });

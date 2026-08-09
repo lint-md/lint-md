@@ -21,8 +21,8 @@ const makeTextReportRule = (
 const runRule = (md: string, rule: LintMdRule, options?: Record<string, any>) => {
   const lintResult = runLint(md, [{ rule, options }]);
   return {
-    data: lintResult.ruleManager.getReportData(),
-    fallbackHits: lintResult.ruleManager.getFallbackHits()
+    data: lintResult.reports,
+    fallbackHits: lintResult.fallbackHits
   };
 };
 

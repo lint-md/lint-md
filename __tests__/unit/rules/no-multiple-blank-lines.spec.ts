@@ -13,7 +13,7 @@ describe('no-multiple-blank-lines', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe('第一段\n\n第二段');
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(1);
+    expect(lintResult.reports).toHaveLength(1);
   });
 
   test('处理不同类型块之间的多余空白行', () => {
@@ -22,7 +22,7 @@ describe('no-multiple-blank-lines', () => {
 
     expect(fixedResult?.result)
       .toBe('# 标题\n\n---\n\n- 项目\n\n> 引用');
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(3);
+    expect(lintResult.reports).toHaveLength(3);
   });
 
   test('空格和 Tab 组成的 CRLF 空白行也参与限制', () => {
@@ -30,7 +30,7 @@ describe('no-multiple-blank-lines', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe('第一段\r\n\r\n第二段');
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(1);
+    expect(lintResult.reports).toHaveLength(1);
   });
 
   test('不修改围栏代码块内部的空白行', () => {
@@ -38,7 +38,7 @@ describe('no-multiple-blank-lines', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe(markdown);
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
+    expect(lintResult.reports).toHaveLength(0);
   });
 
   test('不修改缩进代码块内部的空白行', () => {
@@ -46,7 +46,7 @@ describe('no-multiple-blank-lines', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe(markdown);
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
+    expect(lintResult.reports).toHaveLength(0);
   });
 
   test('不修改 YAML block scalar 内的空白行', () => {
@@ -62,7 +62,7 @@ describe('no-multiple-blank-lines', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe(markdown);
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
+    expect(lintResult.reports).toHaveLength(0);
   });
 
   test('删除 YAML 前导空行但保留 block scalar 空白行', () => {
@@ -94,7 +94,7 @@ describe('no-multiple-blank-lines', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe(markdown);
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
+    expect(lintResult.reports).toHaveLength(0);
   });
 
   test('不修改数学块内的空白行', () => {
@@ -102,7 +102,7 @@ describe('no-multiple-blank-lines', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe(markdown);
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
+    expect(lintResult.reports).toHaveLength(0);
   });
 
   test('删除文档开头的空白行', () => {
@@ -110,7 +110,7 @@ describe('no-multiple-blank-lines', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe('# 标题');
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(1);
+    expect(lintResult.reports).toHaveLength(1);
   });
 
   test('只包含空白行的文档修复为空文档', () => {
@@ -118,7 +118,7 @@ describe('no-multiple-blank-lines', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe('');
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(1);
+    expect(lintResult.reports).toHaveLength(1);
   });
 
   test('无换行的纯空格文档修复为空文档', () => {
@@ -126,7 +126,7 @@ describe('no-multiple-blank-lines', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe('');
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(1);
+    expect(lintResult.reports).toHaveLength(1);
   });
 
   test('文档末尾最多保留一个换行', () => {
@@ -134,7 +134,7 @@ describe('no-multiple-blank-lines', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe('正文\n');
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(1);
+    expect(lintResult.reports).toHaveLength(1);
   });
 
   test('删除末尾空白行中的空格和 Tab', () => {
@@ -142,7 +142,7 @@ describe('no-multiple-blank-lines', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe('正文\n');
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(1);
+    expect(lintResult.reports).toHaveLength(1);
   });
 
   test('可以通过 Core 配置启用', () => {
@@ -174,6 +174,6 @@ describe('no-multiple-blank-lines', () => {
     const { fixedResult, lintResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe(markdown);
-    expect(lintResult.ruleManager.getReportData()).toHaveLength(0);
+    expect(lintResult.reports).toHaveLength(0);
   });
 });

@@ -18,28 +18,28 @@ const fixedMarkdownToCheck = `
 describe('test space-around-number', () => {
   test('fix applied', () => {
     const { fixedResult, lintResult } = fixer(markdownToCheck);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(3);
+    expect(lintResult.reports.length).toStrictEqual(3);
     expect(fixedResult?.result).toStrictEqual(fixedMarkdownToCheck);
   });
 
   test('fix applied for percentage between chinese text', () => {
     const md = '100%测试 测试100%';
     const { fixedResult, lintResult } = fixer(md);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(lintResult.reports.length).toStrictEqual(2);
     expect(fixedResult?.result).toStrictEqual('100% 测试 测试 100%');
   });
 
   test('does not treat symbols as alphabet through this rule', () => {
     const md = 'C#教程 中文#标签';
     const { fixedResult, lintResult } = fixer(md);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
+    expect(lintResult.reports.length).toStrictEqual(0);
     expect(fixedResult?.result).toStrictEqual(md);
   });
 
   test('insert spaces outside a numeric character entity', () => {
     const md = '中&#49;文';
     const { fixedResult, lintResult } = fixer(md);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(lintResult.reports.length).toStrictEqual(2);
     expect(fixedResult?.result).toStrictEqual('中 &#49; 文');
   });
 
@@ -48,13 +48,13 @@ describe('test space-around-number', () => {
     ['123𠀀', '123 𠀀'],
   ])('supports supplementary Han characters: "%s" → "%s"', (input, expectedFix) => {
     const { fixedResult, lintResult } = fixer(input);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(lintResult.reports.length).toStrictEqual(1);
     expect(fixedResult?.result).toStrictEqual(expectedFix);
   });
 
   test('supports supplementary Han around percentages', () => {
     const { fixedResult, lintResult } = fixer('𠀀100%𠀀');
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(lintResult.reports.length).toStrictEqual(2);
     expect(fixedResult?.result).toStrictEqual('𠀀 100% 𠀀');
   });
 });

@@ -24,6 +24,6 @@ describe('test no-empty-blockquote', () => {
 - wrong
 
 `);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(1);
+    expect(lintResult.reports.length).toStrictEqual(1);
   });
 });

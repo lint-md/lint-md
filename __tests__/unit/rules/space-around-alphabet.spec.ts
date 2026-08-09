@@ -10,7 +10,7 @@ describe('test space-around-alphabet', () => {
   test('fix applied', () => {
     const content = '（有时称为 m\\-dots 或 m子域名）就是 - 托管在 website子域名中的的移动特定版本，通常是 `m` 子域名。';
     const { fixedResult, lintResult } = fixer(content);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(2);
+    expect(lintResult.reports.length).toStrictEqual(2);
     expect(fixedResult?.result).toStrictEqual('（有时称为 m\\-dots 或 m 子域名）就是 - 托管在 website 子域名中的的移动特定版本，通常是 `m` 子域名。');
   });
 
@@ -21,7 +21,7 @@ describe('test space-around-alphabet', () => {
     ['English𠀀', 1, 'English 𠀀'],
   ])('%s → %i report, fix to "%s"', (input, expectedReports, expectedFix) => {
     const { lintResult, fixedResult } = fixer(input);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(expectedReports);
+    expect(lintResult.reports.length).toStrictEqual(expectedReports);
     expect(fixedResult?.result).toStrictEqual(expectedFix);
   });
 
@@ -33,7 +33,7 @@ describe('test space-around-alphabet', () => {
     ['中文😀abc'],
   ])('"%s" does not report (already spaced or punctuation in between)', (input) => {
     const { lintResult } = fixer(input);
-    expect(lintResult.ruleManager.getReportData().length).toStrictEqual(0);
+    expect(lintResult.reports.length).toStrictEqual(0);
   });
 
   test.each([
@@ -64,12 +64,12 @@ describe('test space-around-alphabet', () => {
 
       const first = combinedFixer(input);
       expect(first.fixedResult?.result).toBe(expected);
-      expect(first.lintResult.ruleManager.getReportData().map(report => report.name))
+      expect(first.lintResult.reports.map(report => report.name))
         .toEqual(expect.arrayContaining([
           'space-around-alphabet',
           'space-around-number'
         ]));
-      expect(combinedFixer(first.fixedResult!.result).lintResult.ruleManager.getReportData())
+      expect(combinedFixer(first.fixedResult!.result).lintResult.reports)
         .toHaveLength(0);
     }
   );

@@ -1,11 +1,29 @@
 import { parseMdWithSourceMap } from '@lint-md/parser';
-import type { LintMdRuleWithOptions, RunLintOptions } from '../types';
+import type {
+  LintMdRuleWithOptions,
+  ReportOption,
+  RuleExecutionError,
+  RuleFixConfig,
+  RunLintOptions
+} from '../types';
 import { createEmitter } from '../utils/emitter';
 import { createTraverser } from '../utils/traverser';
 import { createRuleManager } from '../utils/rule-manager';
 import { createRuleErrorCollector } from '../utils/rule-execution-errors';
 import { createLintSourceCode } from '../utils/source-code';
 import { isSourceMapError } from '../utils/source-code-errors';
+
+interface RunLintRoundOptions extends RunLintOptions {
+  /** Run reported fix callbacks before this function returns. */
+  computeFixes?: boolean
+}
+
+export interface RunLintResult {
+  reports: ReportOption[]
+  fixes: RuleFixConfig[]
+  executionErrors: RuleExecutionError[]
+  fallbackHits: number
+}
 
 /**
  * 基于各种 rules 对 Markdown 文本进行校验
@@ -23,12 +41,12 @@ import { isSourceMapError } from '../utils/source-code-errors';
 export const runLint = (
   markdown: string,
   allRuleConfigs: LintMdRuleWithOptions[],
-  options: RunLintOptions = {}
-) => {
+  options: RunLintRoundOptions = {}
+): RunLintResult => {
   const policy = options.ruleErrorPolicy ?? 'collect';
   const round = options.round ?? 0;
 
-  // 先创建收集器，再创建 ruleManager：getAllFixes() 内的 fix() 阶段错误才能接入收集器。
+  // The collector must exist before fix callbacks run.
   const collector = createRuleErrorCollector(policy, round);
 
   // Parser owns normalized-text -> original-Markdown mapping.
@@ -37,7 +55,7 @@ export const runLint = (
 
   const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
 
-  // 全局规则管理器（传入 collector，使 fix 阶段捕获生效）
+  // The manager holds mutable state only during this execution round.
   const ruleManager = createRuleManager(markdown, collector);
 
   const emitter = createEmitter();
@@ -95,8 +113,14 @@ export const runLint = (
   // 递归地遍历 ast；selector 失败已在 listener 内逐条处理，此处不再吞错。
   traverser.traverse(ast, null);
 
+  const fixes = options.computeFixes
+    ? ruleManager.getAllFixes()
+    : [];
+
   return {
-    ruleManager,
-    executionErrors: collector.getErrors()
+    reports: [...ruleManager.getReportData()],
+    fixes,
+    executionErrors: collector.getErrors(),
+    fallbackHits: ruleManager.getFallbackHits()
   };
 };

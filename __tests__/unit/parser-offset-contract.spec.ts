@@ -1,5 +1,5 @@
 import { parseMd } from '@lint-md/parser';
-import { isValidOffset } from '../../src/utils/rule-manager';
+import { isValidOffset } from '../../src/utils/source-code';
 
 interface OffsetContractIssue {
   type: string

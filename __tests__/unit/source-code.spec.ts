@@ -263,4 +263,58 @@ describe('LintSourceCode', () => {
       expect(() => sc.getLocation([0, 100])).toThrow(InvalidRuleRangeError);
     });
   });
+
+  describe('report locations', () => {
+    const text = 'first\r\nsecond\rthird\nfourth TARGET tail';
+    const sc = createLintSourceCode({
+      text,
+      ast: {} as any,
+      sourceMap: {} as any
+    });
+
+    test.each([
+      ['CRLF', { line: 2, column: 1 }, text.indexOf('second')],
+      ['CR', { line: 3, column: 1 }, text.indexOf('third')],
+      ['LF', { line: 4, column: 8 }, text.indexOf('TARGET')]
+    ])('getOffset resolves a position after %s', (_label, position, expected) => {
+      expect(sc.getOffset(position)).toBe(expected);
+    });
+
+    test.each([NaN, Infinity, -1])('getOffset treats offset %s as missing', (offset) => {
+      expect(sc.getOffset({ line: 4, column: 8, offset })).toBe(text.indexOf('TARGET'));
+    });
+
+    test('getOffset keeps a valid rule offset', () => {
+      expect(sc.getOffset({ line: 99, column: 99, offset: 2 })).toBe(2);
+    });
+
+    test('normalizeReportLocation preserves a legacy loc and resolves its range', () => {
+      const loc = {
+        start: { line: 4, column: 8 },
+        end: { line: 4, column: 14 }
+      };
+
+      expect(sc.normalizeReportLocation({ loc })).toEqual({
+        loc,
+        range: [text.indexOf('TARGET'), text.indexOf('TARGET') + 'TARGET'.length],
+        usedFallback: true
+      });
+    });
+
+    test('normalizeReportLocation converts a range without fallback', () => {
+      const start = text.indexOf('TARGET');
+      const range = [start, start + 'TARGET'.length] as const;
+
+      expect(sc.normalizeReportLocation({ range })).toEqual({
+        loc: sc.getLocation(range),
+        range,
+        usedFallback: false
+      });
+    });
+
+    test('getContext returns the requested source window', () => {
+      const start = text.indexOf('TARGET');
+      expect(sc.getContext([start, start + 'TARGET'.length])).toBe('urth TARGET tail');
+    });
+  });
 });

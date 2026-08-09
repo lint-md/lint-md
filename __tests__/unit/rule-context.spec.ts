@@ -1,5 +1,6 @@
-import type { PositionedMarkdownRoot } from '../../src/types';
+import { parseMdWithSourceMap } from '@lint-md/parser';
 import { createRuleManager } from '../../src/utils/rule-manager';
+import { createLintSourceCode } from '../../src/utils/source-code';
 
 const fakeRule = {
   rule: {
@@ -9,25 +10,21 @@ const fakeRule = {
   }
 };
 
-const fakeAst = { type: 'root', children: [] } as unknown as PositionedMarkdownRoot;
-
-const fakeSourceCode = {
-  text: '',
-  ast: fakeAst,
-  getRaw: () => '',
-  getTextRange: () => [0, 0] as [number, number]
-} as any;
+const createManager = (markdown = '') => {
+  const { ast, sourceMap } = parseMdWithSourceMap(markdown);
+  return createRuleManager(createLintSourceCode({ text: markdown, ast, sourceMap }));
+};
 
 describe('test rule context', () => {
   test('test rule context creation', () => {
-    const ctx = createRuleManager('');
+    const ctx = createManager();
     expect(ctx).toBeTruthy();
-    expect(typeof ctx.createRuleContext(fakeRule as any, { ast: fakeAst, markdown: '', sourceCode: fakeSourceCode }).report).toStrictEqual('function');
+    expect(typeof ctx.createRuleContext(fakeRule as any).report).toStrictEqual('function');
   });
 
   test('test rule context report() call', () => {
-    const manager = createRuleManager('');
-    manager.createRuleContext(fakeRule as any, { ast: fakeAst, markdown: '', sourceCode: fakeSourceCode }).report({
+    const manager = createManager();
+    manager.createRuleContext(fakeRule as any).report({
       message: 'message 1',
       loc: {
         start: {
@@ -40,7 +37,7 @@ describe('test rule context', () => {
         }
       }
     });
-    manager.createRuleContext(fakeRule as any, { ast: fakeAst, markdown: '', sourceCode: fakeSourceCode }).report({
+    manager.createRuleContext(fakeRule as any).report({
       message: 'message 2',
       loc: {
         start: {

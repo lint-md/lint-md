@@ -2,7 +2,7 @@ import type {
   LintMdRule,
   PositionedMarkdownNode
 } from '../types';
-import { createTraverser } from '../utils/traverser';
+import { traverseMarkdown } from '../utils/traverser';
 
 type PositionedLinkLikeNode = Extract<
   PositionedMarkdownNode,
@@ -42,14 +42,14 @@ const spaceAroundLink: LintMdRule = {
     >();
     const reportedOffsets = new Set<number>();
 
-    createTraverser({
-      onEnter(node, parent) {
+    traverseMarkdown(context.ast, {
+      enter(node, parent) {
         parents.set(node, parent);
         if (node.type === 'link' || node.type === 'linkReference') {
           links.push(node);
         }
       }
-    }).traverse(context.ast, null);
+    });
 
     const getBoundaryNode = (
       node: PositionedMarkdownNode,

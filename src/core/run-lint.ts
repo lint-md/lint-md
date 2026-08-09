@@ -8,7 +8,7 @@ import type {
   RunLintOptions
 } from '../types';
 import { RULE_SEVERITY } from '../types';
-import { createTraverser } from '../utils/traverser';
+import { traverseMarkdown } from '../utils/traverser';
 import { createRuleManager } from '../utils/rule-manager';
 import { createRuleErrorCollector } from '../utils/rule-execution-errors';
 import { createLintSourceCode } from '../utils/source-code';
@@ -115,8 +115,8 @@ export const runLint = (
     }
   }
 
-  const traverser = createTraverser({
-    onEnter: (node) => {
+  traverseMarkdown(ast, {
+    enter: (node) => {
       const registered = selectorsByType.get(node.type);
       if (!registered) {
         return;
@@ -136,9 +136,6 @@ export const runLint = (
       }
     }
   });
-
-  // 递归地遍历 ast；selector 失败已在分发循环内逐条处理，此处不再吞错。
-  traverser.traverse(ast, null);
 
   const fixes = options.computeFixes
     ? ruleManager.getAllFixes()

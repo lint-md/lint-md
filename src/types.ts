@@ -158,12 +158,14 @@ export interface LintMdRule {
 }
 
 /** 节点队列 */
+/** @deprecated This legacy type remains for package root compatibility. */
 export interface NodeQueue {
   node: PositionedMarkdownNode
   isEntering: boolean
 }
 
 /** 遍历器的相关选项 */
+/** @deprecated Internal traversal now uses traverseMarkdown options. */
 export interface TraverserOptions {
   /**
    * 在节点进入时做些什么

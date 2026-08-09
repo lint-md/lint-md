@@ -4,33 +4,61 @@ import { isNode } from './common';
 
 const noop = () => {};
 
-/**
- * 初始化遍历器
- *
- * @date 2021-12-12 22:04:25
- */
-export const createTraverser = (options: TraverserOptions) => {
-  const { onLeave = noop, onEnter = noop } = options;
+interface TraverseMarkdownOptions {
+  enter?: (node: PositionedMarkdownNode, parent: PositionedMarkdownNode | null) => void
+  leave?: (node: PositionedMarkdownNode, parent: PositionedMarkdownNode | null) => void
+}
 
-  const traverse = (node: PositionedMarkdownNode | null, parent: PositionedMarkdownNode | null) => {
-    if (!isNode(node)) {
+const traverseNode = (
+  node: PositionedMarkdownNode | null,
+  parent: PositionedMarkdownNode | null,
+  options: TraverseMarkdownOptions
+): void => {
+  const { enter = noop, leave = noop } = options;
+
+  const visit = (
+    current: PositionedMarkdownNode | null,
+    currentParent: PositionedMarkdownNode | null
+  ): void => {
+    if (!isNode(current)) {
       return;
     }
 
-    onEnter(node, parent);
+    enter(current, currentParent);
 
-    const children = 'children' in node && Array.isArray((node as { children?: unknown }).children)
-      ? (node as { children: PositionedMarkdownNode[] }).children
+    const children = 'children' in current
+      && Array.isArray((current as { children?: unknown }).children)
+      ? (current as { children: PositionedMarkdownNode[] }).children
       : [];
 
     for (const child of children) {
-      traverse(child, node);
+      visit(child, current);
     }
 
-    onLeave(node, parent);
+    leave(current, currentParent);
+  };
+
+  visit(node, parent);
+};
+
+export const traverseMarkdown = (
+  node: PositionedMarkdownNode | null,
+  options: TraverseMarkdownOptions
+): void => {
+  traverseNode(node, null, options);
+};
+
+/** @deprecated Use traverseMarkdown. */
+export const createTraverser = (options: TraverserOptions) => {
+  const traversalOptions: TraverseMarkdownOptions = {
+    enter: options.onEnter,
+    leave: options.onLeave
   };
 
   return {
-    traverse
+    traverse: (
+      node: PositionedMarkdownNode | null,
+      parent: PositionedMarkdownNode | null
+    ): void => traverseNode(node, parent, traversalOptions)
   };
 };

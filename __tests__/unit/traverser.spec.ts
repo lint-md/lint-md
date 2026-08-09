@@ -1,6 +1,9 @@
 import { parseMd } from '@lint-md/parser';
 import type { PositionedMarkdownNode } from '../../src/types';
-import { createTraverser } from '../../src/utils/traverser';
+import {
+  createTraverser,
+  traverseMarkdown
+} from '../../src/utils/traverser';
 
 describe('test node traverser', () => {
   let nodeQueue: PositionedMarkdownNode[] = [];
@@ -22,15 +25,14 @@ console.log('!');
     parentNodeQueue = [];
   });
 
-  test('test onLeave in options should be called correctly', () => {
-    const traverser = createTraverser({
-      onLeave: (node, parent) => {
+  test('test leave in options should be called correctly', () => {
+    traverseMarkdown(ast, {
+      leave: (node, parent) => {
         nodeQueue.push(node);
         parentNodeQueue.push(parent);
       }
     });
 
-    traverser.traverse(ast, null);
     expect(nodeQueue.map(item => item.type)).toStrictEqual([
       'text',
       'heading',
@@ -59,15 +61,14 @@ console.log('!');
     ]);
   });
 
-  test('test onEnter in options should be called correctly', () => {
-    const traverser = createTraverser({
-      onEnter: (node, parent) => {
+  test('test enter in options should be called correctly', () => {
+    traverseMarkdown(ast, {
+      enter: (node, parent) => {
         nodeQueue.push(node);
         parentNodeQueue.push(parent);
       }
     });
 
-    traverser.traverse(ast, null);
     expect(nodeQueue.map(item => item.type)).toStrictEqual([
       'root',
       'heading',
@@ -97,15 +98,28 @@ console.log('!');
   });
 
   test('test invalid node', () => {
-    const traverser = createTraverser({
-      onLeave: (node, parent) => {
+    traverseMarkdown(null, {
+      leave: (node, parent) => {
         nodeQueue.push(node);
         parentNodeQueue.push(parent);
       }
     });
 
-    traverser.traverse(null, null);
     expect(nodeQueue.length).toStrictEqual(0);
     expect(parentNodeQueue.length).toStrictEqual(0);
+  });
+
+  test('test legacy traverser keeps the explicit parent', () => {
+    const customParent = parseMd('# Parent');
+    const traverser = createTraverser({
+      onEnter: (node, parent) => {
+        nodeQueue.push(node);
+        parentNodeQueue.push(parent);
+      }
+    });
+
+    traverser.traverse(ast, customParent);
+    expect(nodeQueue[0].type).toStrictEqual('root');
+    expect(parentNodeQueue[0]).toBe(customParent);
   });
 });

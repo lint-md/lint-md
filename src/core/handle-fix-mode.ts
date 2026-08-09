@@ -1,107 +1,121 @@
-import type { FixMetrics, LintMdRuleWithOptions, NotAppliedFix } from '../types';
+import type {
+  FixedResult,
+  LintMdRuleWithOptions,
+  NotAppliedFix,
+  RuleExecutionError
+} from '../types';
 import { FixConvergence } from '../types';
 import { MAX_LINT_AND_FIX_CALL_TIMES } from '../common/constant';
 import { applyFix } from '../utils/apply-fix';
+import { now } from '../utils/time';
+import type { RunLintResult } from './run-lint';
 import { runLint } from './run-lint';
 
-export const handleFixMode = (
+interface RunFixLoopOptions {
+  runRound: (
+    markdown: string,
+    rules: LintMdRuleWithOptions[],
+    round: number
+  ) => RunLintResult
+  now: () => number
+  maxRounds: number
+}
+
+interface FixLoopResult {
+  lintResult: RunLintResult
+  fixedResult: FixedResult
+  executionErrors: RuleExecutionError[]
+}
+
+export const runFixLoop = (
   markdown: string,
   rules: LintMdRuleWithOptions[],
-  policy: 'collect' | 'strict' = 'collect'
-) => {
-  let lintTimes = 0;
-  let initialLintResult = {} as ReturnType<typeof runLint>;
+  options: RunFixLoopOptions
+): FixLoopResult => {
+  const { runRound, now: readTime, maxRounds } = options;
 
-  // 聚合所有 fix 轮次的规则执行错误（lint-only 恒为 0 轮）；严格模式下任一失败即抛 RuleExecutionFailure。
-  const allExecutionErrors: ReturnType<typeof runLint>['executionErrors'] = [];
+  if (!Number.isInteger(maxRounds) || maxRounds < 1) {
+    throw new TypeError('[lint-md] maxRounds must be a positive integer');
+  }
 
+  let rounds = 0;
+  let initialLintResult!: RunLintResult;
+  const executionErrors: RuleExecutionError[] = [];
   let current = markdown;
   let lastNotAppliedFixes: NotAppliedFix[] = [];
-
-  // 记录已处理过的文本状态，用于检测振荡循环（如 A -> B -> A）。
   const seenTexts = new Set<string>();
   let convergence: FixConvergence | undefined;
-
-  // 性能基线：记录每一轮完整 wall time（parse + AST 遍历 + 规则执行 + applyFix）。
   const perRound: number[] = [];
-  const startAll = performance.now();
+  const startAll = readTime();
 
-  while (lintTimes < MAX_LINT_AND_FIX_CALL_TIMES) {
-    const roundStart = performance.now();
-
-    // 记录本轮输入文本，供后续判断是否回到历史状态。
+  while (rounds < maxRounds) {
+    const roundStart = readTime();
     seenTexts.add(current);
 
-    const lintResult = runLint(current, rules, {
-      ruleErrorPolicy: policy,
-      round: lintTimes,
-      computeFixes: true
-    });
+    const lintResult = runRound(current, rules, rounds);
 
-    if (lintTimes === 0) {
+    if (rounds === 0) {
       initialLintResult = lintResult;
     }
 
-    lintTimes++;
+    rounds++;
+    executionErrors.push(...lintResult.executionErrors);
 
-    const { fixes } = lintResult;
-
-    // The round result includes create, selector, and fix errors.
-    allExecutionErrors.push(...lintResult.executionErrors);
-
-    // 无 fix 可应用 => 正常收敛。
-    if (!fixes.length) {
-      perRound.push(performance.now() - roundStart);
+    if (!lintResult.fixes.length) {
       convergence = FixConvergence.STABLE;
-      break;
+    }
+    else {
+      const nextFixedResult = applyFix(current, [...lintResult.fixes]);
+      lastNotAppliedFixes = nextFixedResult.notAppliedFixes;
+
+      if (nextFixedResult.result === current) {
+        convergence = FixConvergence.STABLE;
+      }
+      else {
+        current = nextFixedResult.result;
+
+        if (seenTexts.has(current)) {
+          convergence = FixConvergence.CYCLE_DETECTED;
+        }
+      }
     }
 
-    const nextFixedResult = applyFix(current, fixes);
+    perRound.push(readTime() - roundStart);
 
-    // 仅保留最后一轮 applyFix 返回的 notAppliedFixes
-    // 不跨轮累积：不同轮次的 fix range 基于各自输入文本，跨轮混用会导致 range 失效
-    lastNotAppliedFixes = nextFixedResult.notAppliedFixes;
-
-    // 文本不再变化 => 正常收敛（即便该轮存在冲突未应用的 fix）。
-    if (nextFixedResult.result === current) {
-      perRound.push(performance.now() - roundStart);
-      convergence = FixConvergence.STABLE;
+    if (convergence) {
       break;
     }
-
-    current = nextFixedResult.result;
-
-    // 文本回到了某个已处理过的状态 => 检测到循环，提前停止。
-    // 放在文本不变判断之后，自替换规则仍归类为 STABLE。
-    if (seenTexts.has(current)) {
-      perRound.push(performance.now() - roundStart);
-      convergence = FixConvergence.CYCLE_DETECTED;
-      break;
-    }
-
-    perRound.push(performance.now() - roundStart);
   }
 
-  // 走到上限仍未收敛 => 被截断。
-  if (!convergence) {
-    convergence = FixConvergence.MAX_ROUNDS;
-  }
-
-  const fixedResult = {
+  const fixedResult: FixedResult = {
     result: current,
     notAppliedFixes: lastNotAppliedFixes,
-    convergence,
-    rounds: lintTimes,
+    convergence: convergence ?? FixConvergence.MAX_ROUNDS,
+    rounds,
     metrics: {
-      rounds: lintTimes,
-      wallTime: performance.now() - startAll,
+      rounds,
+      wallTime: readTime() - startAll,
       perRound
-    } as FixMetrics
+    }
   };
 
   return {
     lintResult: initialLintResult,
     fixedResult,
-    executionErrors: allExecutionErrors
+    executionErrors
   };
 };
+
+export const handleFixMode = (
+  markdown: string,
+  rules: LintMdRuleWithOptions[],
+  policy: 'collect' | 'strict' = 'collect'
+): FixLoopResult => runFixLoop(markdown, rules, {
+  runRound: (current, currentRules, round) => runLint(current, currentRules, {
+    ruleErrorPolicy: policy,
+    round,
+    computeFixes: true
+  }),
+  now,
+  maxRounds: MAX_LINT_AND_FIX_CALL_TIMES
+});

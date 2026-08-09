@@ -1,6 +1,6 @@
 import { runLint } from '../../src/core/run-lint';
 import type { LintMdRule, PositionedTextNode, ReportOption } from '../../src/types';
-import { isValidOffset } from '../../src/utils/rule-manager';
+import { isValidOffset } from '../../src/utils/source-code';
 import noLongCode from '../../src/rules/no-long-code';
 import noHalfWidthPunctuation from '../../src/rules/no-half-width-punctuation';
 import useStandardEllipsis from '../../src/rules/use-standard-ellipsis';
@@ -104,6 +104,8 @@ describe('rule-manager offset contract: resolveOffset fallback slices correctly 
 
     expect(fallbackHits).toBe(1);
     expect(data).toHaveLength(1);
+    expect(data[0].loc.start.offset).toBeUndefined();
+    expect(data[0].loc.end.offset).toBeUndefined();
     // 兜底切片应只截取报告位置附近内容（整篇文档的子串），而非整篇文档。
     expect(data[0].content.length).toBeGreaterThan(0);
     expect(data[0].content.length).toBeLessThan(md.length);

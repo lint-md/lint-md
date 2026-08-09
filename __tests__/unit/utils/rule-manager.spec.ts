@@ -1,19 +1,19 @@
+import { parseMdWithSourceMap } from '@lint-md/parser';
 import { createRuleManager } from '../../../src/utils/rule-manager';
+import { createLintSourceCode } from '../../../src/utils/source-code';
 
-const fakeSourceCode = {
-  text: '',
-  ast: {} as any,
-  getRaw: () => '',
-  getTextRange: () => [0, 0] as [number, number]
-} as any;
+const createManager = (markdown: string) => {
+  const { ast, sourceMap } = parseMdWithSourceMap(markdown);
+  const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
+  return createRuleManager(sourceCode);
+};
 
 describe('test rule-manager report content fallback', () => {
   test('report with offset slices only the reported range', () => {
     const markdown = 'line1\nline2\nline3';
-    const manager = createRuleManager(markdown);
+    const manager = createManager(markdown);
     const context = manager.createRuleContext(
-      { rule: { meta: { name: 'demo' }, create: () => ({}) } as any, options: {} },
-      { ast: {} as any, markdown, sourceCode: fakeSourceCode }
+      { rule: { meta: { name: 'demo' }, create: () => ({}) } as any, options: {} }
     );
 
     context.report({
@@ -32,10 +32,9 @@ describe('test rule-manager report content fallback', () => {
 
   test('report without offset falls back to line/column, not whole doc', () => {
     const markdown = 'aaaa\nbbbb\ncccc\ndddd';
-    const manager = createRuleManager(markdown);
+    const manager = createManager(markdown);
     const context = manager.createRuleContext(
-      { rule: { meta: { name: 'demo' }, create: () => ({}) } as any, options: {} },
-      { ast: {} as any, markdown, sourceCode: fakeSourceCode }
+      { rule: { meta: { name: 'demo' }, create: () => ({}) } as any, options: {} }
     );
 
     context.report({

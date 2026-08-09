@@ -73,7 +73,7 @@ export const runLint = (
   );
 
   // The manager holds mutable state only during this execution round.
-  const ruleManager = createRuleManager(markdown, collector);
+  const ruleManager = createRuleManager(sourceCode, collector);
 
   const emitter = createEmitter();
 
@@ -89,10 +89,7 @@ export const runLint = (
   // 遍历所有的 rules，并拿到它们的选择器，为每一个选择器订阅相关事件。
   // 注册时逐个包装 selector：同一节点上某坏规则抛错不会阻断其它规则，且能准确记录 ruleName。
   for (const { rule, options: ruleOptions } of allRuleConfigs) {
-    const ruleContext = ruleManager.createRuleContext(
-      { rule, options: ruleOptions },
-      { ast, markdown, sourceCode }
-    );
+    const ruleContext = ruleManager.createRuleContext({ rule, options: ruleOptions });
 
     // create 阶段也可能抛错，需在调用 create 处捕获并归入规则执行错误。
     let ruleSelectors: Record<string, (node: any) => void>;

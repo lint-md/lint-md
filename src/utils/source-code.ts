@@ -4,7 +4,7 @@ import type {
   MarkdownTextNode as ParserMarkdownTextNode
 } from '@lint-md/parser';
 import { SourceMapUnavailableError } from '@lint-md/parser';
-import type { LintSourceCode, MarkdownPosition, PositionedInlineCodeNode, PositionedMarkdownNode, PositionedMarkdownRoot, PositionedTextNode, TextRange } from '../types';
+import type { LintSourceCode, MarkdownPosition, PositionedInlineCodeNode, PositionedMarkdownNode, PositionedMarkdownRoot, PositionedTextNode, ReportOption, ReportPosition, TextRange } from '../types';
 import { InvalidRuleRangeError, isSourceMapError } from './source-code-errors';
 
 interface SourceCodeOptions {
@@ -13,12 +13,105 @@ interface SourceCodeOptions {
   sourceMap: MarkdownSourceMap
 }
 
+type ReportLocationInput =
+  | { loc: ReportOption['loc'] }
+  | { range: TextRange };
+
+interface NormalizedReportLocation {
+  loc: ReportOption['loc']
+  range: TextRange
+  usedFallback: boolean
+}
+
+/** Core report helpers that use the current document source. */
+export interface ReportSourceCode extends LintSourceCode {
+  getOffset(position: ReportPosition): number
+  normalizeReportLocation(input: ReportLocationInput): NormalizedReportLocation
+  getContext(range: TextRange, padding?: number): string
+}
+
+/** A usable offset is a finite, non-negative integer. */
+export const isValidOffset = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isInteger(value) && value >= 0;
+
 export const createLintSourceCode = ({
   text,
   ast,
   sourceMap
-}: SourceCodeOptions): LintSourceCode => {
+}: SourceCodeOptions): ReportSourceCode => {
   const lineStarts = buildLineStarts(text);
+
+  const getPosition = (offset: number): MarkdownPosition => {
+    if (!Number.isInteger(offset) || offset < 0 || offset > text.length) {
+      throw new InvalidRuleRangeError(
+        `getPosition: offset must be an integer in [0, ${text.length}], got ${offset}`
+      );
+    }
+    return offsetToPosition(lineStarts, offset);
+  };
+
+  const getLocation = (range: TextRange): { start: MarkdownPosition; end: MarkdownPosition } => {
+    const [start, end] = range;
+    if (!Number.isInteger(start) || !Number.isInteger(end)
+      || start < 0 || start > end || end > text.length) {
+      throw new InvalidRuleRangeError(
+        `getLocation: range must satisfy 0 <= start <= end <= ${text.length}, got [${start}, ${end}]`
+      );
+    }
+    return {
+      start: offsetToPosition(lineStarts, start),
+      end: offsetToPosition(lineStarts, end)
+    };
+  };
+
+  const getOffset = (position: ReportPosition): number => {
+    if (isValidOffset(position.offset)) {
+      return position.offset;
+    }
+
+    let lineStart = 0;
+    if (position.line > lineStarts.length) {
+      lineStart = text.length;
+    }
+    else if (position.line > 1) {
+      lineStart = lineStarts[Math.ceil(position.line) - 1] ?? text.length;
+    }
+
+    return Math.min(
+      text.length,
+      lineStart + Math.max(0, position.column - 1)
+    );
+  };
+
+  const normalizeReportLocation = (
+    input: ReportLocationInput
+  ): NormalizedReportLocation => {
+    if ('range' in input) {
+      return {
+        loc: getLocation(input.range),
+        range: input.range,
+        usedFallback: false
+      };
+    }
+
+    const usedFallback
+      = !isValidOffset(input.loc.start.offset)
+        || !isValidOffset(input.loc.end.offset);
+
+    return {
+      loc: input.loc,
+      range: [getOffset(input.loc.start), getOffset(input.loc.end)],
+      usedFallback
+    };
+  };
+
+  const getContext = (range: TextRange, padding = 5): string => {
+    const [start, end] = range;
+    return text.slice(
+      Math.max(0, start - padding),
+      Math.min(text.length, end + padding)
+    );
+  };
 
   return {
     text,
@@ -63,28 +156,11 @@ export const createLintSourceCode = ({
       }
     },
 
-    getPosition(offset: number): MarkdownPosition {
-      if (!Number.isInteger(offset) || offset < 0 || offset > text.length) {
-        throw new InvalidRuleRangeError(
-          `getPosition: offset must be an integer in [0, ${text.length}], got ${offset}`
-        );
-      }
-      return offsetToPosition(lineStarts, offset);
-    },
-
-    getLocation(range: TextRange): { start: MarkdownPosition; end: MarkdownPosition } {
-      const [start, end] = range;
-      if (!Number.isInteger(start) || !Number.isInteger(end)
-        || start < 0 || start > end || end > text.length) {
-        throw new InvalidRuleRangeError(
-          `getLocation: range must satisfy 0 <= start <= end <= ${text.length}, got [${start}, ${end}]`
-        );
-      }
-      return {
-        start: offsetToPosition(lineStarts, start),
-        end: offsetToPosition(lineStarts, end)
-      };
-    }
+    getPosition,
+    getLocation,
+    getOffset,
+    normalizeReportLocation,
+    getContext
   };
 };
 

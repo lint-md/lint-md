@@ -82,7 +82,7 @@ export interface ReportOption {
   /**
    * 诊断位置。`offset` 字段对规则作者可选：
    * - 来自节点 `node.position`（如 `parseMd` 输出）的报告，offset 必填
-   * - 规则侧合成的位置（如多行超长代码的某一行）可省略，由 rule-manager 兜底
+   * - Rules can omit offset for synthetic positions. SourceCode resolves it.
    */
   loc: {
     start: ReportPosition

@@ -67,7 +67,7 @@ describe('lintMarkdown() rule alias & config contract (issue #177)', () => {
       'alias-key': [mockRule, RULE_SEVERITY.ERROR, {}]
     }, false);
 
-    // 配置键 + meta.name 别名指向同一记录，应只运行一次，不翻倍。
+    // The normalized registry keeps one record for each meta.name, so the rule runs once.
     expect(res.lintResult).toHaveLength(1);
   });
 
@@ -75,11 +75,22 @@ describe('lintMarkdown() rule alias & config contract (issue #177)', () => {
     const ruleA = makeMockRule({ name: 'shared-meta-name', withFix: false });
     const ruleB = makeMockRule({ name: 'shared-meta-name', withFix: false });
 
-    expect(() => lintMarkdown('text only', {
-      ...disableAllInternal(),
-      'key-a': [ruleA, RULE_SEVERITY.ERROR, {}],
-      'key-b': [ruleB, RULE_SEVERITY.ERROR, {}]
-    }, false)).toThrow(/别名冲突/);
+    let thrown: unknown;
+    try {
+      lintMarkdown('text only', {
+        ...disableAllInternal(),
+        'key-a': [ruleA, RULE_SEVERITY.ERROR, {}],
+        'key-b': [ruleB, RULE_SEVERITY.ERROR, {}]
+      }, false);
+    }
+    catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toBeInstanceOf(TypeError);
+    expect((thrown as TypeError).message).toBe(
+      '[lint-md] 规则别名冲突：shared-meta-name 已被另一规则占用'
+    );
   });
 
   test('5. unknown rule with illegal (non-array) config throws instead of silent ignore', () => {

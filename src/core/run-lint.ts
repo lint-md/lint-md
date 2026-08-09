@@ -6,6 +6,7 @@ import type {
   RuleFixConfig,
   RunLintOptions
 } from '../types';
+import { RULE_SEVERITY } from '../types';
 import { createEmitter } from '../utils/emitter';
 import { createTraverser } from '../utils/traverser';
 import { createRuleManager } from '../utils/rule-manager';
@@ -18,8 +19,17 @@ interface RunLintRoundOptions extends RunLintOptions {
   computeFixes?: boolean
 }
 
+interface RuleExecutionConfig extends LintMdRuleWithOptions {
+  readonly id?: string
+  readonly severity?: number
+}
+
+export interface RunLintReport extends ReportOption {
+  severity: number
+}
+
 export interface RunLintResult {
-  reports: ReportOption[]
+  reports: RunLintReport[]
   fixes: RuleFixConfig[]
   executionErrors: RuleExecutionError[]
   fallbackHits: number
@@ -40,7 +50,7 @@ export interface RunLintResult {
  */
 export const runLint = (
   markdown: string,
-  allRuleConfigs: LintMdRuleWithOptions[],
+  allRuleConfigs: RuleExecutionConfig[],
   options: RunLintRoundOptions = {}
 ): RunLintResult => {
   const policy = options.ruleErrorPolicy ?? 'collect';
@@ -54,6 +64,13 @@ export const runLint = (
   const { ast, sourceMap } = parseMdWithSourceMap(markdown);
 
   const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
+
+  const severityById = new Map(
+    allRuleConfigs.map(({ id, rule, severity }) => [
+      id ?? rule.meta.name,
+      severity ?? RULE_SEVERITY.ERROR
+    ])
+  );
 
   // The manager holds mutable state only during this execution round.
   const ruleManager = createRuleManager(markdown, collector);
@@ -118,7 +135,10 @@ export const runLint = (
     : [];
 
   return {
-    reports: [...ruleManager.getReportData()],
+    reports: ruleManager.getReportData().map(report => ({
+      ...report,
+      severity: severityById.get(report.name) ?? RULE_SEVERITY.ERROR
+    })),
     fixes,
     executionErrors: collector.getErrors(),
     fallbackHits: ruleManager.getFallbackHits()

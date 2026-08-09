@@ -1,4 +1,4 @@
-import { overrideDefaultRules } from '../../../src/utils/override-default-rules';
+import { normalizeRuleRegistry } from '../../../src/utils/normalize-rule-registry';
 import { type LintMdRule, RULE_SEVERITY } from '../../../src/types';
 
 const createMockRule = (name: string): LintMdRule => ({
@@ -6,20 +6,24 @@ const createMockRule = (name: string): LintMdRule => ({
   create: () => ({})
 });
 
-describe('overrideDefaultRules', () => {
+describe('normalizeRuleRegistry', () => {
   const defaultRules: Record<string, LintMdRule> = {
     'rule-a': createMockRule('rule-a'),
     'rule-b': createMockRule('rule-b')
   };
 
   it('should register all default rules with ERROR severity and empty options', () => {
-    const result = overrideDefaultRules(defaultRules, {});
-    expect(result['rule-a']).toEqual({
+    const result = normalizeRuleRegistry(defaultRules, {});
+    expect(result.get('rule-a')).toEqual({
+      id: 'rule-a',
+      configKey: 'rule-a',
       rule: defaultRules['rule-a'],
       options: {},
       severity: RULE_SEVERITY.ERROR
     });
-    expect(result['rule-b']).toEqual({
+    expect(result.get('rule-b')).toEqual({
+      id: 'rule-b',
+      configKey: 'rule-b',
       rule: defaultRules['rule-b'],
       options: {},
       severity: RULE_SEVERITY.ERROR
@@ -27,45 +31,45 @@ describe('overrideDefaultRules', () => {
   });
 
   it('should override severity with number config', () => {
-    const result = overrideDefaultRules(defaultRules, {
+    const result = normalizeRuleRegistry(defaultRules, {
       'rule-a': RULE_SEVERITY.WARN
     });
-    expect(result['rule-a'].severity).toBe(RULE_SEVERITY.WARN);
-    expect(result['rule-a'].options).toEqual({});
+    expect(result.get('rule-a')?.severity).toBe(RULE_SEVERITY.WARN);
+    expect(result.get('rule-a')?.options).toEqual({});
   });
 
   it('should use configured default severities', () => {
-    const result = overrideDefaultRules(
+    const result = normalizeRuleRegistry(
       defaultRules,
       {},
       { 'rule-b': RULE_SEVERITY.OFF }
     );
 
-    expect(result['rule-a'].severity).toBe(RULE_SEVERITY.ERROR);
-    expect(result['rule-b'].severity).toBe(RULE_SEVERITY.OFF);
+    expect(result.get('rule-a')?.severity).toBe(RULE_SEVERITY.ERROR);
+    expect(result.get('rule-b')?.severity).toBe(RULE_SEVERITY.OFF);
   });
 
   it('should let user config override a configured default severity', () => {
-    const result = overrideDefaultRules(
+    const result = normalizeRuleRegistry(
       defaultRules,
       { 'rule-b': RULE_SEVERITY.WARN },
       { 'rule-b': RULE_SEVERITY.OFF }
     );
 
-    expect(result['rule-b'].severity).toBe(RULE_SEVERITY.WARN);
+    expect(result.get('rule-b')?.severity).toBe(RULE_SEVERITY.WARN);
   });
 
   it('should override severity and options with tuple config', () => {
-    const result = overrideDefaultRules(defaultRules, {
+    const result = normalizeRuleRegistry(defaultRules, {
       'rule-a': [RULE_SEVERITY.OFF, { foo: 'bar' }]
     });
-    expect(result['rule-a'].severity).toBe(RULE_SEVERITY.OFF);
-    expect(result['rule-a'].options).toEqual({ foo: 'bar' });
+    expect(result.get('rule-a')?.severity).toBe(RULE_SEVERITY.OFF);
+    expect(result.get('rule-a')?.options).toEqual({ foo: 'bar' });
   });
 
   it('should throw error for invalid tuple config (length !== 2)', () => {
     expect(() => {
-      overrideDefaultRules(defaultRules, {
+      normalizeRuleRegistry(defaultRules, {
         'rule-a': [RULE_SEVERITY.ERROR] as any
       });
     }).toThrow(/无效的规则配置/);
@@ -73,10 +77,12 @@ describe('overrideDefaultRules', () => {
 
   it('should register third-party rule with tuple config (length === 3)', () => {
     const customRule = createMockRule('custom-rule');
-    const result = overrideDefaultRules(defaultRules, {
+    const result = normalizeRuleRegistry(defaultRules, {
       'custom-rule': [customRule, RULE_SEVERITY.WARN, { custom: true }]
     });
-    expect(result['custom-rule']).toEqual({
+    expect(result.get('custom-rule')).toEqual({
+      id: 'custom-rule',
+      configKey: 'custom-rule',
       rule: customRule,
       severity: RULE_SEVERITY.WARN,
       options: { custom: true }
@@ -86,7 +92,7 @@ describe('overrideDefaultRules', () => {
   it('should throw error for invalid third-party rule config (length !== 3)', () => {
     const customRule = createMockRule('custom-rule');
     expect(() => {
-      overrideDefaultRules(defaultRules, {
+      normalizeRuleRegistry(defaultRules, {
         'custom-rule': [customRule, RULE_SEVERITY.WARN] as any
       });
     }).toThrow(/第三方规则.*配置长度必须为 3/);
@@ -94,53 +100,54 @@ describe('overrideDefaultRules', () => {
 
   it('should throw for unknown rule when config is not an array (issue #177)', () => {
     expect(() => {
-      overrideDefaultRules(defaultRules, {
+      normalizeRuleRegistry(defaultRules, {
         'custom-rule': RULE_SEVERITY.WARN as any
       });
     }).toThrow(/配置格式非法/);
   });
 
-  it('should register third-party rule alias by meta.name (issue #177)', () => {
+  it('should store an aliased third-party rule only by meta.name', () => {
     const customRule = createMockRule('actual-name');
-    const result = overrideDefaultRules(defaultRules, {
+    const result = normalizeRuleRegistry(defaultRules, {
       'configured-alias': [customRule, RULE_SEVERITY.WARN, {}]
     });
-    // 配置键与 meta.name 不等时，按 meta.name 建立别名，回查仍能命中同一记录。
-    expect(result['configured-alias']).toBeDefined();
-    expect(result['actual-name']).toBe(result['configured-alias']);
+    expect(result.has('configured-alias')).toBe(false);
+    expect(result.get('actual-name')).toMatchObject({
+      id: 'actual-name',
+      configKey: 'configured-alias',
+      rule: customRule
+    });
   });
 
   it('should handle empty default rules', () => {
-    const result = overrideDefaultRules({}, {});
-    expect(Object.keys(result)).toHaveLength(0);
+    const result = normalizeRuleRegistry({}, {});
+    expect(result.size).toBe(0);
   });
 
   it('should handle config with disabled rules', () => {
-    const result = overrideDefaultRules(defaultRules, {
+    const result = normalizeRuleRegistry(defaultRules, {
       'rule-a': RULE_SEVERITY.OFF,
       'rule-b': RULE_SEVERITY.OFF
     });
-    expect(result['rule-a'].severity).toBe(RULE_SEVERITY.OFF);
-    expect(result['rule-b'].severity).toBe(RULE_SEVERITY.OFF);
+    expect(result.get('rule-a')?.severity).toBe(RULE_SEVERITY.OFF);
+    expect(result.get('rule-b')?.severity).toBe(RULE_SEVERITY.OFF);
   });
   it('should throw for prototype-like unknown rule name and not pollute Object.prototype (issue #177)', () => {
     const rules = JSON.parse('{"__proto__": 2}') as any;
 
-    expect(() => overrideDefaultRules(defaultRules, rules)).toThrow(/未知规则/);
+    expect(() => normalizeRuleRegistry(defaultRules, rules)).toThrow(/未知规则/);
     expect(Object.hasOwn(Object.prototype, 'severity')).toBe(false);
   });
 
-  it('should store third-party rule whose meta.name is a prototype key as plain key without pollution (issue #177)', () => {
-    // 使用无原型注册表后，meta.name 为 __proto__ 的规则会被当作普通 own 属性保存，
-    // 不会改变 Object.prototype，也不会崩溃。
+  it('should store a prototype-like rule ID without pollution', () => {
     const protoRule = createMockRule('__proto__');
-    const result = overrideDefaultRules(defaultRules, {
+    const result = normalizeRuleRegistry(defaultRules, {
       'proto-alias': [protoRule, RULE_SEVERITY.WARN, {}]
     });
 
     expect(Object.hasOwn(Object.prototype, 'severity')).toBe(false);
-    const protoEntry = Object.getOwnPropertyDescriptor(result, '__proto__')?.value;
+    const protoEntry = result.get('__proto__');
     expect(protoEntry).toBeDefined();
-    expect(protoEntry.rule).toBe(protoRule);
+    expect(protoEntry?.rule).toBe(protoRule);
   });
 });

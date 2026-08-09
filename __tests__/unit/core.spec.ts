@@ -1,4 +1,4 @@
-import { lintMarkdown } from '../../src';
+import { RULE_SEVERITY, lintMarkdown } from '../../src';
 import noEmptyCode from '../../src/rules/no-empty-code';
 import { getExample } from '../utils/test-utils';
 import { runLint } from '../../src/core/run-lint';
@@ -31,6 +31,17 @@ Some **importance**, and \`code\`.
   test('test runLint() with empty rules array', () => {
     const lintResult = runLint('# Hello', []);
     expect(lintResult.reports.length).toBe(0);
+  });
+
+  test('runLint reports include the configured rule severity', () => {
+    const result = runLint('```\n\n```', [{
+      id: noEmptyCode.meta.name,
+      rule: noEmptyCode,
+      severity: RULE_SEVERITY.WARN
+    }]);
+
+    expect(result.reports).toHaveLength(1);
+    expect(result.reports[0].severity).toBe(RULE_SEVERITY.WARN);
   });
 
   test('test runLint() collects Error thrown by rule (collect policy, structured errors)', () => {

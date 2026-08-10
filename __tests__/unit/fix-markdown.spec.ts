@@ -22,6 +22,13 @@ describe('fixMarkdown', () => {
     expect(result.fixableErrorCount).toBe(1);
   });
 
+  test('removes obsolete conflicts after another fix resolves the lint finding', () => {
+    const result = fixMarkdown('### 问题:\n');
+
+    expect(result.fixedResult.result).toBe('### 问题\n');
+    expect(result.fixedResult.notAppliedFixes).toEqual([]);
+  });
+
   test('forwards the strict rule error policy', () => {
     const throwingRule: LintMdRule = {
       meta: { name: 'throwing-rule' },

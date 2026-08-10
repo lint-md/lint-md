@@ -176,7 +176,7 @@ Some **importance**, and \`code\`.
               message: 'to X',
               fix: () => ({
                 range: [node.position.start.offset, node.position.end.offset],
-                text: 'X'
+                text: 'abc'
               })
             });
           }
@@ -209,7 +209,7 @@ Some **importance**, and \`code\`.
     );
 
     expect(res.fixedResult).not.toBeNull();
-    expect(res.fixedResult!.result).toBe('X');
+    expect(res.fixedResult!.result).toBe('abc');
     const unappliedFix: NotAppliedFix = res.fixedResult!.notAppliedFixes[0];
     expect(unappliedFix).toStrictEqual({
       range: [0, 3],

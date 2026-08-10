@@ -38,7 +38,7 @@
     "chinese"
   ],
   "dependencies": {
-    "@lint-md/parser": "~0.2.0"
+    "@lint-md/parser": "~0.2.1"
   },
   "devDependencies": {
     "@attachments/eslint-config": "^0.3.3",

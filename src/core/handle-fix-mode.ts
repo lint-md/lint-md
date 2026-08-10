@@ -62,6 +62,7 @@ export const runFixLoop = (
     executionErrors.push(...lintResult.executionErrors);
 
     if (!lintResult.fixes.length) {
+      lastNotAppliedFixes = [];
       convergence = FixConvergence.STABLE;
     }
     else {

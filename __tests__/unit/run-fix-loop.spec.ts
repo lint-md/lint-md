@@ -168,7 +168,7 @@ describe('runFixLoop', () => {
     expect(fixes.map(fix => fix.targetRule)).toStrictEqual(['same', 'conflict']);
   });
 
-  test('keeps only conflicts from the last fix-bearing round', () => {
+  test('clears conflicts when a later round has no fixes', () => {
     const oldConflict = makeFix('X', [0, 1], 'old-conflict');
     const newConflict = makeFix('Y', [0, 1], 'new-conflict');
     const rounds = [
@@ -183,10 +183,7 @@ describe('runFixLoop', () => {
       maxRounds: 5
     });
 
-    expect(result.fixedResult.notAppliedFixes).toStrictEqual([{
-      ...newConflict,
-      reason: FixNotAppliedReason.OVERLAP
-    }]);
+    expect(result.fixedResult.notAppliedFixes).toStrictEqual([]);
   });
 
   test('does not reorder fixes returned by the round adapter', () => {

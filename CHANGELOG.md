@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## [2.3.2](https://github.com/lint-md/lint-md/compare/v2.3.1...v2.3.2) - 2026-08-10
+
+### Bug Fixes
+
+- **fix-mode**: clear obsolete unapplied fixes after a clean fix round (#255)
+
 ## [2.3.1](https://github.com/lint-md/lint-md/compare/v2.3.0...v2.3.1) - 2026-08-10
 
 ### Chores

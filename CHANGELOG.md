@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## [2.3.1](https://github.com/lint-md/lint-md/compare/v2.3.0...v2.3.1) - 2026-08-10
+
+### Chores
+
+- **parser**: update `@lint-md/parser` to 0.2.1
+
 ### Refactoring
 
 - **run-lint**: return reports, fixes, execution errors, and fallback metrics as one round result

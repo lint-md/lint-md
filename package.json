@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@attachments/eslint-config": "^0.3.3",
-    "@lint-md/core": "0.2.2",
+    "lint-md-core-legacy": "npm:@lint-md/core@0.2.2",
     "@microsoft/api-extractor": "^7.58.12",
     "@types/benchmark": "^2.1.2",
     "@types/jest": "^29.2.0",

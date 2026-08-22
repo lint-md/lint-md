@@ -1,4 +1,6 @@
-import { fix, lint } from '@lint-md/core';
+// 0.2.2 基线经 npm alias 安装：#260 给包加了 exports 后，裸名 @lint-md/core
+// 触发 self-reference，只会解析到当前源码，benchmark 的“新旧对比”随之失效。
+import { fix, lint } from 'lint-md-core-legacy';
 import { benchMarkBetween, getExample } from '../utils/test-utils';
 import { lintMarkdown } from '../../src';
 

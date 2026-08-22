@@ -108,3 +108,45 @@ jobs:
             echo "- Last compatibility command: \`${COMPATIBILITY_COMMAND:-not reached}\`"
             echo "- Job status: \`${{ job.status }}\`"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  eslint-plugin-main:
+    name: Core candidate × eslint-plugin main
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Checkout core
+        uses: actions/checkout@v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 22
+
+      - name: Build core package
+        run: |
+          npm install
+          npm run build
+          npm run package-contract
+          mkdir -p "$RUNNER_TEMP/core-package"
+          CORE_TARBALL=$(npm pack --pack-destination "$RUNNER_TEMP/core-package" | tail -n 1)
+          echo "CORE_TARBALL=$RUNNER_TEMP/core-package/$CORE_TARBALL" >> "$GITHUB_ENV"
+
+      - name: Checkout eslint-plugin
+        uses: actions/checkout@v6.0.2
+        with:
+          repository: lint-md/eslint-plugin
+          ref: main
+          path: downstream/eslint-plugin
+
+      - name: Install candidate in eslint-plugin
+        working-directory: downstream/eslint-plugin
+        run: |
+          npm install
+          npm install --no-save "$CORE_TARBALL"
+
+      - name: Sync rules against candidate
+        working-directory: downstream/eslint-plugin
+        run: |
+          npm run build
+          npm run sync-rules

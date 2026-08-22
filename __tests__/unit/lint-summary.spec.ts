@@ -1,4 +1,4 @@
-import { lintMarkdown } from '../../src';
+import { fixMarkdown, lintMarkdown } from '../../src';
 import type { LintDiagnostic, LintMdRule, LintMdRulesConfig } from '../../src/types';
 import { RULE_SEVERITY } from '../../src/types';
 import { summarizeDiagnostics } from '../../src/utils/lint-summary';
@@ -68,10 +68,14 @@ describe('LintSummary derivation from diagnostics (#190)', () => {
   test('summary always equals summarizeDiagnostics(diagnostics)', () => {
     const mixed = lintMarkdown('中文English', MIXED_CONFIG, false);
     const defaults = lintMarkdown(['中文English 混排', '', '第二段有123数字和English结尾。'].join('\n'), {}, false);
-    const fixed = lintMarkdown('中文English', {}, false);
+    // fix 模式走 handleFixMode → initialLintResult → diagnostics 的独立路径，
+    // summary 一致性契约必须同样成立。
+    const fixed = fixMarkdown('中文English', { rules: {} });
 
     for (const result of [mixed, defaults, fixed]) {
       expect(result.summary).toEqual(summarizeDiagnostics(result.diagnostics));
+      expect(result.summary.fixableErrorCount).toBe(result.fixableErrorCount);
+      expect(result.summary.fixableWarningCount).toBe(result.fixableWarningCount);
     }
   });
 

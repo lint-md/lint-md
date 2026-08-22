@@ -331,7 +331,10 @@ export interface FixedResult {
   metrics?: FixMetrics
 }
 
-/** `lintMarkdown` 返回的 lint 诊断项（带严重级别） */
+/**
+ * `lintMarkdown` 返回的 legacy 诊断项（带严重级别）。
+ * @deprecated Prefer LintDiagnostic for new integrations.
+ */
 export interface LintReportItem {
   loc: ReportOption['loc']
   message: string
@@ -354,11 +357,20 @@ export interface LintSummary {
 }
 
 export interface LintMdResultBase {
+  /**
+   * @deprecated Use diagnostics instead.
+   */
   lintResult: LintReportItem[]
   diagnostics: LintDiagnostic[]
   /** 由 diagnostics 派生的统计摘要；顶层 fixable counts 是它的兼容投影 */
   summary: LintSummary
+  /**
+   * @deprecated Use summary.fixableErrorCount.
+   */
   fixableErrorCount: number
+  /**
+   * @deprecated Use summary.fixableWarningCount.
+   */
   fixableWarningCount: number
   /**
    * 结构化根级规则执行错误数组（兼容所有返回模式：lint-only 与 fix 多轮）。

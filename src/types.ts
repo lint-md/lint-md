@@ -235,6 +235,13 @@ export interface LintDiagnostic {
   message: string
   /** 严重级别 */
   severity: RULE_SEVERITY
+  /**
+   * 该 report 是否声明了 automatic fix callback（#190）。
+   * 只表示“存在 fix”，不表示 fix 已执行：lint-only 模式不运行 fix callback。
+   * core 返回的诊断运行时恒有此字段；类型上可选的理由同 range，
+   * 下一个 major 将改为必填。
+   */
+  fixable?: boolean
 }
 
 /** fix 收敛状态：调用方据此区分“已稳定”“检测到循环”“达到上限” */

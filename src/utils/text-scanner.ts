@@ -3,8 +3,8 @@ import type {
   PositionedInlineCodeNode,
   PositionedTextNode,
   TextRange
-} from '../types';
-import type { MarkdownTextNode } from './get-text-nodes';
+} from '../types.js';
+import type { MarkdownTextNode } from './get-text-nodes.js';
 
 export interface TextMatch {
   index: number

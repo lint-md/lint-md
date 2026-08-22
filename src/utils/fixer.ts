@@ -1,4 +1,4 @@
-import type { TextRange } from '../types';
+import type { TextRange } from '../types.js';
 
 /**
  * 初始化一个 fixer (修复器）

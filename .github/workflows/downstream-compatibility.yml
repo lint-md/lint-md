@@ -9,6 +9,7 @@ on:
       - "tsconfig*.json"
       - "etc/core.api.md"
       - "scripts/check-package-contract.mjs"
+      - "scripts/write-esm-package-type.mjs"
       - ".github/workflows/downstream-compatibility.yml"
   push:
     branches:
@@ -20,6 +21,7 @@ on:
       - "tsconfig*.json"
       - "etc/core.api.md"
       - "scripts/check-package-contract.mjs"
+      - "scripts/write-esm-package-type.mjs"
       - ".github/workflows/downstream-compatibility.yml"
   workflow_dispatch:
 

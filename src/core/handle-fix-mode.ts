@@ -3,13 +3,13 @@ import type {
   LintMdRuleWithOptions,
   NotAppliedFix,
   RuleExecutionError
-} from '../types';
-import { FixConvergence } from '../types';
-import { MAX_LINT_AND_FIX_CALL_TIMES } from '../common/constant';
-import { applyFix } from '../utils/apply-fix';
-import { now } from '../utils/time';
-import type { RunLintResult } from './run-lint';
-import { runLint } from './run-lint';
+} from '../types.js';
+import { FixConvergence } from '../types.js';
+import { MAX_LINT_AND_FIX_CALL_TIMES } from '../common/constant.js';
+import { applyFix } from '../utils/apply-fix.js';
+import { now } from '../utils/time.js';
+import type { RunLintResult } from './run-lint.js';
+import { runLint } from './run-lint.js';
 
 interface RunFixLoopOptions {
   runRound: (

@@ -1,4 +1,4 @@
-import type { LintDiagnostic } from './types';
+import type { LintDiagnostic } from './types.js';
 
 /**
  * 将标准诊断格式转为 ALE (Vim/Neovim) 兼容的输出字符串

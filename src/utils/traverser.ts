@@ -1,6 +1,6 @@
 import type { PositionedMarkdownNode } from '@lint-md/parser';
-import type { TraverserOptions } from '../types';
-import { isNode } from './common';
+import type { TraverserOptions } from '../types.js';
+import { isNode } from './common.js';
 
 const noop = () => {};
 

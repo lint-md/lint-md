@@ -4,11 +4,11 @@ import type {
   ReportOption,
   RuleFixConfig,
   RuleReportInput
-} from '../types';
-import type { ReportSourceCode } from './source-code';
-import type { createRuleErrorCollector } from './rule-execution-errors';
-import { createFixer } from './fixer';
-import { isSourceMapError } from './source-code-errors';
+} from '../types.js';
+import type { ReportSourceCode } from './source-code.js';
+import type { createRuleErrorCollector } from './rule-execution-errors.js';
+import { createFixer } from './fixer.js';
+import { isSourceMapError } from './source-code-errors.js';
 
 /**
  * 初始化全局 rule 管理器

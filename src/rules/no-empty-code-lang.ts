@@ -1,4 +1,4 @@
-import type { LintMdRule, PositionedCodeNode } from '../types';
+import type { LintMdRule, PositionedCodeNode } from '../types.js';
 
 const noEmptyCodeLang: LintMdRule = {
   meta: {

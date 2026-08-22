@@ -1,5 +1,5 @@
-import type { LintMdRule, PositionedTextNode } from '../types';
-import { getTextNodes } from '../utils/get-text-nodes';
+import type { LintMdRule, PositionedTextNode } from '../types.js';
+import { getTextNodes } from '../utils/get-text-nodes.js';
 
 const FORBIDDEN_PUNCTUATIONS = ['.', ',', ';', ':', '。', '，', '；', '：', '~', '*', '`'];
 

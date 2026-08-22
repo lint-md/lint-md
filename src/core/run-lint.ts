@@ -6,13 +6,13 @@ import type {
   RuleFixConfig,
   RuleSelector,
   RunLintOptions
-} from '../types';
-import { RULE_SEVERITY } from '../types';
-import { traverseMarkdown } from '../utils/traverser';
-import { createRuleManager } from '../utils/rule-manager';
-import { createRuleErrorCollector } from '../utils/rule-execution-errors';
-import { createLintSourceCode } from '../utils/source-code';
-import { isSourceMapError } from '../utils/source-code-errors';
+} from '../types.js';
+import { RULE_SEVERITY } from '../types.js';
+import { traverseMarkdown } from '../utils/traverser.js';
+import { createRuleManager } from '../utils/rule-manager.js';
+import { createRuleErrorCollector } from '../utils/rule-execution-errors.js';
+import { createLintSourceCode } from '../utils/source-code.js';
+import { isSourceMapError } from '../utils/source-code-errors.js';
 
 interface RunLintRoundOptions extends RunLintOptions {
   /** Run reported fix callbacks before this function returns. */

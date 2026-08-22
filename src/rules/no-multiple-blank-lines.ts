@@ -1,5 +1,5 @@
-import type { LintMdRule } from '../types';
-import { traverseMarkdown } from '../utils/traverser';
+import type { LintMdRule } from '../types.js';
+import { traverseMarkdown } from '../utils/traverser.js';
 
 const PROTECTED_NODE_TYPES = new Set([
   'code',

@@ -1,6 +1,6 @@
-import type { LintMdRule, PositionedTextNode } from '../types';
-import { isChineseCharacter, isNumberCharacter } from '../utils/char-helper';
-import { TextScanner } from '../utils/text-scanner';
+import type { LintMdRule, PositionedTextNode } from '../types.js';
+import { isChineseCharacter, isNumberCharacter } from '../utils/char-helper.js';
+import { TextScanner } from '../utils/text-scanner.js';
 
 const spaceAroundNumber: LintMdRule = {
   meta: {

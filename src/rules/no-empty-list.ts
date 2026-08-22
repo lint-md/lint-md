@@ -1,4 +1,4 @@
-import type { LintMdRule, PositionedListItemNode } from '../types';
+import type { LintMdRule, PositionedListItemNode } from '../types.js';
 
 const noEmptyList: LintMdRule = {
   meta: {

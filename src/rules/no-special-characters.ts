@@ -1,5 +1,5 @@
-import type { LintMdRule, PositionedTextNode } from '../types';
-import { TextScanner } from '../utils/text-scanner';
+import type { LintMdRule, PositionedTextNode } from '../types.js';
+import { TextScanner } from '../utils/text-scanner.js';
 
 // U+0008 (backspace) and U+200A (hair space)
 const SPECIAL_CHARACTERS = ['\u0008', '\u200A'];

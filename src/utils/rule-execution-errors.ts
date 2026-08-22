@@ -1,4 +1,4 @@
-import type { RuleErrorPolicy, RuleExecutionError, RuleExecutionPhase } from '../types';
+import type { RuleErrorPolicy, RuleExecutionError, RuleExecutionPhase } from '../types.js';
 
 /**
  * 严格模式专用异常：首次规则执行失败时立即抛出。

@@ -1,4 +1,4 @@
-import type { LintMdRule, PositionedBlockquoteNode } from '../types';
+import type { LintMdRule, PositionedBlockquoteNode } from '../types.js';
 
 const noMultipleSpaceBlockquote: LintMdRule = {
   meta: {

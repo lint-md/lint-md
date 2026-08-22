@@ -1,4 +1,4 @@
-import { isChineseCharacter, isEnglishCharacter, isNumberCharacter } from './char-helper';
+import { isChineseCharacter, isEnglishCharacter, isNumberCharacter } from './char-helper.js';
 
 /**
  * 将字符串抽象成标记字符，这对于中英文、标点相关的文本处理都有好处

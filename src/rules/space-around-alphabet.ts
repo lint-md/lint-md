@@ -1,6 +1,6 @@
-import type { LintMdRule, PositionedTextNode } from '../types';
-import { isChineseCharacter, isEnglishCharacter } from '../utils/char-helper';
-import { TextScanner } from '../utils/text-scanner';
+import type { LintMdRule, PositionedTextNode } from '../types.js';
+import { isChineseCharacter, isEnglishCharacter } from '../utils/char-helper.js';
+import { TextScanner } from '../utils/text-scanner.js';
 
 const isChineseEnglishBoundary = (a: string, b: string): boolean => {
   return (isChineseCharacter(a) && isEnglishCharacter(b))

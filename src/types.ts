@@ -3,7 +3,7 @@ import type {
   PositionedMarkdownNode as ParserPositionedMarkdownNode,
   PositionedMarkdownRoot as ParserPositionedMarkdownRoot
 } from '@lint-md/parser';
-import type { createFixer } from './utils/fixer';
+import type { createFixer } from './utils/fixer.js';
 
 export type PositionedMarkdownNode = ParserPositionedMarkdownNode;
 export type PositionedMarkdownRoot = ParserPositionedMarkdownRoot;

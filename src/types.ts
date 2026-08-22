@@ -341,9 +341,23 @@ export interface LintReportItem {
 }
 
 /** `lintMarkdown` 返回结果的公共部分 */
+/** 从 canonical diagnostics 派生的统计摘要（#190）；diagnostics 是唯一的 counts 来源 */
+export interface LintSummary {
+  /** severity === ERROR 的诊断数 */
+  errorCount: number
+  /** severity === WARN 的诊断数 */
+  warningCount: number
+  /** ERROR 且 fixable 的诊断数 */
+  fixableErrorCount: number
+  /** WARN 且 fixable 的诊断数 */
+  fixableWarningCount: number
+}
+
 export interface LintMdResultBase {
   lintResult: LintReportItem[]
   diagnostics: LintDiagnostic[]
+  /** 由 diagnostics 派生的统计摘要；顶层 fixable counts 是它的兼容投影 */
+  summary: LintSummary
   fixableErrorCount: number
   fixableWarningCount: number
   /**

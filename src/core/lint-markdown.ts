@@ -12,6 +12,7 @@ import type {
 import * as internalRuleConfig from '../rules/index.js';
 import { DEFAULT_RULE_SEVERITIES } from '../rules/default-rule-severities.js';
 import { normalizeRuleRegistry } from '../utils/normalize-rule-registry.js';
+import { summarizeDiagnostics } from '../utils/lint-summary.js';
 import { RULE_SEVERITY } from '../types.js';
 import { runLint } from './run-lint.js';
 import { handleFixMode } from './handle-fix-mode.js';
@@ -60,21 +61,9 @@ const buildLintResult = (
 ): LintMdResult => {
   const { fixedResult, lintResult, executionErrors } = executionResult;
   const reportData = lintResult.reports;
-  let fixableErrorCount = 0;
-  let fixableWarningCount = 0;
 
   const reportDataWithSeverity: LintReportItem[] = reportData.map((item) => {
     const severity = item.severity as RULE_SEVERITY;
-
-    if (typeof item.fix === 'function') {
-      if (severity === RULE_SEVERITY.ERROR) {
-        fixableErrorCount++;
-      }
-      else if (severity === RULE_SEVERITY.WARN) {
-        fixableWarningCount++;
-      }
-    }
-
     const { loc, message, name, content } = item;
     return {
       loc,
@@ -99,12 +88,16 @@ const buildLintResult = (
     fixable: typeof item.fix === 'function'
   }));
 
+  // counts 唯一来源是 diagnostics（#190）；顶层字段只是兼容投影。
+  const summary = summarizeDiagnostics(diagnostics);
+
   return {
     lintResult: reportDataWithSeverity,
     diagnostics,
+    summary,
     fixedResult,
-    fixableErrorCount,
-    fixableWarningCount,
+    fixableErrorCount: summary.fixableErrorCount,
+    fixableWarningCount: summary.fixableWarningCount,
     executionErrors
   };
 };

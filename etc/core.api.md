@@ -140,6 +140,8 @@ export interface LintMdResultBase {
     fixableWarningCount: number;
     // (undocumented)
     lintResult: LintReportItem[];
+    // (undocumented)
+    summary: LintSummary;
 }
 
 // @public (undocumented)
@@ -211,6 +213,18 @@ export interface LintSourceCode {
     getTextRange(node: PositionedTextNode | PositionedInlineCodeNode, valueStart: number, valueEnd: number): TextRange;
     // (undocumented)
     readonly text: string;
+}
+
+// @public (undocumented)
+export interface LintSummary {
+    // (undocumented)
+    errorCount: number;
+    // (undocumented)
+    fixableErrorCount: number;
+    // (undocumented)
+    fixableWarningCount: number;
+    // (undocumented)
+    warningCount: number;
 }
 
 // @public (undocumented)

@@ -1,4 +1,4 @@
-import { RULE_SEVERITY } from '../types';
+import { RULE_SEVERITY } from '../types.js';
 
 export const DEFAULT_RULE_SEVERITIES: Readonly<
   Partial<Record<string, RULE_SEVERITY>>

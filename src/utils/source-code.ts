@@ -4,8 +4,8 @@ import type {
   MarkdownTextNode as ParserMarkdownTextNode
 } from '@lint-md/parser';
 import { SourceMapUnavailableError } from '@lint-md/parser';
-import type { LintSourceCode, MarkdownPosition, PositionedInlineCodeNode, PositionedMarkdownNode, PositionedMarkdownRoot, PositionedTextNode, ReportOption, ReportPosition, TextRange } from '../types';
-import { InvalidRuleRangeError, isSourceMapError } from './source-code-errors';
+import type { LintSourceCode, MarkdownPosition, PositionedInlineCodeNode, PositionedMarkdownNode, PositionedMarkdownRoot, PositionedTextNode, ReportOption, ReportPosition, TextRange } from '../types.js';
+import { InvalidRuleRangeError, isSourceMapError } from './source-code-errors.js';
 
 interface SourceCodeOptions {
   text: string

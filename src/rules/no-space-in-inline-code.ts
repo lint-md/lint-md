@@ -1,4 +1,4 @@
-import type { LintMdRule, LintMdRuleContext, PositionedInlineCodeNode } from '../types';
+import type { LintMdRule, LintMdRuleContext, PositionedInlineCodeNode } from '../types.js';
 
 const getSerializedInlineCode = (content: string, preferredFenceLength: number) => {
   const backtickRuns: string[] = content.match(/`+/g) || [];

@@ -8,13 +8,13 @@ import type {
   LintMdRuleWithOptions,
   LintMdRulesConfig,
   LintReportItem
-} from '../types';
-import * as internalRuleConfig from '../rules';
-import { DEFAULT_RULE_SEVERITIES } from '../rules/default-rule-severities';
-import { normalizeRuleRegistry } from '../utils/normalize-rule-registry';
-import { RULE_SEVERITY } from '../types';
-import { runLint } from './run-lint';
-import { handleFixMode } from './handle-fix-mode';
+} from '../types.js';
+import * as internalRuleConfig from '../rules/index.js';
+import { DEFAULT_RULE_SEVERITIES } from '../rules/default-rule-severities.js';
+import { normalizeRuleRegistry } from '../utils/normalize-rule-registry.js';
+import { RULE_SEVERITY } from '../types.js';
+import { runLint } from './run-lint.js';
+import { handleFixMode } from './handle-fix-mode.js';
 
 export const lintMarkdownInternal = (
   markdown: string,

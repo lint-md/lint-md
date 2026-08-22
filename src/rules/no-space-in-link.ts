@@ -1,5 +1,5 @@
-import type { LintMdRule, LintMdRuleContext, PositionedLinkNode, PositionedTextNode } from '../types';
-import { getTextNodes } from '../utils/get-text-nodes';
+import type { LintMdRule, LintMdRuleContext, PositionedLinkNode, PositionedTextNode } from '../types.js';
+import { getTextNodes } from '../utils/get-text-nodes.js';
 
 const checkAndReportTextNode = (ctx: LintMdRuleContext, node: PositionedTextNode, pos: 'between' | 'start-only' | 'end-only') => {
   if (!node || node.type !== 'text') {

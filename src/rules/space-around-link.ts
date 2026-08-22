@@ -1,8 +1,8 @@
 import type {
   LintMdRule,
   PositionedMarkdownNode
-} from '../types';
-import { traverseMarkdown } from '../utils/traverser';
+} from '../types.js';
+import { traverseMarkdown } from '../utils/traverser.js';
 
 type PositionedLinkLikeNode = Extract<
   PositionedMarkdownNode,

@@ -1,5 +1,5 @@
-import type { FixConfig } from '../types';
-import { FixNotAppliedReason } from '../types';
+import type { FixConfig } from '../types.js';
+import { FixNotAppliedReason } from '../types.js';
 
 const addReason = <T extends FixConfig>(
   fix: T,

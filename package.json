@@ -4,6 +4,21 @@
   "description": "Core of lint-md which used to lint your markdown file for Chinese.",
   "main": "lib/index.js",
   "module": "esm/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./esm/index.js",
+      "require": "./lib/index.js",
+      "default": "./lib/index.js"
+    },
+    "./lib/rules/index": {
+      "types": "./lib/rules/index.d.ts",
+      "require": "./lib/rules/index.js",
+      "default": "./lib/rules/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "contributors": [
     "hustcc <i@hust.cc>",
     "yuzhanglong <loveyzl1123@gmail.com>"
@@ -16,7 +31,7 @@
     "typecheck": "tsc --noEmit",
     "typecheck:tests": "tsc -p tsconfig.test.json --noEmit",
     "lib:cjs": "tsc -p tsconfig.json --target ESNext --module commonjs --outDir lib",
-    "lib:esm": "tsc -p tsconfig.json --target ESNext --module ESNext --outDir esm",
+    "lib:esm": "tsc -p tsconfig.json --target ESNext --module ESNext --outDir esm && node scripts/write-esm-package-type.mjs",
     "build": "rm -rf lib esm && run-p lib:*",
     "clean": "rm -rf lib esm",
     "package-contract": "node scripts/check-package-contract.mjs",
@@ -58,6 +73,9 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testRegex": "(/__tests__/.*\\.(test|spec))\\.ts$",
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",

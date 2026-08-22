@@ -1,5 +1,5 @@
-import type { LintMdRule, LintMdRulesConfig } from '../types';
-import { RULE_SEVERITY } from '../types';
+import type { LintMdRule, LintMdRulesConfig } from '../types.js';
+import { RULE_SEVERITY } from '../types.js';
 
 export interface NormalizedRuleRecord {
   readonly id: string

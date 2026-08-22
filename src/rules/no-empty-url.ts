@@ -1,6 +1,6 @@
 import type { MarkdownRoot, ParsedPosition } from '@lint-md/parser';
 import { revertMdAstNode } from '@lint-md/parser';
-import type { LintMdRule, LintMdRuleContext, PositionedImageNode, PositionedLinkNode } from '../types';
+import type { LintMdRule, LintMdRuleContext, PositionedImageNode, PositionedLinkNode } from '../types.js';
 
 /**
  * 链接和图片节点共有的最小字段：url 可写、position 必填。

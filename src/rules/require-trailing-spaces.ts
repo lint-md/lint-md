@@ -1,5 +1,5 @@
-import type { LintMdRule, PositionedTextNode } from '../types';
-import { TextScanner } from '../utils/text-scanner';
+import type { LintMdRule, PositionedTextNode } from '../types.js';
+import { TextScanner } from '../utils/text-scanner.js';
 
 const requireTrailingSpaces: LintMdRule = {
   meta: {

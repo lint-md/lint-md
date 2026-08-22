@@ -13,6 +13,7 @@
 ### Bug Fixes
 
 - **package**: make ESM build natively importable in Node.js (#260)
+- **benchmark**: alias legacy core baseline dependency so the old-version comparison keeps working after exports were added (#266)
 
 ### Refactoring
 

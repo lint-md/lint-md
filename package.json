@@ -12,6 +12,11 @@
       "require": "./lib/index.js",
       "default": "./lib/index.js"
     },
+    "./lib/rules/index": {
+      "types": "./lib/rules/index.d.ts",
+      "require": "./lib/rules/index.js",
+      "default": "./lib/rules/index.js"
+    },
     "./package.json": "./package.json"
   },
   "contributors": [

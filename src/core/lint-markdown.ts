@@ -85,9 +85,10 @@ const buildLintResult = (
     };
   });
 
-  const diagnostics = reportDataWithSeverity.map(item => ({
+  const diagnostics = reportData.map(item => ({
     line: item.loc.start.line,
     column: item.loc.start.column,
+    range: item.range,
     ruleId: item.name,
     message: item.message,
     severity: item.severity

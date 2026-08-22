@@ -37,6 +37,10 @@ const makeReport = (message: string): RunLintReport => ({
     start: { line: 1, column: 1, offset: 0 },
     end: { line: 1, column: 2, offset: 1 }
   },
+  range: {
+    start: { line: 1, column: 1, offset: 0 },
+    end: { line: 1, column: 2, offset: 1 }
+  },
   severity: RULE_SEVERITY.ERROR
 });
 

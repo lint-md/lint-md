@@ -89,6 +89,8 @@ export interface LintDiagnostic {
     // (undocumented)
     message: string;
     // (undocumented)
+    range?: SourceRange;
+    // (undocumented)
     ruleId: string;
     // (undocumented)
     severity: RULE_SEVERITY;
@@ -412,6 +414,14 @@ export { SourceMapConsistencyError }
 export { SourceMapError }
 
 export { SourceMapUnavailableError }
+
+// @public (undocumented)
+export interface SourceRange {
+    // (undocumented)
+    end: MarkdownPosition;
+    // (undocumented)
+    start: MarkdownPosition;
+}
 
 // @public (undocumented)
 export const spaceAroundAlphabet: LintMdRule;

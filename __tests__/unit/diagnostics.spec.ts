@@ -47,7 +47,7 @@ describe('diagnostics', () => {
   });
 
   describe('toALEOutput()', () => {
-    test('formats diagnostics in ALE-compatible format', () => {
+    test('accepts legacy literals without range (2.x construction compat)', () => {
       const diagnostics: LintDiagnostic[] = [
         { line: 1, column: 3, ruleId: 'space-around-alphabet', message: '中英文之间需要添加空格', severity: 2 },
         { line: 1, column: 12, ruleId: 'space-around-number', message: '中文与数字之间需要添加空格', severity: 1 }

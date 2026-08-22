@@ -5,7 +5,8 @@ import type {
   RuleExecutionError,
   RuleFixConfig,
   RuleSelector,
-  RunLintOptions
+  RunLintOptions,
+  SourceRange
 } from '../types.js';
 import { RULE_SEVERITY } from '../types.js';
 import { traverseMarkdown } from '../utils/traverser.js';
@@ -31,6 +32,8 @@ interface RegisteredSelector {
 
 export interface RunLintReport extends ReportOption {
   severity: number
+  /** 从解析后 offset 推导的规范区间（#190），与 content / fix 使用同一坐标系 */
+  range: SourceRange
 }
 
 export interface RunLintResult {

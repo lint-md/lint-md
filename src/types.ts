@@ -11,6 +11,14 @@ export type PositionedMarkdownRoot = ParserPositionedMarkdownRoot;
 /** 节点单个位置点（line / column / offset 全部必填 number） */
 export type MarkdownPosition = ParsedPoint;
 
+/** 完整源码区间，语义为 [start.offset, end.offset)；offset 为权威坐标，line / column 由 offset 推导 */
+export interface SourceRange {
+  /** 起点位置（含） */
+  start: MarkdownPosition
+  /** 终点位置（offset 为排除端，即该 offset 处的字符不属于区间） */
+  end: MarkdownPosition
+}
+
 /** 上报位置点（line / column 必填，offset 可选） */
 export interface ReportPosition {
   line: number
@@ -210,10 +218,17 @@ export type RegisteredRules = Record<string, LintMdRuleWithOptions & { severity:
 
 /** 标准诊断格式，供各集成平台消费 */
 export interface LintDiagnostic {
-  /** 行号（1-indexed） */
+  /** 行号（1-indexed）。core 输出中与 range.start.line 同源 */
   line: number
-  /** 列号（1-indexed） */
+  /** 列号（1-indexed）。core 输出中与 range.start.column 同源 */
   column: number
+  /**
+   * 完整源码区间（#190）：offset 为权威坐标，语义 [start.offset, end.offset)。
+   * core 返回的诊断运行时恒有此字段；类型上可选是为让 2.x 手工构造
+   * （如测试里组装 toALEOutput 入参）的代码在 minor 升级后仍可编译，
+   * 下一个 major 将改为必填。
+   */
+  range?: SourceRange
   /** 规则名 */
   ruleId: string
   /** 诊断消息 */

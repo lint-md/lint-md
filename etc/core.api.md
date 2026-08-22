@@ -89,7 +89,7 @@ export interface LintDiagnostic {
     // (undocumented)
     message: string;
     // (undocumented)
-    range: SourceRange;
+    range?: SourceRange;
     // (undocumented)
     ruleId: string;
     // (undocumented)

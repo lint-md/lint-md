@@ -47,21 +47,10 @@ describe('diagnostics', () => {
   });
 
   describe('toALEOutput()', () => {
-    test('formats diagnostics in ALE-compatible format', () => {
-      const range = {
-        start: { line: 1, column: 3, offset: 2 },
-        end: { line: 1, column: 10, offset: 9 }
-      };
+    test('accepts legacy literals without range (2.x construction compat)', () => {
       const diagnostics: LintDiagnostic[] = [
-        { line: 1, column: 3, range, ruleId: 'space-around-alphabet', message: '中英文之间需要添加空格', severity: 2 },
-        {
-          line: 1,
-          column: 12,
-          range: { start: { line: 1, column: 12, offset: 11 }, end: { line: 1, column: 15, offset: 14 } },
-          ruleId: 'space-around-number',
-          message: '中文与数字之间需要添加空格',
-          severity: 1
-        }
+        { line: 1, column: 3, ruleId: 'space-around-alphabet', message: '中英文之间需要添加空格', severity: 2 },
+        { line: 1, column: 12, ruleId: 'space-around-number', message: '中文与数字之间需要添加空格', severity: 1 }
       ];
       const output = toALEOutput(diagnostics, '/tmp/test.md');
 

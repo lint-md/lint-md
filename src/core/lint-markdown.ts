@@ -85,9 +85,11 @@ const buildLintResult = (
     };
   });
 
+  // line/column 从规范 range 取值而非透传 item.loc：
+  // 规则可能上报与 offset 矛盾的 loc，range 才是与 content / fix 同一坐标系的权威。
   const diagnostics = reportData.map(item => ({
-    line: item.loc.start.line,
-    column: item.loc.start.column,
+    line: item.range.start.line,
+    column: item.range.start.column,
     range: item.range,
     ruleId: item.name,
     message: item.message,

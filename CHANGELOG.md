@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+## [2.4.0](https://github.com/lint-md/lint-md/compare/v2.3.2...v2.4.0) - 2026-08-22
+
+### Features
+
+- **diagnostics**: expose complete source ranges on `LintDiagnostic` (#261)
+- **diagnostics**: expose diagnostic fixability (#262)
+- **diagnostics**: add `LintSummary` derived from canonical diagnostics (#263)
+
+### Bug Fixes
+
+- **package**: make ESM build natively importable in Node.js (#260)
+
+### Refactoring
+
+- **api**: deprecate legacy lint result fields in favor of diagnostics and summary (#264)
+
 ## [2.3.2](https://github.com/lint-md/lint-md/compare/v2.3.1...v2.3.2) - 2026-08-10
 
 ### Bug Fixes

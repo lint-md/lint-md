@@ -93,7 +93,10 @@ const buildLintResult = (
     range: item.range,
     ruleId: item.name,
     message: item.message,
-    severity: item.severity
+    severity: item.severity,
+    // 只反映“声明了 fix callback”；lint-only 不执行 fix（computeFixes 才会），
+    // 因此这里绝不能调用 item.fix 来探测可修复性。
+    fixable: typeof item.fix === 'function'
   }));
 
   return {

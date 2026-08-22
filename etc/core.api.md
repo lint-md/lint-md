@@ -85,6 +85,8 @@ export interface LintDiagnostic {
     // (undocumented)
     column: number;
     // (undocumented)
+    fixable?: boolean;
+    // (undocumented)
     line: number;
     // (undocumented)
     message: string;

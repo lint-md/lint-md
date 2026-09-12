@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+## [2.5.0](https://github.com/lint-md/lint-md/compare/v2.4.0...v2.5.0) - 2026-09-12
+
+### Features
+
+- **core**: add an options-based `lintMarkdown()` API with explicit lint-only behavior (#272)
+- **fix**: expose diagnostics and summaries for the original input and final fixed output (#273)
+- **core**: expose diagnostic completeness on the new lint and fix result types (#274)
+
+### Performance
+
+- **run-lint**: store report severity during lint execution (#269)
+- **text-scanner**: remove per-character position allocations from Unicode scanning (#271)
+
+### Refactoring
+
+- **core**: separate execution reports from public diagnostics while preserving legacy locations (#275)
+
 ## [2.4.0](https://github.com/lint-md/lint-md/compare/v2.3.2...v2.4.0) - 2026-08-22
 
 ### Features

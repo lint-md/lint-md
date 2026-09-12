@@ -9,6 +9,25 @@ const createManager = (markdown: string) => {
 };
 
 describe('test rule-manager report content fallback', () => {
+  test('reuses the normalized source range', () => {
+    const markdown = 'line1\nline2';
+    const { ast, sourceMap } = parseMdWithSourceMap(markdown);
+    const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
+    const getPosition = jest.spyOn(sourceCode, 'getPosition');
+    const manager = createRuleManager(sourceCode);
+    const context = manager.createRuleContext(
+      { rule: { meta: { name: 'demo' }, create: () => ({}) } as any, options: {} }
+    );
+
+    context.report({ range: [6, 11], message: 'demo' });
+
+    expect(getPosition).not.toHaveBeenCalled();
+    expect(manager.getReportData()[0].range).toEqual({
+      start: { line: 2, column: 1, offset: 6 },
+      end: { line: 2, column: 6, offset: 11 }
+    });
+  });
+
   test('report with offset slices only the reported range', () => {
     const markdown = 'line1\nline2\nline3';
     const manager = createManager(markdown);

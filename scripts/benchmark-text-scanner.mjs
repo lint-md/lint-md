@@ -4,6 +4,7 @@
  *
  * Compares linear scan (old) vs binary search with lazy pre-computation (new).
  * It also compares location construction with range-only matches.
+ * It compares duplicate and reused report locations.
  * Includes constructor cost in timing to reflect real-world usage.
  *
  * Usage:
@@ -120,6 +121,26 @@ function matchAtRangeOnly(startOffset, index, length) {
   };
 }
 
+function reportRangeWithDuplicateLocation(lineBreakIndices, index, length) {
+  const loc = {
+    start: positionAtBinary(lineBreakIndices, 1, 1, 0, index),
+    end: positionAtBinary(lineBreakIndices, 1, 1, 0, index + length)
+  };
+  const sourceRange = {
+    start: positionAtBinary(lineBreakIndices, 1, 1, 0, index),
+    end: positionAtBinary(lineBreakIndices, 1, 1, 0, index + length)
+  };
+  return { loc, sourceRange };
+}
+
+function reportRangeWithReusedLocation(lineBreakIndices, index, length) {
+  const loc = {
+    start: positionAtBinary(lineBreakIndices, 1, 1, 0, index),
+    end: positionAtBinary(lineBreakIndices, 1, 1, 0, index + length)
+  };
+  return { loc, sourceRange: loc };
+}
+
 function median(arr) {
   const sorted = [...arr].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
@@ -216,7 +237,20 @@ bench('range only', () => {
   }
 }, Math.round(iterations / 10), opts.runs);
 
-// Scenario 5: rules that only use forEachChar.
+// Scenario 5: report range normalization.
+console.log(`\n=== report range normalization (${matches.length} reports) ===`);
+bench('duplicate location', () => {
+  for (const m of matches) {
+    reportRangeWithDuplicateLocation(lineBreakIndices, m.index, m.length);
+  }
+}, Math.round(iterations / 10), opts.runs);
+bench('reused location', () => {
+  for (const m of matches) {
+    reportRangeWithReusedLocation(lineBreakIndices, m.index, m.length);
+  }
+}, Math.round(iterations / 10), opts.runs);
+
+// Scenario 6: rules that only use forEachChar.
 console.log('\n=== forEachChar simulation (no positionAt calls) ===');
 bench('linear (old constructor)', () => {
   // Old: O(1) constructor, then O(n) forEachChar

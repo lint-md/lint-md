@@ -74,26 +74,17 @@ export const createRuleManager = (
 
     // 上报方法，供选择器内部调用
     const report = (option: RuleReportInput) => {
-      const { loc, range, usedFallback }
+      const { loc, range, sourceRange, usedFallback }
         = sourceCode.normalizeReportLocation(option);
       if (usedFallback) {
         fallbackHits++;
       }
 
-      // 规范坐标从解析后的 offset 推导（#190）：offset 是唯一权威，
-      // 避免 line/column 与 content、fix 使用的区间互相矛盾。
-      // range 已归一化到 [0, text.length]。规则上报非数字坐标时 getPosition
-      // 抛 InvalidRuleRangeError，按 selector 失败进入 collector，与既有策略一致。
       // 覆盖 spread 进来的 loc 输入形态可能携带的 range 元组，防止内部结构外泄。
-      const resolvedRange: SourceRange = {
-        start: sourceCode.getPosition(range[0]),
-        end: sourceCode.getPosition(range[1])
-      };
-
       allReportedData.push({
         ...option,
         loc,
-        range: resolvedRange,
+        range: sourceRange,
         content: sourceCode.getContext(range),
         name: rule.meta.name,
         severity

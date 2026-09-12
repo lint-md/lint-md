@@ -105,13 +105,25 @@ export interface LintExecutionOptions {
 }
 
 // @public (undocumented)
-export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: true, options?: LintExecutionOptions): LintMdFixResult;
+export function lintMarkdown(markdown: string, options?: LintMarkdownOptions): LintMdLintResult;
 
 // @public (undocumented)
-export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: false, options?: LintExecutionOptions): LintMdLintResult;
+export function lintMarkdown(markdown: string, rules: LintMdRulesConfig): LintMdFixResult;
 
 // @public (undocumented)
-export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: boolean, options?: LintExecutionOptions): LintMdResult;
+export function lintMarkdown(markdown: string, rules: LintMdRulesConfig | undefined, isFixMode: true, options?: LintExecutionOptions): LintMdFixResult;
+
+// @public (undocumented)
+export function lintMarkdown(markdown: string, rules: LintMdRulesConfig | undefined, isFixMode: false, options?: LintExecutionOptions): LintMdLintResult;
+
+// @public (undocumented)
+export function lintMarkdown(markdown: string, rules: LintMdRulesConfig | undefined, isFixMode: boolean, options?: LintExecutionOptions): LintMdResult;
+
+// @public (undocumented)
+export interface LintMarkdownOptions extends LintExecutionOptions {
+    // (undocumented)
+    rules?: LintMdRulesConfig;
+}
 
 // @public (undocumented)
 export interface LintMdFixResult extends LintMdResultBase {

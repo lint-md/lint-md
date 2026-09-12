@@ -170,7 +170,7 @@ Some **importance**, and \`code\`.
 
   test('test lintMarkdown() to lint or fix markdown source', () => {
     const example = getExample('docs-for-all-rules');
-    const res = lintMarkdown(example);
+    const res = lintMarkdown(example, {}, true);
 
     expect(res.fixedResult?.result).toMatchSnapshot();
   });

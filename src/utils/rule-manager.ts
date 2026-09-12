@@ -6,13 +6,14 @@ import type {
   RuleReportInput,
   SourceRange
 } from '../types.js';
+import { RULE_SEVERITY } from '../types.js';
 import type { ReportSourceCode } from './source-code.js';
 import type { createRuleErrorCollector } from './rule-execution-errors.js';
 import { createFixer } from './fixer.js';
 import { isSourceMapError } from './source-code-errors.js';
 
 /** 内部存储的报告：loc 保留规则原始上报值，range 是从解析后 offset 推导的规范坐标 */
-type StoredReport = ReportOption & { range: SourceRange };
+type StoredReport = ReportOption & { range: SourceRange; severity: number };
 
 /**
  * 初始化全局 rule 管理器
@@ -63,9 +64,10 @@ export const createRuleManager = (
 
   // 初始化一个 rule context
   const createRuleContext = (
-    ruleConfig: LintMdRuleWithOptions
+    ruleConfig: LintMdRuleWithOptions & { severity?: number }
   ): LintMdRuleContext => {
     const { rule, options } = ruleConfig;
+    const severity = ruleConfig.severity ?? RULE_SEVERITY.ERROR;
 
     // 上报方法，供选择器内部调用
     const report = (option: RuleReportInput) => {
@@ -90,7 +92,8 @@ export const createRuleManager = (
         loc,
         range: resolvedRange,
         content: sourceCode.getContext(range),
-        name: rule.meta.name
+        name: rule.meta.name,
+        severity
       } as StoredReport);
     };
 

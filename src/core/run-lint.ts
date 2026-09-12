@@ -8,7 +8,6 @@ import type {
   RunLintOptions,
   SourceRange
 } from '../types.js';
-import { RULE_SEVERITY } from '../types.js';
 import { traverseMarkdown } from '../utils/traverser.js';
 import { createRuleManager } from '../utils/rule-manager.js';
 import { createRuleErrorCollector } from '../utils/rule-execution-errors.js';
@@ -73,21 +72,18 @@ export const runLint = (
 
   const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
 
-  const severityById = new Map(
-    allRuleConfigs.map(({ id, rule, severity }) => [
-      id ?? rule.meta.name,
-      severity ?? RULE_SEVERITY.ERROR
-    ])
-  );
-
   // The manager holds mutable state only during this execution round.
   const ruleManager = createRuleManager(sourceCode, collector);
 
   const selectorsByType = new Map<string, RegisteredSelector[]>();
 
   // Selector order follows rule configuration order for each node type.
-  for (const { rule, options: ruleOptions } of allRuleConfigs) {
-    const ruleContext = ruleManager.createRuleContext({ rule, options: ruleOptions });
+  for (const { rule, options: ruleOptions, severity } of allRuleConfigs) {
+    const ruleContext = ruleManager.createRuleContext({
+      rule,
+      options: ruleOptions,
+      severity
+    });
 
     // create 阶段也可能抛错，需在调用 create 处捕获并归入规则执行错误。
     let ruleSelectors: Record<string, RuleSelector>;
@@ -145,10 +141,7 @@ export const runLint = (
     : [];
 
   return {
-    reports: ruleManager.getReportData().map(report => ({
-      ...report,
-      severity: severityById.get(report.name) ?? RULE_SEVERITY.ERROR
-    })),
+    reports: ruleManager.getReportData(),
     fixes,
     executionErrors: collector.getErrors(),
     fallbackHits: ruleManager.getFallbackHits()

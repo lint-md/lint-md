@@ -130,7 +130,8 @@ export const handleFixMode = (
   runRound: (current, currentRules, round, computeFixes) => runLint(current, currentRules, {
     ruleErrorPolicy: policy,
     round,
-    computeFixes
+    computeFixes,
+    materializeLegacyContent: round === 0
   }),
   now,
   maxRounds: MAX_LINT_AND_FIX_CALL_TIMES

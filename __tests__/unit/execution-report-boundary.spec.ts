@@ -1,8 +1,44 @@
 import { RULE_SEVERITY, lintMarkdown } from '../../src';
+import { lintMarkdownInternal } from '../../src/core/lint-markdown';
 import { runLint } from '../../src/core/run-lint';
 import type { LintMdRule } from '../../src/types';
 
 describe('execution report boundary', () => {
+  test('materializes legacy content only for the initial fix round', () => {
+    const rule: LintMdRule = {
+      meta: { name: 'round-boundary' },
+      create: context => ({
+        root: () => context.report({
+          range: [0, 1],
+          message: 'round report',
+          fix: context.markdown === 'A'
+            ? fixer => fixer.replaceTextRange([0, 1], 'B')
+            : undefined
+        })
+      })
+    };
+
+    const result = lintMarkdownInternal('A', [{ rule }], true);
+
+    expect(result.fixedResult?.rounds).toBe(2);
+    expect(result.lintResult.reports[0]).toMatchObject({
+      content: 'A',
+      loc: {
+        start: { offset: 0 },
+        end: { offset: 1 }
+      }
+    });
+    expect(result.remainingLintResult?.reports[0].content).toBe('');
+    expect(result.remainingLintResult?.reports[0].loc).toEqual({
+      start: { line: 1, column: 1, offset: 0 },
+      end: { line: 1, column: 2, offset: 1 }
+    });
+    expect(result.remainingLintResult?.reports[0].range).toEqual({
+      start: { line: 1, column: 1, offset: 0 },
+      end: { line: 1, column: 2, offset: 1 }
+    });
+  });
+
   test('separates execution data from public result models', () => {
     const markdown = '中文English';
     let fixCalled = false;

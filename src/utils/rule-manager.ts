@@ -23,10 +23,12 @@ export type ExecutionReport = ReportOption & {
  *
  * @param sourceCode The current document source and position Module.
  * @param collector The optional collector receives fix callback errors.
+ * @param materializeLegacyContent Include content for the legacy result projection.
  */
 export const createRuleManager = (
   sourceCode: ReportSourceCode,
-  collector?: ReturnType<typeof createRuleErrorCollector>
+  collector?: ReturnType<typeof createRuleErrorCollector>,
+  materializeLegacyContent = true
 ) => {
   // 修复器
   const fixer = createFixer();
@@ -80,12 +82,12 @@ export const createRuleManager = (
         fallbackHits++;
       }
 
-      // 覆盖 spread 进来的 loc 输入形态可能携带的 range 元组，防止内部结构外泄。
+      // Override spread input ranges to keep the internal shape private.
       allReportedData.push({
         ...option,
         loc,
         range: sourceRange,
-        content: sourceCode.getContext(range),
+        content: materializeLegacyContent ? sourceCode.getContext(range) : '',
         name: rule.meta.name,
         severity
       } as ExecutionReport);

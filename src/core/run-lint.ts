@@ -18,6 +18,8 @@ import { isSourceMapError } from '../utils/source-code-errors.js';
 interface RunLintRoundOptions extends RunLintOptions {
   /** Run reported fix callbacks before this function returns. */
   computeFixes?: boolean
+  /** Include content for the legacy result projection. */
+  materializeLegacyContent?: boolean
 }
 
 interface RuleExecutionConfig extends LintMdRuleWithOptions {
@@ -70,7 +72,11 @@ export const runLint = (
   const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
 
   // The manager holds mutable state only during this execution round.
-  const ruleManager = createRuleManager(sourceCode, collector);
+  const ruleManager = createRuleManager(
+    sourceCode,
+    collector,
+    options.materializeLegacyContent ?? true
+  );
 
   const selectorsByType = new Map<string, RegisteredSelector[]>();
 

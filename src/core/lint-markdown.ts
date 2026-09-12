@@ -1,5 +1,6 @@
 import type {
   FixMarkdownOptions,
+  FixMarkdownResult,
   FixedResult,
   LintDiagnostic,
   LintExecutionOptions,
@@ -82,7 +83,7 @@ const buildDiagnostics = (
 
 const buildLintResult = (
   executionResult: ReturnType<typeof lintMarkdownInternal>
-): LintMdResult => {
+): LintMdLintResult | FixMarkdownResult => {
   const {
     fixedResult,
     lintResult,
@@ -137,7 +138,7 @@ const buildLintResult = (
   };
 };
 
-function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: true, options: LintExecutionOptions): LintMdFixResult;
+function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: true, options: LintExecutionOptions): FixMarkdownResult;
 function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: false, options: LintExecutionOptions): LintMdLintResult;
 function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: boolean, options: LintExecutionOptions): LintMdResult;
 function executeMarkdown(
@@ -221,6 +222,6 @@ export function lintMarkdown(
 export function fixMarkdown(
   markdown: string,
   options: FixMarkdownOptions = {}
-): LintMdFixResult {
+): FixMarkdownResult {
   return executeMarkdown(markdown, options.rules ?? {}, true, options);
 }

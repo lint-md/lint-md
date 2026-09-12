@@ -401,6 +401,18 @@ export interface LintMdLintResult extends LintMdResultBase {
 /** 修复模式（isFixMode=true，默认）：`fixedResult` 为对象 */
 export interface LintMdFixResult extends LintMdResultBase {
   fixedResult: FixedResult
+  /** Runtime fix results include this field. It stays optional for 2.x compatibility. */
+  initialDiagnostics?: LintDiagnostic[]
+  /** Runtime fix results include this field. It stays optional for 2.x compatibility. */
+  remainingDiagnostics?: LintDiagnostic[]
+  /** Runtime fix results include this field. It stays optional for 2.x compatibility. */
+  initialSummary?: LintSummary
+  /** Runtime fix results include this field. It stays optional for 2.x compatibility. */
+  remainingSummary?: LintSummary
+}
+
+/** Precise result from `fixMarkdown()`. */
+export interface FixMarkdownResult extends LintMdFixResult {
   /** Diagnostics whose ranges apply to the original Markdown input. */
   initialDiagnostics: LintDiagnostic[]
   /** Diagnostics whose ranges apply to `fixedResult.result`. */

@@ -5,11 +5,11 @@ import {
   fixMarkdown,
   lintMarkdown
 } from '../../src';
-import type { LintMdFixResult, LintMdRule } from '../../src';
+import type { FixMarkdownResult, LintMdRule } from '../../src';
 
 describe('fixMarkdown', () => {
   test('applies configured fixes and returns diagnostics for the original input', () => {
-    const result: LintMdFixResult = fixMarkdown('第一段\n\n\n第二段', {
+    const result: FixMarkdownResult = fixMarkdown('第一段\n\n\n第二段', {
       rules: {
         'no-multiple-blank-lines': RULE_SEVERITY.ERROR
       }

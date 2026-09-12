@@ -1,5 +1,6 @@
 import { parseMdWithSourceMap } from '@lint-md/parser';
 import type {
+  LintDiagnostic,
   LintMdRuleWithOptions,
   ReportOption,
   RuleExecutionError,
@@ -9,7 +10,10 @@ import type {
   SourceRange
 } from '../types.js';
 import { traverseMarkdown } from '../utils/traverser.js';
-import { createRuleManager } from '../utils/rule-manager.js';
+import {
+  type ExecutionReport,
+  createRuleManager
+} from '../utils/rule-manager.js';
 import { createRuleErrorCollector } from '../utils/rule-execution-errors.js';
 import { createLintSourceCode } from '../utils/source-code.js';
 import { isSourceMapError } from '../utils/source-code-errors.js';
@@ -29,18 +33,38 @@ interface RegisteredSelector {
   readonly selector: RuleSelector
 }
 
-export interface RunLintReport extends ReportOption {
-  severity: number
-  /** 从解析后 offset 推导的规范区间（#190），与 content / fix 使用同一坐标系 */
+export type { ExecutionReport } from '../utils/rule-manager.js';
+
+interface InternalLintDiagnostic extends LintDiagnostic {
   range: SourceRange
+  fixable: boolean
+  /** Original rule location for the 2.x `lintResult` projection. */
+  legacyLoc: ReportOption['loc']
+  /** Source excerpt for the 2.x `lintResult` projection. */
+  legacyContent: string
 }
 
 export interface RunLintResult {
-  reports: RunLintReport[]
+  reports: ExecutionReport[]
+  diagnostics: InternalLintDiagnostic[]
   fixes: RuleFixConfig[]
   executionErrors: RuleExecutionError[]
   fallbackHits: number
 }
+
+const buildInternalDiagnostic = (
+  report: ExecutionReport
+): InternalLintDiagnostic => ({
+  line: report.range.start.line,
+  column: report.range.start.column,
+  range: report.range,
+  ruleId: report.name,
+  message: report.message,
+  severity: report.severity,
+  fixable: typeof report.fix === 'function',
+  legacyLoc: report.loc,
+  legacyContent: report.content
+});
 
 /**
  * 基于各种 rules 对 Markdown 文本进行校验
@@ -139,9 +163,11 @@ export const runLint = (
   const fixes = options.computeFixes
     ? ruleManager.getAllFixes()
     : [];
+  const reports = ruleManager.getReportData();
 
   return {
-    reports: ruleManager.getReportData(),
+    reports,
+    diagnostics: reports.map(buildInternalDiagnostic),
     fixes,
     executionErrors: collector.getErrors(),
     fallbackHits: ruleManager.getFallbackHits()

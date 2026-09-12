@@ -12,8 +12,11 @@ import type { createRuleErrorCollector } from './rule-execution-errors.js';
 import { createFixer } from './fixer.js';
 import { isSourceMapError } from './source-code-errors.js';
 
-/** 内部存储的报告：loc 保留规则原始上报值，range 是从解析后 offset 推导的规范坐标 */
-type StoredReport = ReportOption & { range: SourceRange; severity: number };
+/** Execution data retained until the current lint round ends. */
+export type ExecutionReport = ReportOption & {
+  range: SourceRange
+  severity: number
+};
 
 /**
  * 初始化全局 rule 管理器
@@ -29,7 +32,7 @@ export const createRuleManager = (
   const fixer = createFixer();
 
   // 已经上报的数据
-  const allReportedData: StoredReport[] = [];
+  const allReportedData: ExecutionReport[] = [];
 
   // 统计触发兜底的报告数，使防御性 fallback 可观测、可收窄：
   // 计数单位是一条报告，其 start 或 end 任一 offset 缺失/非法计 1（同一报告不重复计）。
@@ -37,7 +40,7 @@ export const createRuleManager = (
 
   const getFallbackHits = () => fallbackHits;
 
-  const getReportData = (): StoredReport[] => allReportedData;
+  const getReportData = (): ExecutionReport[] => allReportedData;
 
   const getAllFixes = (): RuleFixConfig[] =>
     allReportedData.flatMap((item) => {
@@ -94,7 +97,7 @@ export const createRuleManager = (
         content: sourceCode.getContext(range),
         name: rule.meta.name,
         severity
-      } as StoredReport);
+      } as ExecutionReport);
     };
 
     return {

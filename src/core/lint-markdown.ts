@@ -71,15 +71,14 @@ const resolveConfiguredRules = (rules: LintMdRulesConfig) => {
 
 const buildDiagnostics = (
   lintResult: ReturnType<typeof runLint>
-): LintDiagnostic[] => lintResult.reports.map(item => ({
-  line: item.range.start.line,
-  column: item.range.start.column,
+): LintDiagnostic[] => lintResult.diagnostics.map(item => ({
+  line: item.line,
+  column: item.column,
   range: item.range,
-  ruleId: item.name,
+  ruleId: item.ruleId,
   message: item.message,
   severity: item.severity,
-  // A callback declares fixability. Lint-only runs do not execute it.
-  fixable: typeof item.fix === 'function'
+  fixable: item.fixable
 }));
 
 const buildLintResult = (
@@ -91,16 +90,13 @@ const buildLintResult = (
     remainingLintResult,
     executionErrors
   } = executionResult;
-  const reportData = lintResult.reports;
-
-  const reportDataWithSeverity: LintReportItem[] = reportData.map((item) => {
+  const reportDataWithSeverity: LintReportItem[] = lintResult.diagnostics.map((item) => {
     const severity = item.severity as RULE_SEVERITY;
-    const { loc, message, name, content } = item;
     return {
-      loc,
-      message,
-      name,
-      content,
+      loc: item.legacyLoc,
+      message: item.message,
+      name: item.ruleId,
+      content: item.legacyContent,
       severity
     };
   });

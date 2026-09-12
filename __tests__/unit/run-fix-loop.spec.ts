@@ -1,5 +1,5 @@
 import { runFixLoop } from '../../src/core/handle-fix-mode';
-import type { RunLintReport, RunLintResult } from '../../src/core/run-lint';
+import type { ExecutionReport, RunLintResult } from '../../src/core/run-lint';
 import type {
   LintMdRuleWithOptions,
   RuleExecutionError,
@@ -29,7 +29,7 @@ const makeRound = (
   ...overrides
 });
 
-const makeReport = (message: string): RunLintReport => ({
+const makeReport = (message: string): ExecutionReport => ({
   name: 'test-rule',
   content: 'A',
   message,

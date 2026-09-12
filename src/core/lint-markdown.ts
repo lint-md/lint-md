@@ -12,14 +12,16 @@ import type {
   LintMdRuleWithOptions,
   LintMdRulesConfig,
   LintReportItem,
-  LintSummary
+  LintSummary,
+  ReportOption,
+  SourceRange
 } from '../types.js';
 import * as internalRuleConfig from '../rules/index.js';
 import { DEFAULT_RULE_SEVERITIES } from '../rules/default-rule-severities.js';
 import { normalizeRuleRegistry } from '../utils/normalize-rule-registry.js';
 import { summarizeDiagnostics } from '../utils/lint-summary.js';
 import { RULE_SEVERITY } from '../types.js';
-import { runLint } from './run-lint.js';
+import { type ExecutionReport, runLint } from './run-lint.js';
 import { handleFixMode } from './handle-fix-mode.js';
 
 export const lintMarkdownInternal = (
@@ -69,17 +71,39 @@ const resolveConfiguredRules = (rules: LintMdRulesConfig) => {
     .filter(value => value.severity !== RULE_SEVERITY.OFF);
 };
 
+interface InternalLintDiagnostic extends LintDiagnostic {
+  range: SourceRange
+  fixable: boolean
+  /** Original rule location for the 2.x `lintResult` projection. */
+  legacyLoc: ReportOption['loc']
+  /** Source excerpt for the 2.x `lintResult` projection. */
+  legacyContent: string
+}
+
+const buildInternalDiagnostics = (
+  reports: readonly ExecutionReport[]
+): InternalLintDiagnostic[] => reports.map(report => ({
+  line: report.range.start.line,
+  column: report.range.start.column,
+  range: report.range,
+  ruleId: report.name,
+  message: report.message,
+  severity: report.severity,
+  fixable: typeof report.fix === 'function',
+  legacyLoc: report.loc,
+  legacyContent: report.content
+}));
+
 const buildDiagnostics = (
-  lintResult: ReturnType<typeof runLint>
-): LintDiagnostic[] => lintResult.reports.map(item => ({
-  line: item.range.start.line,
-  column: item.range.start.column,
+  internalDiagnostics: readonly InternalLintDiagnostic[]
+): LintDiagnostic[] => internalDiagnostics.map(item => ({
+  line: item.line,
+  column: item.column,
   range: item.range,
-  ruleId: item.name,
+  ruleId: item.ruleId,
   message: item.message,
   severity: item.severity,
-  // A callback declares fixability. Lint-only runs do not execute it.
-  fixable: typeof item.fix === 'function'
+  fixable: item.fixable
 }));
 
 const buildLintResult = (
@@ -91,21 +115,19 @@ const buildLintResult = (
     remainingLintResult,
     executionErrors
   } = executionResult;
-  const reportData = lintResult.reports;
-
-  const reportDataWithSeverity: LintReportItem[] = reportData.map((item) => {
+  const internalDiagnostics = buildInternalDiagnostics(lintResult.reports);
+  const reportDataWithSeverity: LintReportItem[] = internalDiagnostics.map((item) => {
     const severity = item.severity as RULE_SEVERITY;
-    const { loc, message, name, content } = item;
     return {
-      loc,
-      message,
-      name,
-      content,
+      loc: item.legacyLoc,
+      message: item.message,
+      name: item.ruleId,
+      content: item.legacyContent,
       severity
     };
   });
 
-  const diagnostics = buildDiagnostics(lintResult);
+  const diagnostics = buildDiagnostics(internalDiagnostics);
   const summary = summarizeDiagnostics(diagnostics);
 
   const baseResult = {
@@ -125,7 +147,7 @@ const buildLintResult = (
   const finalLintResult = remainingLintResult!;
   const remainingDiagnostics = finalLintResult === lintResult
     ? diagnostics
-    : buildDiagnostics(finalLintResult);
+    : buildDiagnostics(buildInternalDiagnostics(finalLintResult.reports));
   const remainingSummary: LintSummary = remainingDiagnostics === diagnostics
     ? summary
     : summarizeDiagnostics(remainingDiagnostics);

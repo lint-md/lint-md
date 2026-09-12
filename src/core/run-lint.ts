@@ -1,15 +1,16 @@
 import { parseMdWithSourceMap } from '@lint-md/parser';
 import type {
   LintMdRuleWithOptions,
-  ReportOption,
   RuleExecutionError,
   RuleFixConfig,
   RuleSelector,
-  RunLintOptions,
-  SourceRange
+  RunLintOptions
 } from '../types.js';
 import { traverseMarkdown } from '../utils/traverser.js';
-import { createRuleManager } from '../utils/rule-manager.js';
+import {
+  type ExecutionReport,
+  createRuleManager
+} from '../utils/rule-manager.js';
 import { createRuleErrorCollector } from '../utils/rule-execution-errors.js';
 import { createLintSourceCode } from '../utils/source-code.js';
 import { isSourceMapError } from '../utils/source-code-errors.js';
@@ -29,14 +30,10 @@ interface RegisteredSelector {
   readonly selector: RuleSelector
 }
 
-export interface RunLintReport extends ReportOption {
-  severity: number
-  /** 从解析后 offset 推导的规范区间（#190），与 content / fix 使用同一坐标系 */
-  range: SourceRange
-}
+export type { ExecutionReport } from '../utils/rule-manager.js';
 
 export interface RunLintResult {
-  reports: RunLintReport[]
+  reports: ExecutionReport[]
   fixes: RuleFixConfig[]
   executionErrors: RuleExecutionError[]
   fallbackHits: number
@@ -139,9 +136,10 @@ export const runLint = (
   const fixes = options.computeFixes
     ? ruleManager.getAllFixes()
     : [];
+  const reports = ruleManager.getReportData();
 
   return {
-    reports: ruleManager.getReportData(),
+    reports,
     fixes,
     executionErrors: collector.getErrors(),
     fallbackHits: ruleManager.getFallbackHits()

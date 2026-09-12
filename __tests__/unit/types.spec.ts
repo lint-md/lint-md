@@ -21,10 +21,8 @@ describe('TextRange', () => {
 describe('lintMarkdown return types', () => {
   test('infers options calls as lint-only results', () => {
     const result: LintMdLintResult = lintMarkdown('text', { rules: {} });
-    const defaultResult: LintMdLintResult = lintMarkdown('text');
 
     expect(result.fixedResult).toBeNull();
-    expect(defaultResult.fixedResult).toBeNull();
 
     // The options API never returns a fix result.
     // @ts-expect-error The options overload returns LintMdLintResult.
@@ -32,10 +30,14 @@ describe('lintMarkdown return types', () => {
     expect(fixResult).toBeDefined();
   });
 
-  test('keeps precise legacy boolean return types', () => {
+  test('keeps precise legacy return types', () => {
+    const defaultResult: LintMdFixResult = lintMarkdown('text');
+    const emptyRulesResult: LintMdFixResult = lintMarkdown('text', {});
     const lintResult: LintMdLintResult = lintMarkdown('text', {}, false);
     const fixResult: LintMdFixResult = lintMarkdown('text', {}, true);
 
+    expect(defaultResult.fixedResult).not.toBeNull();
+    expect(emptyRulesResult.fixedResult).not.toBeNull();
     expect(lintResult.fixedResult).toBeNull();
     expect(fixResult.fixedResult).not.toBeNull();
   });

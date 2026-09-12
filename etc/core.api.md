@@ -105,7 +105,10 @@ export interface LintExecutionOptions {
 }
 
 // @public (undocumented)
-export function lintMarkdown(markdown: string, options?: LintMarkdownOptions): LintMdLintResult;
+export function lintMarkdown(markdown: string, options: LintMarkdownOptions): LintMdLintResult;
+
+// @public (undocumented)
+export function lintMarkdown(markdown: string): LintMdFixResult;
 
 // @public (undocumented)
 export function lintMarkdown(markdown: string, rules: LintMdRulesConfig): LintMdFixResult;
@@ -120,10 +123,12 @@ export function lintMarkdown(markdown: string, rules: LintMdRulesConfig | undefi
 export function lintMarkdown(markdown: string, rules: LintMdRulesConfig | undefined, isFixMode: boolean, options?: LintExecutionOptions): LintMdResult;
 
 // @public (undocumented)
-export interface LintMarkdownOptions extends LintExecutionOptions {
-    // (undocumented)
+export type LintMarkdownOptions = LintExecutionOptions & ({
+    rules: LintMdRulesConfig;
+} | {
     rules?: LintMdRulesConfig;
-}
+    ruleErrorPolicy: RuleErrorPolicy;
+});
 
 // @public (undocumented)
 export interface LintMdFixResult extends LintMdResultBase {

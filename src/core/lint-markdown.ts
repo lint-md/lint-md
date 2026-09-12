@@ -127,22 +127,19 @@ function executeMarkdown(
 const isLintMarkdownOptions = (
   value: LintMarkdownOptions | LintMdRulesConfig | undefined
 ): value is LintMarkdownOptions => {
-  if (value === undefined || Object.keys(value).length === 0) {
-    return true;
+  if (value === undefined) {
+    return false;
   }
 
-  if ('ruleErrorPolicy' in value) {
-    return value.ruleErrorPolicy === undefined
-      || value.ruleErrorPolicy === 'collect'
-      || value.ruleErrorPolicy === 'strict';
-  }
+  const hasRuleErrorPolicy = 'ruleErrorPolicy' in value
+    && (value.ruleErrorPolicy === 'collect' || value.ruleErrorPolicy === 'strict');
 
-  if ('rules' in value) {
-    return value.rules === undefined
-      || (typeof value.rules === 'object' && value.rules !== null && !Array.isArray(value.rules));
-  }
+  const hasRules = 'rules' in value
+    && typeof value.rules === 'object'
+    && value.rules !== null
+    && !Array.isArray(value.rules);
 
-  return false;
+  return hasRuleErrorPolicy || hasRules;
 };
 
 /**
@@ -150,7 +147,9 @@ const isLintMarkdownOptions = (
  *
  * @public
  */
-export function lintMarkdown(markdown: string, options?: LintMarkdownOptions): LintMdLintResult;
+export function lintMarkdown(markdown: string, options: LintMarkdownOptions): LintMdLintResult;
+/** @deprecated Use `fixMarkdown(markdown, options)` for automatic fixes. */
+export function lintMarkdown(markdown: string): LintMdFixResult;
 /** @deprecated Use the options-based overload for lint-only checks. */
 export function lintMarkdown(markdown: string, rules: LintMdRulesConfig): LintMdFixResult;
 /** @deprecated Use `fixMarkdown(markdown, options)`. */
@@ -165,7 +164,7 @@ export function lintMarkdown(
   isFixMode?: boolean,
   options: LintExecutionOptions = {}
 ): LintMdResult {
-  if (arguments.length < 3 && isLintMarkdownOptions(rulesOrOptions)) {
+  if (arguments.length === 2 && isLintMarkdownOptions(rulesOrOptions)) {
     return executeMarkdown(markdown, rulesOrOptions.rules ?? {}, false, rulesOrOptions);
   }
 

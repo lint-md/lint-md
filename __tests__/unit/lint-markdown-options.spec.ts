@@ -24,16 +24,18 @@ describe('lintMarkdown options API', () => {
     expect(result.diagnostics[0].ruleId).toBe('no-multiple-blank-lines');
   });
 
-  test('runs lint-only when options are omitted', () => {
-    const result = lintMarkdown('first\n\n\nsecond');
+  test('keeps legacy fix mode when the second argument is omitted', () => {
+    const markdown = 'first\n\n\nsecond';
+    const result = lintMarkdown(markdown);
 
-    expect(result.fixedResult).toBeNull();
+    expect(result.fixedResult.result).toBe(markdown);
   });
 
-  test('treats an empty options object as lint-only', () => {
-    const result = lintMarkdown('first\n\n\nsecond', {});
+  test('keeps legacy fix mode for an empty rules object', () => {
+    const markdown = 'first\n\n\nsecond';
+    const result = lintMarkdown(markdown, {});
 
-    expect(result.fixedResult).toBeNull();
+    expect(result.fixedResult.result).toBe(markdown);
   });
 
   test('forwards the strict rule error policy', () => {

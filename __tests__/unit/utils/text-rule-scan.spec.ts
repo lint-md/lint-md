@@ -1,6 +1,6 @@
 import type { LintSourceCode } from '../../../src/types';
 import type { MarkdownTextNode } from '../../../src/utils/get-text-nodes';
-import { registerTextRuleScanConsumer } from '../../../src/utils/text-rule-scan';
+import { registerTextNodeAnalysisConsumer } from '../../../src/utils/text-rule-scan';
 
 const makeNode = (value: string): MarkdownTextNode => ({
   type: 'text',
@@ -17,15 +17,16 @@ describe('text rule scan', () => {
   test('shares one scan for the same node value', () => {
     const node = makeNode('中文1(test),English');
     const sourceCode = makeSourceCode();
-    const firstConsumer = registerTextRuleScanConsumer(sourceCode);
-    const secondConsumer = registerTextRuleScanConsumer(sourceCode);
+    const firstConsumer = registerTextNodeAnalysisConsumer(sourceCode);
+    const secondConsumer = registerTextNodeAnalysisConsumer(sourceCode);
 
     expect(secondConsumer).toBe(firstConsumer);
+    expect(firstConsumer.consumerCount).toBe(2);
     expect(firstConsumer.get(node)).toBe(secondConsumer.get(node));
   });
 
   test('classifies Unicode code points and collects rule candidates', () => {
-    const session = registerTextRuleScanConsumer(makeSourceCode());
+    const session = registerTextNodeAnalysisConsumer(makeSourceCode());
     const scan = session.get(makeNode('𠀀A1(test),'));
 
     expect(scan.alphabetBoundaries).toEqual([{
@@ -41,7 +42,7 @@ describe('text rule scan', () => {
 
   test('refreshes the scan after a node value changes', () => {
     const node = makeNode('中文1');
-    const session = registerTextRuleScanConsumer(makeSourceCode());
+    const session = registerTextNodeAnalysisConsumer(makeSourceCode());
     const first = session.get(node);
 
     node.value = '中文A';

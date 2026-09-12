@@ -1,7 +1,7 @@
 import type { LintMdRule, PositionedTextNode } from '../types.js';
 import { isChineseCharacter } from '../utils/char-helper.js';
 import { TextScanner } from '../utils/text-scanner.js';
-import { registerTextRuleScanConsumer } from '../utils/text-rule-scan.js';
+import { registerTextNodeAnalysisConsumer } from '../utils/text-rule-scan.js';
 
 const HALF_TO_FULL: Record<string, string> = {
   ',': '，',
@@ -19,6 +19,23 @@ const hasAdjacentChinese = (value: string, index: number) => {
   const nextChar = value[index + 1];
   return (prevChar !== undefined && isChineseCharacter(prevChar))
     || (nextChar !== undefined && isChineseCharacter(nextChar));
+};
+
+const getParenthesisPairs = (value: string): [number, number][] => {
+  const pairs: [number, number][] = [];
+  const stack: number[] = [];
+  for (let index = 0; index < value.length; index++) {
+    if (value[index] === '(') {
+      stack.push(index);
+    }
+    else if (value[index] === ')') {
+      const openIndex = stack.pop();
+      if (openIndex !== undefined) {
+        pairs.push([openIndex, index]);
+      }
+    }
+  }
+  return pairs;
 };
 
 const isHorizontalWhitespace = (char: string) => char === ' ' || char === '\t' || char === '\u3000';
@@ -48,12 +65,15 @@ const noHalfWidthPunctuation: LintMdRule = {
     name: 'no-half-width-punctuation'
   },
   create: (context) => {
-    const textRuleScan = registerTextRuleScanConsumer(context.sourceCode);
+    const textNodeAnalysis = registerTextNodeAnalysisConsumer(context.sourceCode);
     return {
       text: (node: PositionedTextNode) => {
         const scanner = new TextScanner(node, context.sourceCode);
         const { value } = scanner;
-        const { parenthesisPairs, punctuationCharacters } = textRuleScan.get(node);
+        const sharedAnalysis = textNodeAnalysis.consumerCount > 1
+          ? textNodeAnalysis.get(node)
+          : undefined;
+        const parenthesisPairs = sharedAnalysis?.parenthesisPairs ?? getParenthesisPairs(value);
 
         const convertIndices = new Set<number>();
 
@@ -84,8 +104,13 @@ const noHalfWidthPunctuation: LintMdRule = {
           }
         };
 
-        for (const { char, index } of punctuationCharacters) {
-          inspectPunctuation(char, index);
+        if (sharedAnalysis) {
+          for (const { char, index } of sharedAnalysis.punctuationCharacters) {
+            inspectPunctuation(char, index);
+          }
+        }
+        else {
+          scanner.forEachChar(inspectPunctuation);
         }
       }
     };

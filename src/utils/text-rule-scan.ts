@@ -26,7 +26,7 @@ export interface TextNodeAnalysis {
   parenthesisPairs: [number, number][]
 }
 
-interface CachedTextRuleScan {
+interface CachedTextNodeAnalysis {
   sourceValue: string
   result: TextNodeAnalysis
 }
@@ -108,11 +108,21 @@ const scanTextValue = (value: string): TextNodeAnalysis => {
 };
 
 export interface TextNodeAnalysisSession {
+  readonly consumerCount: number
   get: (node: MarkdownTextNode) => TextNodeAnalysis
 }
 
 class TextNodeAnalysisSessionImpl implements TextNodeAnalysisSession {
-  private readonly scanCache = new WeakMap<MarkdownTextNode, CachedTextRuleScan>();
+  private readonly scanCache = new WeakMap<MarkdownTextNode, CachedTextNodeAnalysis>();
+  private _consumerCount = 0;
+
+  get consumerCount(): number {
+    return this._consumerCount;
+  }
+
+  register(): void {
+    this._consumerCount++;
+  }
 
   get(node: MarkdownTextNode): TextNodeAnalysis {
     const cached = this.scanCache.get(node);
@@ -128,11 +138,12 @@ class TextNodeAnalysisSessionImpl implements TextNodeAnalysisSession {
 
 const sessions = new WeakMap<LintSourceCode, TextNodeAnalysisSessionImpl>();
 
-export const registerTextRuleScanConsumer = (sourceCode: LintSourceCode): TextNodeAnalysisSession => {
+export const registerTextNodeAnalysisConsumer = (sourceCode: LintSourceCode): TextNodeAnalysisSession => {
   let session = sessions.get(sourceCode);
   if (!session) {
     session = new TextNodeAnalysisSessionImpl();
     sessions.set(sourceCode, session);
   }
+  session.register();
   return session;
 };

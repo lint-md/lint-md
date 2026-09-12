@@ -3,6 +3,7 @@
  * Micro benchmark for TextScanner positionAt optimization.
  *
  * Compares linear scan (old) vs binary search with lazy pre-computation (new).
+ * It also compares location construction with range-only matches.
  * Includes constructor cost in timing to reflect real-world usage.
  *
  * Usage:
@@ -111,6 +112,14 @@ function matchAtBinary(lineBreakIndices, startLine, startColumn, startOffset, in
   };
 }
 
+function matchAtRangeOnly(startOffset, index, length) {
+  return {
+    index,
+    length,
+    absoluteRange: [startOffset + index, startOffset + index + length]
+  };
+}
+
 function median(arr) {
   const sorted = [...arr].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
@@ -193,7 +202,21 @@ bench('binary (lazy pre-compute)', () => {
   }
 }, Math.round(iterations / 10), opts.runs);
 
-// Scenario 4: forEachChar-only rules — should show no regression
+// Scenario 4: current location output compared with range-only output.
+console.log(`\n=== match location construction (${matches.length} matches) ===`);
+const lineBreakIndices = buildLineBreakIndices(text);
+bench('with location', () => {
+  for (const m of matches) {
+    matchAtBinary(lineBreakIndices, 1, 1, 0, m.index, m.length);
+  }
+}, Math.round(iterations / 10), opts.runs);
+bench('range only', () => {
+  for (const m of matches) {
+    matchAtRangeOnly(0, m.index, m.length);
+  }
+}, Math.round(iterations / 10), opts.runs);
+
+// Scenario 5: rules that only use forEachChar.
 console.log('\n=== forEachChar simulation (no positionAt calls) ===');
 bench('linear (old constructor)', () => {
   // Old: O(1) constructor, then O(n) forEachChar

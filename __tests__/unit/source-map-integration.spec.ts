@@ -14,7 +14,7 @@ import type { LintMdRule } from '../../src/types';
 const halfWidthConfig = [{ rule: noHalfWidthPunctuation }];
 
 describe('parser source-map integration', () => {
-  test('resolves source ranges only after a match', () => {
+  test('maps matches without resolving locations', () => {
     const node = {
       type: 'text',
       value: 'abc',
@@ -44,7 +44,7 @@ describe('parser source-map integration', () => {
     const match = new TextScanner(node as any, sourceCode).matchAt(1, 1);
     expect(match.absoluteRange).toEqual([1, 2]);
     expect(getTextRange).toHaveBeenCalledTimes(1);
-    expect(getLocation).toHaveBeenCalledTimes(1);
+    expect(getLocation).not.toHaveBeenCalled();
     expect(getTextRange.mock.calls.map(([, start, end]) => [start, end]))
       .toEqual([[1, 2]]);
   });
@@ -109,7 +109,7 @@ describe('parser source-map integration', () => {
         inlineCode: (node) => {
           const match = new TextScanner(node as any, context.sourceCode).matchAt(0, 1);
           context.report({
-            loc: match.loc,
+            range: match.absoluteRange,
             message: 'replace inline code value',
             fix: fixer => fixer.replaceTextRange(match.absoluteRange, 'b')
           });
@@ -191,7 +191,7 @@ describe('parser source-map integration', () => {
             if (char === '𝔄') {
               const match = scanner.matchAt(index, char.length);
               context.report({
-                loc: match.loc,
+                range: match.absoluteRange,
                 message: 'replace atomic entity',
                 fix: fixer => fixer.replaceTextRange(match.absoluteRange, 'A')
               });

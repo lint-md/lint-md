@@ -9,10 +9,6 @@ import type { MarkdownTextNode } from './get-text-nodes.js';
 export interface TextMatch {
   index: number
   length: number
-  loc: {
-    start: { line: number; column: number; offset: number }
-    end: { line: number; column: number; offset: number }
-  }
   absoluteRange: TextRange
 }
 
@@ -38,22 +34,16 @@ export class TextScanner {
     return this._node;
   }
 
-  private sourceRange(start: number, end: number) {
-    const range = this._sourceCode.getTextRange(
-      this._node as MarkdownTextNode as PositionedTextNode | PositionedInlineCodeNode,
-      start,
-      end
-    );
-    return this._sourceCode.getLocation(range);
-  }
-
   matchAt(index: number, length: number): TextMatch {
-    const range = this.sourceRange(index, index + length);
+    const absoluteRange = this._sourceCode.getTextRange(
+      this._node as MarkdownTextNode as PositionedTextNode | PositionedInlineCodeNode,
+      index,
+      index + length
+    );
     return {
       index,
       length,
-      loc: range,
-      absoluteRange: [range.start.offset, range.end.offset]
+      absoluteRange
     };
   }
 

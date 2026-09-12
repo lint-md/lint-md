@@ -29,10 +29,6 @@ describe('TextScanner', () => {
       expect(match).toEqual({
         index: 0,
         length: 5,
-        loc: {
-          start: { line: 1, column: 1, offset: 0 },
-          end: { line: 1, column: 6, offset: 5 }
-        },
         absoluteRange: [0, 5]
       });
     });
@@ -40,31 +36,25 @@ describe('TextScanner', () => {
     it('resolves an empty range at the value end', () => {
       const match = createScanner('hello').matchAt(5, 0);
 
-      expect(match.loc.start).toEqual({ line: 1, column: 6, offset: 5 });
-      expect(match.loc.end).toEqual({ line: 1, column: 6, offset: 5 });
       expect(match.absoluteRange).toEqual([5, 5]);
     });
 
     it('resolves a range across line endings', () => {
       const match = createScanner('a\nb\nc').matchAt(0, 3);
 
-      expect(match.loc.start).toEqual({ line: 1, column: 1, offset: 0 });
-      expect(match.loc.end).toEqual({ line: 2, column: 2, offset: 3 });
       expect(match.absoluteRange).toEqual([0, 3]);
     });
 
     it('uses the source node start position', () => {
       const match = createScanner('# abc').matchAt(0, 3);
 
-      expect(match.loc.start).toEqual({ line: 1, column: 3, offset: 2 });
-      expect(match.loc.end).toEqual({ line: 1, column: 6, offset: 5 });
+      expect(match.absoluteRange).toEqual([2, 5]);
     });
 
     it('resolves CRLF positions from SourceCode', () => {
       const match = createScanner('a\r\nb').matchAt(0, 4);
 
-      expect(match.loc.start).toEqual({ line: 1, column: 1, offset: 0 });
-      expect(match.loc.end).toEqual({ line: 2, column: 2, offset: 4 });
+      expect(match.absoluteRange).toEqual([0, 4]);
     });
 
     it.each([
@@ -113,11 +103,8 @@ describe('TextScanner', () => {
     it('resolves matches across newlines', () => {
       const matches = createScanner('ab\ncd').findAllMatches(/[\s\S]/g);
 
-      expect(matches[2].loc).toEqual({
-        start: { line: 1, column: 3, offset: 2 },
-        end: { line: 2, column: 1, offset: 3 }
-      });
-      expect(matches[3].loc.start).toEqual({ line: 2, column: 1, offset: 3 });
+      expect(matches.map(match => match.absoluteRange))
+        .toEqual([[0, 1], [1, 2], [2, 3], [3, 4], [4, 5]]);
     });
   });
 
@@ -144,7 +131,6 @@ describe('TextScanner', () => {
 
       expect(matches.map(match => match.absoluteRange))
         .toEqual([[0, 2], [3, 5]]);
-      expect(matches[1].loc.start).toEqual({ line: 2, column: 1, offset: 3 });
     });
   });
 

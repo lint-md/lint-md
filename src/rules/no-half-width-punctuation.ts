@@ -1,6 +1,7 @@
 import type { LintMdRule, PositionedTextNode } from '../types.js';
 import { isChineseCharacter } from '../utils/char-helper.js';
 import { TextScanner } from '../utils/text-scanner.js';
+import { registerTextRuleScan } from '../utils/text-rule-scan.js';
 
 const HALF_TO_FULL: Record<string, string> = {
   ',': '，',
@@ -64,13 +65,16 @@ const noHalfWidthPunctuation: LintMdRule = {
     name: 'no-half-width-punctuation'
   },
   create: (context) => {
+    const textRuleScan = registerTextRuleScan(context.sourceCode);
     return {
       text: (node: PositionedTextNode) => {
         const scanner = new TextScanner(node, context.sourceCode);
         const { value } = scanner;
+        const sharedScan = textRuleScan.consumerCount > 1
+          ? textRuleScan.get(node)
+          : undefined;
+        const parenthesisPairs = sharedScan?.parenthesisPairs ?? getParenthesisPairs(value);
 
-        // 预处理：找出需要转换的括号对
-        const parenthesisPairs = getParenthesisPairs(value);
         const convertIndices = new Set<number>();
 
         for (const [openIdx, closeIdx] of parenthesisPairs) {
@@ -80,26 +84,34 @@ const noHalfWidthPunctuation: LintMdRule = {
           }
         }
 
-        // 逐字符扫描
-        scanner.forEachChar((char, i) => {
+        const inspectPunctuation = (char: string, index: number) => {
           const fullChar = HALF_TO_FULL[char];
           if (!fullChar)
             return;
 
           const isParenthesis = char === '(' || char === ')';
           const shouldConvert = isParenthesis
-            ? convertIndices.has(i) || hasAdjacentChinese(value, i)
-            : hasAdjacentChinese(value, i);
+            ? convertIndices.has(index) || hasAdjacentChinese(value, index)
+            : hasAdjacentChinese(value, index);
 
           if (shouldConvert) {
-            const match = scanner.matchAt(i, 1);
+            const match = scanner.matchAt(index, 1);
             context.report({
               range: match.absoluteRange,
               message: `不应在中文中使用半角标点"${char}"，请使用全角"${fullChar}"`,
               fix: fixer => fixer.replaceTextRange(match.absoluteRange, fullChar)
             });
           }
-        });
+        };
+
+        if (sharedScan) {
+          for (const { char, index } of sharedScan.punctuationCharacters) {
+            inspectPunctuation(char, index);
+          }
+        }
+        else {
+          scanner.forEachChar(inspectPunctuation);
+        }
       }
     };
   }

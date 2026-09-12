@@ -28,11 +28,17 @@ import path from 'node:path';
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(scriptDir, '..');
 const require = createRequire(import.meta.url);
+// The contract must create and install a tarball during `npm publish --dry-run`.
+const contractEnv = Object.fromEntries(
+  Object.entries(process.env)
+    .filter(([name]) => name.toLowerCase() !== 'npm_config_dry_run'),
+);
 
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, {
     cwd: options.cwd ?? root,
     encoding: 'utf8',
+    env: contractEnv,
     timeout: options.timeoutMs ?? 180_000,
   });
   if (result.status !== 0) {

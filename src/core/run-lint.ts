@@ -1,13 +1,10 @@
 import { parseMdWithSourceMap } from '@lint-md/parser';
 import type {
-  LintDiagnostic,
   LintMdRuleWithOptions,
-  ReportOption,
   RuleExecutionError,
   RuleFixConfig,
   RuleSelector,
-  RunLintOptions,
-  SourceRange
+  RunLintOptions
 } from '../types.js';
 import { traverseMarkdown } from '../utils/traverser.js';
 import {
@@ -35,36 +32,12 @@ interface RegisteredSelector {
 
 export type { ExecutionReport } from '../utils/rule-manager.js';
 
-interface InternalLintDiagnostic extends LintDiagnostic {
-  range: SourceRange
-  fixable: boolean
-  /** Original rule location for the 2.x `lintResult` projection. */
-  legacyLoc: ReportOption['loc']
-  /** Source excerpt for the 2.x `lintResult` projection. */
-  legacyContent: string
-}
-
 export interface RunLintResult {
   reports: ExecutionReport[]
-  diagnostics: InternalLintDiagnostic[]
   fixes: RuleFixConfig[]
   executionErrors: RuleExecutionError[]
   fallbackHits: number
 }
-
-const buildInternalDiagnostic = (
-  report: ExecutionReport
-): InternalLintDiagnostic => ({
-  line: report.range.start.line,
-  column: report.range.start.column,
-  range: report.range,
-  ruleId: report.name,
-  message: report.message,
-  severity: report.severity,
-  fixable: typeof report.fix === 'function',
-  legacyLoc: report.loc,
-  legacyContent: report.content
-});
 
 /**
  * 基于各种 rules 对 Markdown 文本进行校验
@@ -167,7 +140,6 @@ export const runLint = (
 
   return {
     reports,
-    diagnostics: reports.map(buildInternalDiagnostic),
     fixes,
     executionErrors: collector.getErrors(),
     fallbackHits: ruleManager.getFallbackHits()

@@ -28,20 +28,7 @@ describe('execution report boundary', () => {
     const execution = runLint(markdown, rules, { computeFixes: false });
 
     expect(execution.reports[0].fix).toBeInstanceOf(Function);
-    expect(execution.diagnostics[0]).toStrictEqual({
-      line: 1,
-      column: 1,
-      range: {
-        start: { line: 1, column: 1, offset: 0 },
-        end: { line: 1, column: 2, offset: 1 }
-      },
-      ruleId: 'boundary-report',
-      message: 'boundary report',
-      severity: RULE_SEVERITY.WARN,
-      fixable: true,
-      legacyLoc,
-      legacyContent: markdown.slice(0, 6)
-    });
+    expect(execution).not.toHaveProperty('diagnostics');
     expect(fixCalled).toBe(false);
 
     const result = lintMarkdown(markdown, {

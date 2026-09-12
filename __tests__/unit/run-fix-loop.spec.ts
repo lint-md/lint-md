@@ -23,7 +23,6 @@ const makeRound = (
   overrides: Partial<RunLintResult> = {}
 ): RunLintResult => ({
   reports: [],
-  diagnostics: [],
   fixes: [],
   executionErrors: [],
   fallbackHits: 0,

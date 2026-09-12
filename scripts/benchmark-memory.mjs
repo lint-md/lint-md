@@ -84,11 +84,12 @@ if (process.env.BENCHMARK_CHILD === '1') {
   }
 
   function runTextScannerRules() {
-    // 仅启用这 5 条依赖 TextScanner 的文本规则，隔离 scanner 成本以独立归因。
+    // Use selected TextScanner-heavy rules to isolate scanner cost.
     const names = [
       'use-standard-ellipsis',
       'no-half-width-punctuation',
       'no-full-width-number',
+      'space-around-alphabet',
       'space-around-number',
       'no-special-characters',
     ];
@@ -375,15 +376,12 @@ function generateMixedMarkdown(targetBytes) {
 }
 
 function generateHighMatchDensity(targetBytes) {
-  // Lots of Chinese + English adjacent text to trigger space-around-alphabet etc.
-  const base = `中文English中文123中文abc测试中文x${CHINESE_CHARS.slice(0, 5)}`;
+  const base = '中文a中文b中文c1中文2';
   return repeatToSize(base, targetBytes);
 }
 
 function generateLowMatchDensity(targetBytes) {
-  // Plain English text — most Chinese rules won't fire.
-  const base = `This is plain English text for low match density testing. ${
-    ENGLISH_WORDS.join(' ')}. `;
+  const base = '中文中文中文中文中文';
   return repeatToSize(base, targetBytes);
 }
 

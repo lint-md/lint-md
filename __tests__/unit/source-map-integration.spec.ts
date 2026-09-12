@@ -7,12 +7,14 @@ import { lintMarkdownInternal } from '../../src/core/lint-markdown';
 import { TextScanner } from '../../src/utils/text-scanner';
 import { createLintSourceCode } from '../../src/utils/source-code';
 import noHalfWidthPunctuation from '../../src/rules/no-half-width-punctuation';
+import spaceAroundAlphabet from '../../src/rules/space-around-alphabet';
+import spaceAroundNumber from '../../src/rules/space-around-number';
 import type { LintMdRule } from '../../src/types';
 
 const halfWidthConfig = [{ rule: noHalfWidthPunctuation }];
 
 describe('parser source-map integration', () => {
-  test('does not resolve source ranges for uninspected code points', () => {
+  test('resolves source ranges only after a match', () => {
     const node = {
       type: 'text',
       value: 'abc',
@@ -39,17 +41,52 @@ describe('parser source-map integration', () => {
     expect(getTextRange).not.toHaveBeenCalled();
     expect(getLocation).not.toHaveBeenCalled();
 
-    const positions: Array<{ endOffset: number }> = [];
-    new TextScanner(node as any, sourceCode).forEachChar((_char, _index, pos) => {
-      positions.push(pos);
-    });
-    expect(getTextRange).not.toHaveBeenCalled();
-    expect(getLocation).not.toHaveBeenCalled();
-    expect(positions.map(pos => pos.endOffset)).toEqual([1, 2, 3]);
-    expect(getTextRange).toHaveBeenCalledTimes(3);
-    expect(getLocation).toHaveBeenCalledTimes(3);
+    const match = new TextScanner(node as any, sourceCode).matchAt(1, 1);
+    expect(match.absoluteRange).toEqual([1, 2]);
+    expect(getTextRange).toHaveBeenCalledTimes(1);
+    expect(getLocation).toHaveBeenCalledTimes(1);
     expect(getTextRange.mock.calls.map(([, start, end]) => [start, end]))
-      .toEqual([[0, 1], [1, 2], [2, 3]]);
+      .toEqual([[1, 2]]);
+  });
+
+  test.each([
+    ['alphabet', spaceAroundAlphabet, '中文a'],
+    ['number', spaceAroundNumber, '中文1']
+  ])('%s resolves only the diagnostic range in lint-only mode', (_name, rule, value) => {
+    const node = {
+      type: 'text',
+      value,
+      position: {
+        start: { line: 1, column: 1, offset: 0 },
+        end: { line: 1, column: value.length + 1, offset: value.length }
+      }
+    };
+    const getTextRange = jest.fn((_node: unknown, start: number, end: number) => [start, end] as [number, number]);
+    const sourceCode = {
+      text: value,
+      ast: { type: 'root', children: [] } as any,
+      getRaw: () => value,
+      getTextRange,
+      getPosition: () => ({ line: 1, column: 1, offset: 0 }),
+      getLocation: (range: [number, number]) => ({
+        start: { line: 1, column: range[0] + 1, offset: range[0] },
+        end: { line: 1, column: range[1] + 1, offset: range[1] }
+      })
+    };
+    const report = jest.fn();
+    const selector = rule.create({
+      report,
+      options: {},
+      ast: sourceCode.ast,
+      markdown: value,
+      sourceCode
+    }).text!;
+
+    selector(node as any);
+
+    expect(report).toHaveBeenCalledTimes(1);
+    expect(getTextRange).toHaveBeenCalledTimes(1);
+    expect(getTextRange).toHaveBeenCalledWith(node, 1, 3);
   });
 
   test.each([

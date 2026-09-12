@@ -157,21 +157,15 @@ describe('TextScanner', () => {
       expect(chars).toEqual(['a', '𝔄', 'b']);
     });
 
-    it('resolves positions only when a callback reads them', () => {
-      const positions: Array<{ line: number; column: number; offset: number }> = [];
+    it('passes only the character and UTF-16 index', () => {
+      const callbackArguments: unknown[][] = [];
 
-      createScanner('a\nb').forEachChar((_char, _index, position) => {
-        positions.push({
-          line: position.line,
-          column: position.column,
-          offset: position.offset
-        });
-      });
+      createScanner('中𝔄a').forEachChar((...args) => callbackArguments.push(args));
 
-      expect(positions).toEqual([
-        { line: 1, column: 1, offset: 0 },
-        { line: 1, column: 2, offset: 1 },
-        { line: 2, column: 1, offset: 2 }
+      expect(callbackArguments).toEqual([
+        ['中', 0],
+        ['𝔄', 1],
+        ['a', 3]
       ]);
     });
   });

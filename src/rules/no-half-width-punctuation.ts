@@ -21,23 +21,6 @@ const hasAdjacentChinese = (value: string, index: number) => {
     || (nextChar !== undefined && isChineseCharacter(nextChar));
 };
 
-const getParenthesisPairs = (value: string): [number, number][] => {
-  const pairs: [number, number][] = [];
-  const stack: number[] = [];
-  for (let i = 0; i < value.length; i++) {
-    if (value[i] === '(') {
-      stack.push(i);
-    }
-    else if (value[i] === ')') {
-      const openIndex = stack.pop();
-      if (openIndex !== undefined) {
-        pairs.push([openIndex, i]);
-      }
-    }
-  }
-  return pairs;
-};
-
 const isHorizontalWhitespace = (char: string) => char === ' ' || char === '\t' || char === '\u3000';
 
 const hasOuterChinese = (value: string, openIdx: number, closeIdx: number): boolean => {
@@ -70,12 +53,7 @@ const noHalfWidthPunctuation: LintMdRule = {
       text: (node: PositionedTextNode) => {
         const scanner = new TextScanner(node, context.sourceCode);
         const { value } = scanner;
-        // Multiple character rules make shared classification worthwhile.
-        // Keep the punctuation-only fast path for one consumer.
-        const sharedScan = textRuleScan.consumerCount > 1
-          ? textRuleScan.get(node)
-          : undefined;
-        const parenthesisPairs = sharedScan?.parenthesisPairs ?? getParenthesisPairs(value);
+        const { parenthesisPairs, punctuationCharacters } = textRuleScan.get(node);
 
         const convertIndices = new Set<number>();
 
@@ -106,13 +84,8 @@ const noHalfWidthPunctuation: LintMdRule = {
           }
         };
 
-        if (sharedScan) {
-          for (const { char, index } of sharedScan.punctuationCharacters) {
-            inspectPunctuation(char, index);
-          }
-        }
-        else {
-          scanner.forEachChar(inspectPunctuation);
+        for (const { char, index } of punctuationCharacters) {
+          inspectPunctuation(char, index);
         }
       }
     };

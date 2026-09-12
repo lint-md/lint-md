@@ -8,33 +8,33 @@ import {
 
 const HALF_WIDTH_PUNCTUATION = new Set([',', '.', ';', ':', '!', '?', '(', ')']);
 
-export interface TextPunctuation {
+export interface PunctuationCharacter {
   char: string
   index: number
 }
 
 export interface TextBoundary {
-  index: number
-  length: number
-  firstLength: number
+  start: number
+  totalLength: number
+  firstCharacterLength: number
 }
 
-export interface TextRuleScan {
+export interface TextNodeAnalysis {
   alphabetBoundaries: TextBoundary[]
   numberBoundaries: TextBoundary[]
-  punctuationCharacters: TextPunctuation[]
+  punctuationCharacters: PunctuationCharacter[]
   parenthesisPairs: [number, number][]
 }
 
 interface CachedTextRuleScan {
-  value: string
-  scan: TextRuleScan
+  sourceValue: string
+  result: TextNodeAnalysis
 }
 
-const scanTextNode = (node: MarkdownTextNode): TextRuleScan => {
+const scanTextValue = (value: string): TextNodeAnalysis => {
   const alphabetBoundaries: TextBoundary[] = [];
   const numberBoundaries: TextBoundary[] = [];
-  const punctuationCharacters: TextPunctuation[] = [];
+  const punctuationCharacters: PunctuationCharacter[] = [];
   const parenthesisPairs: [number, number][] = [];
   const parenthesisStack: number[] = [];
   let previousChar: string | undefined;
@@ -43,8 +43,8 @@ const scanTextNode = (node: MarkdownTextNode): TextRuleScan => {
   let previousIsEnglish = false;
   let previousIsNumber = false;
 
-  for (let index = 0; index < node.value.length;) {
-    const char = String.fromCodePoint(node.value.codePointAt(index)!);
+  for (let index = 0; index < value.length;) {
+    const char = String.fromCodePoint(value.codePointAt(index)!);
     const isChinese = isChineseCharacter(char);
     const isEnglish = isEnglishCharacter(char);
     const isNumber = isNumberCharacter(char);
@@ -55,9 +55,9 @@ const scanTextNode = (node: MarkdownTextNode): TextRuleScan => {
         || (previousIsEnglish && isChinese);
       if (isAlphabetBoundary) {
         alphabetBoundaries.push({
-          index: previousIndex,
-          length,
-          firstLength: previousChar.length
+          start: previousIndex,
+          totalLength: length,
+          firstCharacterLength: previousChar.length
         });
       }
 
@@ -66,13 +66,13 @@ const scanTextNode = (node: MarkdownTextNode): TextRuleScan => {
       const isPercentBoundary = previousChar === '%'
         && previousIndex > 0
         && isChinese
-        && node.value.charCodeAt(previousIndex - 1) >= 48
-        && node.value.charCodeAt(previousIndex - 1) <= 57;
+        && value.charCodeAt(previousIndex - 1) >= 48
+        && value.charCodeAt(previousIndex - 1) <= 57;
       if (isNumberBoundary || isPercentBoundary) {
         numberBoundaries.push({
-          index: previousIndex,
-          length,
-          firstLength: previousChar.length
+          start: previousIndex,
+          totalLength: length,
+          firstCharacterLength: previousChar.length
         });
       }
     }
@@ -107,43 +107,32 @@ const scanTextNode = (node: MarkdownTextNode): TextRuleScan => {
   };
 };
 
-export interface TextRuleScanSession {
-  readonly consumerCount: number
-  get: (node: MarkdownTextNode) => TextRuleScan
+export interface TextNodeAnalysisSession {
+  get: (node: MarkdownTextNode) => TextNodeAnalysis
 }
 
-class TextRuleScanSessionImpl implements TextRuleScanSession {
+class TextNodeAnalysisSessionImpl implements TextNodeAnalysisSession {
   private readonly scanCache = new WeakMap<MarkdownTextNode, CachedTextRuleScan>();
-  private _consumerCount = 0;
 
-  get consumerCount(): number {
-    return this._consumerCount;
-  }
-
-  register(): void {
-    this._consumerCount++;
-  }
-
-  get(node: MarkdownTextNode): TextRuleScan {
+  get(node: MarkdownTextNode): TextNodeAnalysis {
     const cached = this.scanCache.get(node);
-    if (cached?.value === node.value) {
-      return cached.scan;
+    if (cached?.sourceValue === node.value) {
+      return cached.result;
     }
 
-    const scan = scanTextNode(node);
-    this.scanCache.set(node, { value: node.value, scan });
-    return scan;
+    const result = scanTextValue(node.value);
+    this.scanCache.set(node, { sourceValue: node.value, result });
+    return result;
   }
 }
 
-const sessions = new WeakMap<LintSourceCode, TextRuleScanSessionImpl>();
+const sessions = new WeakMap<LintSourceCode, TextNodeAnalysisSessionImpl>();
 
-export const registerTextRuleScanConsumer = (sourceCode: LintSourceCode): TextRuleScanSession => {
+export const registerTextRuleScanConsumer = (sourceCode: LintSourceCode): TextNodeAnalysisSession => {
   let session = sessions.get(sourceCode);
   if (!session) {
-    session = new TextRuleScanSessionImpl();
+    session = new TextNodeAnalysisSessionImpl();
     sessions.set(sourceCode, session);
   }
-  session.register();
   return session;
 };

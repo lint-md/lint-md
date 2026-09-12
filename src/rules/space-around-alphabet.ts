@@ -13,13 +13,13 @@ const spaceAroundAlphabet: LintMdRule = {
         const scanner = new TextScanner(node, context.sourceCode);
         const { alphabetBoundaries } = textRuleScan.get(node);
 
-        for (const { index, length, firstLength } of alphabetBoundaries) {
-          const reportMatch = scanner.matchAt(index, length);
+        for (const { start, totalLength, firstCharacterLength } of alphabetBoundaries) {
+          const reportMatch = scanner.matchAt(start, totalLength);
           context.report({
             range: reportMatch.absoluteRange,
             message: '中英文之间需要添加空格',
             fix: (fixer) => {
-              const charMatch = scanner.matchAt(index, firstLength);
+              const charMatch = scanner.matchAt(start, firstCharacterLength);
               return fixer.insertTextAt(charMatch.absoluteRange[1], ' ');
             }
           });

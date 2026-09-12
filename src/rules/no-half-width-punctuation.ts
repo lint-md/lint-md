@@ -1,7 +1,7 @@
 import type { LintMdRule, PositionedTextNode } from '../types.js';
 import { isChineseCharacter } from '../utils/char-helper.js';
 import { TextScanner } from '../utils/text-scanner.js';
-import { registerTextRuleScan } from '../utils/text-rule-scan.js';
+import { registerTextRuleScanConsumer } from '../utils/text-rule-scan.js';
 
 const HALF_TO_FULL: Record<string, string> = {
   ',': '，',
@@ -65,11 +65,13 @@ const noHalfWidthPunctuation: LintMdRule = {
     name: 'no-half-width-punctuation'
   },
   create: (context) => {
-    const textRuleScan = registerTextRuleScan(context.sourceCode);
+    const textRuleScan = registerTextRuleScanConsumer(context.sourceCode);
     return {
       text: (node: PositionedTextNode) => {
         const scanner = new TextScanner(node, context.sourceCode);
         const { value } = scanner;
+        // Multiple character rules make shared classification worthwhile.
+        // Keep the punctuation-only fast path for one consumer.
         const sharedScan = textRuleScan.consumerCount > 1
           ? textRuleScan.get(node)
           : undefined;

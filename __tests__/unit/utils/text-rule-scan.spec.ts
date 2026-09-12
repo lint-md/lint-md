@@ -1,4 +1,4 @@
-import { registerTextRuleScan } from '../../../src/utils/text-rule-scan';
+import { registerTextRuleScanConsumer } from '../../../src/utils/text-rule-scan';
 
 const makeNode = (value: string) => ({
   type: 'text',
@@ -13,8 +13,8 @@ describe('text rule scan', () => {
   test('shares one scan for the same node value', () => {
     const node = makeNode('中文1(test),English');
     const sourceCode = {} as any;
-    const firstConsumer = registerTextRuleScan(sourceCode);
-    const secondConsumer = registerTextRuleScan(sourceCode);
+    const firstConsumer = registerTextRuleScanConsumer(sourceCode);
+    const secondConsumer = registerTextRuleScanConsumer(sourceCode);
 
     expect(secondConsumer).toBe(firstConsumer);
     expect(firstConsumer.consumerCount).toBe(2);
@@ -22,7 +22,7 @@ describe('text rule scan', () => {
   });
 
   test('classifies Unicode code points and collects rule candidates', () => {
-    const session = registerTextRuleScan({} as any);
+    const session = registerTextRuleScanConsumer({} as any);
     const scan = session.get(makeNode('𠀀A1(test),') as any);
 
     expect(scan.alphabetBoundaries).toEqual([{
@@ -38,7 +38,7 @@ describe('text rule scan', () => {
 
   test('refreshes the scan after a node value changes', () => {
     const node = makeNode('中文1');
-    const session = registerTextRuleScan({} as any);
+    const session = registerTextRuleScanConsumer({} as any);
     const first = session.get(node as any);
 
     node.value = '中文A';

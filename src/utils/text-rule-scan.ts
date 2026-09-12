@@ -138,7 +138,7 @@ class TextRuleScanSessionImpl implements TextRuleScanSession {
 
 const sessions = new WeakMap<LintSourceCode, TextRuleScanSessionImpl>();
 
-export const registerTextRuleScan = (sourceCode: LintSourceCode): TextRuleScanSession => {
+export const registerTextRuleScanConsumer = (sourceCode: LintSourceCode): TextRuleScanSession => {
   let session = sessions.get(sourceCode);
   if (!session) {
     session = new TextRuleScanSessionImpl();

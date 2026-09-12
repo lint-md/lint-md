@@ -1,13 +1,13 @@
 import type { LintMdRule, PositionedTextNode } from '../types.js';
 import { TextScanner } from '../utils/text-scanner.js';
-import { registerTextRuleScan } from '../utils/text-rule-scan.js';
+import { registerTextRuleScanConsumer } from '../utils/text-rule-scan.js';
 
 const spaceAroundNumber: LintMdRule = {
   meta: {
     name: 'space-around-number'
   },
   create: (context) => {
-    const textRuleScan = registerTextRuleScan(context.sourceCode);
+    const textRuleScan = registerTextRuleScanConsumer(context.sourceCode);
     return {
       text: (node: PositionedTextNode) => {
         const scanner = new TextScanner(node, context.sourceCode);

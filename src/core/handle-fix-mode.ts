@@ -15,7 +15,8 @@ interface RunFixLoopOptions {
   runRound: (
     markdown: string,
     rules: LintMdRuleWithOptions[],
-    round: number
+    round: number,
+    computeFixes: boolean
   ) => RunLintResult
   now: () => number
   maxRounds: number
@@ -23,6 +24,7 @@ interface RunFixLoopOptions {
 
 interface FixLoopResult {
   lintResult: RunLintResult
+  remainingLintResult: RunLintResult
   fixedResult: FixedResult
   executionErrors: RuleExecutionError[]
 }
@@ -40,6 +42,8 @@ export const runFixLoop = (
 
   let rounds = 0;
   let initialLintResult!: RunLintResult;
+  let lastLintResult!: RunLintResult;
+  let lastLintedText: string | undefined;
   const executionErrors: RuleExecutionError[] = [];
   let current = markdown;
   let lastNotAppliedFixes: NotAppliedFix[] = [];
@@ -52,7 +56,9 @@ export const runFixLoop = (
     const roundStart = readTime();
     seenTexts.add(current);
 
-    const lintResult = runRound(current, rules, rounds);
+    const lintResult = runRound(current, rules, rounds, true);
+    lastLintedText = current;
+    lastLintResult = lintResult;
 
     if (rounds === 0) {
       initialLintResult = lintResult;
@@ -88,6 +94,14 @@ export const runFixLoop = (
     }
   }
 
+  const remainingLintResult = current === lastLintedText
+    ? lastLintResult
+    : runRound(current, rules, rounds, false);
+
+  if (remainingLintResult !== lastLintResult) {
+    executionErrors.push(...remainingLintResult.executionErrors);
+  }
+
   const fixedResult: FixedResult = {
     result: current,
     notAppliedFixes: lastNotAppliedFixes,
@@ -102,6 +116,7 @@ export const runFixLoop = (
 
   return {
     lintResult: initialLintResult,
+    remainingLintResult,
     fixedResult,
     executionErrors
   };
@@ -112,10 +127,10 @@ export const handleFixMode = (
   rules: LintMdRuleWithOptions[],
   policy: 'collect' | 'strict' = 'collect'
 ): FixLoopResult => runFixLoop(markdown, rules, {
-  runRound: (current, currentRules, round) => runLint(current, currentRules, {
+  runRound: (current, currentRules, round, computeFixes) => runLint(current, currentRules, {
     ruleErrorPolicy: policy,
     round,
-    computeFixes: true
+    computeFixes
   }),
   now,
   maxRounds: MAX_LINT_AND_FIX_CALL_TIMES

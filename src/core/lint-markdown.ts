@@ -1,6 +1,8 @@
 import type {
   FixMarkdownOptions,
+  FixMarkdownResult,
   FixedResult,
+  LintDiagnostic,
   LintExecutionOptions,
   LintMarkdownOptions,
   LintMdFixResult,
@@ -8,7 +10,8 @@ import type {
   LintMdResult,
   LintMdRuleWithOptions,
   LintMdRulesConfig,
-  LintReportItem
+  LintReportItem,
+  LintSummary
 } from '../types.js';
 import * as internalRuleConfig from '../rules/index.js';
 import { DEFAULT_RULE_SEVERITIES } from '../rules/default-rule-severities.js';
@@ -25,6 +28,7 @@ export const lintMarkdownInternal = (
   policy: 'collect' | 'strict' = 'collect'
 ): {
   lintResult: ReturnType<typeof runLint>
+  remainingLintResult: ReturnType<typeof runLint> | null
   fixedResult: FixedResult | null
   executionErrors: ReturnType<typeof runLint>['executionErrors']
 } => {
@@ -32,14 +36,21 @@ export const lintMarkdownInternal = (
     const lintResult = runLint(markdown, rules, { ruleErrorPolicy: policy });
     return {
       lintResult,
+      remainingLintResult: null,
       fixedResult: null,
       executionErrors: lintResult.executionErrors
     };
   }
   else {
-    const { lintResult, fixedResult, executionErrors } = handleFixMode(markdown, rules, policy);
+    const {
+      lintResult,
+      remainingLintResult,
+      fixedResult,
+      executionErrors
+    } = handleFixMode(markdown, rules, policy);
     return {
       lintResult,
+      remainingLintResult,
       fixedResult,
       executionErrors
     };
@@ -57,10 +68,28 @@ const resolveConfiguredRules = (rules: LintMdRulesConfig) => {
     .filter(value => value.severity !== RULE_SEVERITY.OFF);
 };
 
+const buildDiagnostics = (
+  lintResult: ReturnType<typeof runLint>
+): LintDiagnostic[] => lintResult.reports.map(item => ({
+  line: item.range.start.line,
+  column: item.range.start.column,
+  range: item.range,
+  ruleId: item.name,
+  message: item.message,
+  severity: item.severity,
+  // A callback declares fixability. Lint-only runs do not execute it.
+  fixable: typeof item.fix === 'function'
+}));
+
 const buildLintResult = (
   executionResult: ReturnType<typeof lintMarkdownInternal>
-): LintMdResult => {
-  const { fixedResult, lintResult, executionErrors } = executionResult;
+): LintMdLintResult | FixMarkdownResult => {
+  const {
+    fixedResult,
+    lintResult,
+    remainingLintResult,
+    executionErrors
+  } = executionResult;
   const reportData = lintResult.reports;
 
   const reportDataWithSeverity: LintReportItem[] = reportData.map((item) => {
@@ -75,35 +104,41 @@ const buildLintResult = (
     };
   });
 
-  // line/column 从规范 range 取值而非透传 item.loc：
-  // 规则可能上报与 offset 矛盾的 loc，range 才是与 content / fix 同一坐标系的权威。
-  const diagnostics = reportData.map(item => ({
-    line: item.range.start.line,
-    column: item.range.start.column,
-    range: item.range,
-    ruleId: item.name,
-    message: item.message,
-    severity: item.severity,
-    // 只反映“声明了 fix callback”；lint-only 不执行 fix（computeFixes 才会），
-    // 因此这里绝不能调用 item.fix 来探测可修复性。
-    fixable: typeof item.fix === 'function'
-  }));
-
-  // counts 唯一来源是 diagnostics（#190）；顶层字段只是兼容投影。
+  const diagnostics = buildDiagnostics(lintResult);
   const summary = summarizeDiagnostics(diagnostics);
 
-  return {
+  const baseResult = {
     lintResult: reportDataWithSeverity,
     diagnostics,
     summary,
-    fixedResult,
     fixableErrorCount: summary.fixableErrorCount,
     fixableWarningCount: summary.fixableWarningCount,
     executionErrors
   };
+
+  if (fixedResult === null) {
+    return { ...baseResult, fixedResult };
+  }
+
+  const finalLintResult = remainingLintResult!;
+  const remainingDiagnostics = finalLintResult === lintResult
+    ? diagnostics
+    : buildDiagnostics(finalLintResult);
+  const remainingSummary: LintSummary = remainingDiagnostics === diagnostics
+    ? summary
+    : summarizeDiagnostics(remainingDiagnostics);
+
+  return {
+    ...baseResult,
+    fixedResult,
+    initialDiagnostics: diagnostics,
+    remainingDiagnostics,
+    initialSummary: summary,
+    remainingSummary
+  };
 };
 
-function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: true, options: LintExecutionOptions): LintMdFixResult;
+function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: true, options: LintExecutionOptions): FixMarkdownResult;
 function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: false, options: LintExecutionOptions): LintMdLintResult;
 function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: boolean, options: LintExecutionOptions): LintMdResult;
 function executeMarkdown(
@@ -179,14 +214,14 @@ export function lintMarkdown(
 /**
  * Apply configured fixes to Markdown.
  *
- * `lintResult` describes the original input. `fixedResult.result` contains
- * the final fixed Markdown.
+ * `diagnostics` and `initialDiagnostics` describe the original input.
+ * `remainingDiagnostics` describes `fixedResult.result`.
  *
  * @public
  */
 export function fixMarkdown(
   markdown: string,
   options: FixMarkdownOptions = {}
-): LintMdFixResult {
+): FixMarkdownResult {
   return executeMarkdown(markdown, options.rules ?? {}, true, options);
 }

@@ -1,39 +1,29 @@
 import type { LintMdRule, PositionedTextNode } from '../types.js';
-import { isChineseCharacter, isEnglishCharacter } from '../utils/char-helper.js';
 import { TextScanner } from '../utils/text-scanner.js';
-
-const isChineseEnglishBoundary = (a: string, b: string): boolean => {
-  return (isChineseCharacter(a) && isEnglishCharacter(b))
-    || (isEnglishCharacter(a) && isChineseCharacter(b));
-};
+import { registerTextNodeAnalysisConsumer } from '../utils/text-rule-scan.js';
 
 const spaceAroundAlphabet: LintMdRule = {
   meta: {
     name: 'space-around-alphabet'
   },
   create: (context) => {
+    const textNodeAnalysis = registerTextNodeAnalysisConsumer(context.sourceCode);
     return {
       text: (node: PositionedTextNode) => {
         const scanner = new TextScanner(node, context.sourceCode);
-        const { value } = scanner;
+        const { alphabetBoundaries } = textNodeAnalysis.get(node);
 
-        scanner.forEachChar((char, index) => {
-          const nextCodePoint = value.codePointAt(index + char.length);
-          const nextCharacter = nextCodePoint === undefined
-            ? undefined
-            : String.fromCodePoint(nextCodePoint);
-          if (nextCharacter && isChineseEnglishBoundary(char, nextCharacter)) {
-            const reportMatch = scanner.matchAt(index, char.length + nextCharacter.length);
-            context.report({
-              range: reportMatch.absoluteRange,
-              message: '中英文之间需要添加空格',
-              fix: (fixer) => {
-                const charMatch = scanner.matchAt(index, char.length);
-                return fixer.insertTextAt(charMatch.absoluteRange[1], ' ');
-              }
-            });
-          }
-        });
+        for (const { start, totalLength, firstCharacterLength } of alphabetBoundaries) {
+          const reportMatch = scanner.matchAt(start, totalLength);
+          context.report({
+            range: reportMatch.absoluteRange,
+            message: '中英文之间需要添加空格',
+            fix: (fixer) => {
+              const charMatch = scanner.matchAt(start, firstCharacterLength);
+              return fixer.insertTextAt(charMatch.absoluteRange[1], ' ');
+            }
+          });
+        }
       }
     };
   }

@@ -1,6 +1,8 @@
 import type { LintMdRule, PositionedTextNode } from '../types.js';
 import { TextScanner } from '../utils/text-scanner.js';
 
+const ELLIPSIS_PATTERN = /\.{4,}|…+/g;
+
 const useStandardEllipsis: LintMdRule = {
   meta: {
     name: 'use-standard-ellipsis'
@@ -9,25 +11,28 @@ const useStandardEllipsis: LintMdRule = {
     return {
       text: (node: PositionedTextNode) => {
         const scanner = new TextScanner(node, context.sourceCode);
+        const value = scanner.value;
+        const firstCandidate = value.search(/[.…]/);
+        if (firstCandidate === -1) {
+          return;
+        }
 
-        // 找到所有的 . 组成的省略号
-        const dotMatches = scanner.findAllMatches(/\.{4,}/g);
+        ELLIPSIS_PATTERN.lastIndex = firstCandidate;
+        let matched = ELLIPSIS_PATTERN.exec(value);
+        while (matched !== null) {
+          const matchedValue = matched[0];
+          const isValidEllipsis = matchedValue[0] === '…' && matchedValue.length === 2;
+          if (!isValidEllipsis) {
+            const match = scanner.matchAt(matched.index, matchedValue.length);
+            context.report({
+              range: match.absoluteRange,
+              message: '请使用标准规范的省略号',
+              fix: fixer => fixer.replaceTextRange(match.absoluteRange, '……')
+            });
+          }
 
-        // 找到所有的 …（只要不是两个，都是不规范的）
-        const singleMatches = scanner.findAllMatches(/…+/g)
-          .filter(m => m.length !== 2);
-
-        const allMatches = dotMatches
-          .concat(singleMatches)
-          .sort((a, b) => a.index - b.index);
-
-        allMatches.forEach((m) => {
-          context.report({
-            range: m.absoluteRange,
-            message: '请使用标准规范的省略号',
-            fix: fixer => fixer.replaceTextRange(m.absoluteRange, '……')
-          });
-        });
+          matched = ELLIPSIS_PATTERN.exec(value);
+        }
       }
     };
   }

@@ -27,6 +27,20 @@ describe('test use-standard-ellipsis', () => {
     expect(fixedResult?.result).toStrictEqual('前言……他说……');
   });
 
+  test('keeps only valid ellipses unchanged', () => {
+    const md = '前言……正文……';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.reports.length).toStrictEqual(0);
+    expect(fixedResult?.result).toStrictEqual(md);
+  });
+
+  test('reports invalid ellipses in text order', () => {
+    const md = '前言……正文....尾部…………';
+    const { fixedResult, lintResult } = fixer(md);
+    expect(lintResult.reports.length).toStrictEqual(2);
+    expect(fixedResult?.result).toStrictEqual('前言……正文……尾部……');
+  });
+
   test('fix long md', () => {
     const md = `
 1. hello world....

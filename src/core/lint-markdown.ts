@@ -2,6 +2,7 @@ import type {
   FixMarkdownOptions,
   FixedResult,
   LintExecutionOptions,
+  LintMarkdownOptions,
   LintMdFixResult,
   LintMdLintResult,
   LintMdResult,
@@ -123,20 +124,56 @@ function executeMarkdown(
   return buildLintResult(executionResult);
 }
 
+const isLintMarkdownOptions = (
+  value: LintMarkdownOptions | LintMdRulesConfig | undefined
+): value is LintMarkdownOptions => {
+  if (value === undefined) {
+    return false;
+  }
+
+  const hasRuleErrorPolicy = 'ruleErrorPolicy' in value
+    && (value.ruleErrorPolicy === 'collect' || value.ruleErrorPolicy === 'strict');
+
+  const hasRules = 'rules' in value
+    && typeof value.rules === 'object'
+    && value.rules !== null
+    && !Array.isArray(value.rules);
+
+  return hasRuleErrorPolicy || hasRules;
+};
+
 /**
- * 核心方法，对某个 Markdown 文本进行 lint 或者 fix
+ * Lint Markdown without applying fixes.
  *
- * @date 2021-12-14 17:16:12
- *    默认开启 fix 模式：
- * - isFixMode=true 或省略时，fixedResult 为 FixedResult
- * - isFixMode=false 时，fixedResult 为 null
- * - isFixMode 为 boolean 变量时，返回联合类型
+ * @public
  */
-export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: true, options?: LintExecutionOptions): LintMdFixResult;
-export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: false, options?: LintExecutionOptions): LintMdLintResult;
-export function lintMarkdown(markdown: string, rules?: LintMdRulesConfig, isFixMode?: boolean, options?: LintExecutionOptions): LintMdResult;
-export function lintMarkdown(markdown: string, rules: LintMdRulesConfig = {}, isFixMode = true, options: LintExecutionOptions = {}): LintMdResult {
-  return executeMarkdown(markdown, rules, isFixMode, options);
+export function lintMarkdown(markdown: string, options: LintMarkdownOptions): LintMdLintResult;
+/** @deprecated Use `fixMarkdown(markdown, options)` for automatic fixes. */
+export function lintMarkdown(markdown: string): LintMdFixResult;
+/** @deprecated Use the options-based overload for lint-only checks. */
+export function lintMarkdown(markdown: string, rules: LintMdRulesConfig): LintMdFixResult;
+/** @deprecated Use `fixMarkdown(markdown, options)`. */
+export function lintMarkdown(markdown: string, rules: LintMdRulesConfig | undefined, isFixMode: true, options?: LintExecutionOptions): LintMdFixResult;
+/** @deprecated Use the options-based overload for lint-only checks. */
+export function lintMarkdown(markdown: string, rules: LintMdRulesConfig | undefined, isFixMode: false, options?: LintExecutionOptions): LintMdLintResult;
+/** @deprecated Use `lintMarkdown(markdown, options)` or `fixMarkdown(markdown, options)`. */
+export function lintMarkdown(markdown: string, rules: LintMdRulesConfig | undefined, isFixMode: boolean, options?: LintExecutionOptions): LintMdResult;
+export function lintMarkdown(
+  markdown: string,
+  rulesOrOptions: LintMdRulesConfig | LintMarkdownOptions = {},
+  isFixMode?: boolean,
+  options: LintExecutionOptions = {}
+): LintMdResult {
+  if (arguments.length === 2 && isLintMarkdownOptions(rulesOrOptions)) {
+    return executeMarkdown(markdown, rulesOrOptions.rules ?? {}, false, rulesOrOptions);
+  }
+
+  return executeMarkdown(
+    markdown,
+    rulesOrOptions as LintMdRulesConfig,
+    isFixMode ?? true,
+    options
+  );
 }
 
 /**

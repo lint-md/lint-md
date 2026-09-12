@@ -139,10 +139,12 @@ try {
   await writeFile(
     path.join(consumerDir, 'check.ts'),
     [
-      'import { fixMarkdown } from \'@lint-md/core\';',
+      'import { fixMarkdown, lintMarkdown, type LintMdLintResult } from \'@lint-md/core\';',
       '',
       'const result = fixMarkdown("# 标题 ", { rules: {} });',
+      'const lintResult: LintMdLintResult = lintMarkdown("# 标题 ", { rules: {} });',
       'console.log(result.lintResult.length);',
+      'console.log(lintResult.fixedResult);',
       '',
     ].join('\n'),
   );

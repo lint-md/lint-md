@@ -282,6 +282,19 @@ export interface LintExecutionOptions {
   ruleErrorPolicy?: RuleErrorPolicy
 }
 
+/** Options for a lint-only Markdown operation. */
+export type LintMarkdownOptions = LintExecutionOptions & (
+  | {
+    /** Rule settings for this lint operation. */
+    rules: LintMdRulesConfig
+  }
+  | {
+    rules?: LintMdRulesConfig
+    /** Rule failure behavior for this lint operation. */
+    ruleErrorPolicy: RuleErrorPolicy
+  }
+);
+
 /**
  * Options for `fixMarkdown`.
  *

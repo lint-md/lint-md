@@ -4,7 +4,7 @@ import type {
   MarkdownTextNode as ParserMarkdownTextNode
 } from '@lint-md/parser';
 import { SourceMapUnavailableError } from '@lint-md/parser';
-import type { LintSourceCode, MarkdownPosition, PositionedInlineCodeNode, PositionedMarkdownNode, PositionedMarkdownRoot, PositionedTextNode, ReportOption, ReportPosition, TextRange } from '../types.js';
+import type { LintSourceCode, MarkdownPosition, PositionedInlineCodeNode, PositionedMarkdownNode, PositionedMarkdownRoot, PositionedTextNode, ReportOption, ReportPosition, SourceRange, TextRange } from '../types.js';
 import { InvalidRuleRangeError, isSourceMapError } from './source-code-errors.js';
 
 interface SourceCodeOptions {
@@ -20,6 +20,7 @@ type ReportLocationInput =
 interface NormalizedReportLocation {
   loc: ReportOption['loc']
   range: TextRange
+  sourceRange: SourceRange
   usedFallback: boolean
 }
 
@@ -92,10 +93,13 @@ export const createLintSourceCode = ({
   const normalizeReportLocation = (
     input: ReportLocationInput
   ): NormalizedReportLocation => {
+    // Internal source ranges must derive from offsets (#190).
     if ('range' in input) {
+      const sourceRange = getLocation(input.range);
       return {
-        loc: getLocation(input.range),
+        loc: sourceRange,
         range: input.range,
+        sourceRange,
         usedFallback: false
       };
     }
@@ -104,9 +108,17 @@ export const createLintSourceCode = ({
       = !isValidOffset(input.loc.start.offset, text.length)
         || !isValidOffset(input.loc.end.offset, text.length);
 
+    const range: TextRange = [
+      getOffset(input.loc.start),
+      getOffset(input.loc.end)
+    ];
     return {
       loc: input.loc,
-      range: [getOffset(input.loc.start), getOffset(input.loc.end)],
+      range,
+      sourceRange: {
+        start: getPosition(range[0]),
+        end: getPosition(range[1])
+      },
       usedFallback
     };
   };

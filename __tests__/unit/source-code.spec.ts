@@ -313,6 +313,10 @@ describe('LintSourceCode', () => {
       expect(sc.normalizeReportLocation({ loc })).toEqual({
         loc,
         range: [text.indexOf('TARGET'), text.indexOf('TARGET') + 'TARGET'.length],
+        sourceRange: sc.getLocation([
+          text.indexOf('TARGET'),
+          text.indexOf('TARGET') + 'TARGET'.length
+        ]),
         usedFallback: true
       });
     });
@@ -321,11 +325,14 @@ describe('LintSourceCode', () => {
       const start = text.indexOf('TARGET');
       const range = [start, start + 'TARGET'.length] as const;
 
-      expect(sc.normalizeReportLocation({ range })).toEqual({
+      const normalized = sc.normalizeReportLocation({ range });
+      expect(normalized).toEqual({
         loc: sc.getLocation(range),
         range,
+        sourceRange: sc.getLocation(range),
         usedFallback: false
       });
+      expect(normalized.sourceRange).toBe(normalized.loc);
     });
 
     test('normalizeReportLocation flags offsets beyond the document', () => {
@@ -337,6 +344,10 @@ describe('LintSourceCode', () => {
       expect(sc.normalizeReportLocation({ loc })).toEqual({
         loc,
         range: [text.indexOf('TARGET'), text.indexOf('TARGET') + 'TARGET'.length],
+        sourceRange: sc.getLocation([
+          text.indexOf('TARGET'),
+          text.indexOf('TARGET') + 'TARGET'.length
+        ]),
         usedFallback: true
       });
     });

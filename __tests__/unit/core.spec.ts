@@ -61,6 +61,16 @@ Some **importance**, and \`code\`.
     expect(result.reports[0].severity).toBe(RULE_SEVERITY.WARN);
   });
 
+  test('runLint defaults a null rule severity to error', () => {
+    const result = runLint('```\n\n```', [{
+      rule: noEmptyCode,
+      severity: null as unknown as number
+    }]);
+
+    expect(result.reports).toHaveLength(1);
+    expect(result.reports[0].severity).toBe(RULE_SEVERITY.ERROR);
+  });
+
   test('test runLint() collects Error thrown by rule (collect policy, structured errors)', () => {
     const throwingRule: LintMdRule = {
       meta: { name: 'throwing-rule' },

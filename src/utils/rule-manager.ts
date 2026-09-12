@@ -66,7 +66,8 @@ export const createRuleManager = (
   const createRuleContext = (
     ruleConfig: LintMdRuleWithOptions & { severity?: number }
   ): LintMdRuleContext => {
-    const { rule, options, severity = RULE_SEVERITY.ERROR } = ruleConfig;
+    const { rule, options } = ruleConfig;
+    const severity = ruleConfig.severity ?? RULE_SEVERITY.ERROR;
 
     // 上报方法，供选择器内部调用
     const report = (option: RuleReportInput) => {

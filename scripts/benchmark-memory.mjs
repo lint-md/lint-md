@@ -84,7 +84,7 @@ if (process.env.BENCHMARK_CHILD === '1') {
   }
 
   function runTextScannerRules() {
-    // Use only TextScanner rules to isolate scanner cost.
+    // Use selected TextScanner-heavy rules to isolate scanner cost.
     const names = [
       'use-standard-ellipsis',
       'no-half-width-punctuation',

@@ -32,12 +32,14 @@ const spaceAroundNumber: LintMdRule = {
             && isNumberCharacter(value[index - 1]);
 
           if (isChineseNumBoundary || isPercentBoundary) {
-            const charMatch = scanner.matchAt(index, char.length);
             const reportMatch = scanner.matchAt(index, char.length + nextCharacter.length);
             context.report({
               range: reportMatch.absoluteRange,
               message: '中文与数字之间需要增加空格',
-              fix: fixer => fixer.insertTextAt(charMatch.absoluteRange[1], ' ')
+              fix: (fixer) => {
+                const charMatch = scanner.matchAt(index, char.length);
+                return fixer.insertTextAt(charMatch.absoluteRange[1], ' ');
+              }
             });
           }
         });

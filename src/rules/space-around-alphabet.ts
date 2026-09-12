@@ -23,12 +23,14 @@ const spaceAroundAlphabet: LintMdRule = {
             ? undefined
             : String.fromCodePoint(nextCodePoint);
           if (nextCharacter && isChineseEnglishBoundary(char, nextCharacter)) {
-            const charMatch = scanner.matchAt(index, char.length);
             const reportMatch = scanner.matchAt(index, char.length + nextCharacter.length);
             context.report({
               range: reportMatch.absoluteRange,
               message: '中英文之间需要添加空格',
-              fix: fixer => fixer.insertTextAt(charMatch.absoluteRange[1], ' ')
+              fix: (fixer) => {
+                const charMatch = scanner.matchAt(index, char.length);
+                return fixer.insertTextAt(charMatch.absoluteRange[1], ' ');
+              }
             });
           }
         });

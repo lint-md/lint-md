@@ -5,6 +5,7 @@ import type {
   LintDiagnostic,
   LintExecutionOptions,
   LintMarkdownOptions,
+  LintMarkdownResult,
   LintMdFixResult,
   LintMdLintResult,
   LintMdResult,
@@ -83,7 +84,7 @@ const buildDiagnostics = (
 
 const buildLintResult = (
   executionResult: ReturnType<typeof lintMarkdownInternal>
-): LintMdLintResult | FixMarkdownResult => {
+): LintMarkdownResult | FixMarkdownResult => {
   const {
     fixedResult,
     lintResult,
@@ -113,7 +114,8 @@ const buildLintResult = (
     summary,
     fixableErrorCount: summary.fixableErrorCount,
     fixableWarningCount: summary.fixableWarningCount,
-    executionErrors
+    executionErrors,
+    complete: executionErrors.length === 0
   };
 
   if (fixedResult === null) {
@@ -139,7 +141,7 @@ const buildLintResult = (
 };
 
 function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: true, options: LintExecutionOptions): FixMarkdownResult;
-function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: false, options: LintExecutionOptions): LintMdLintResult;
+function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: false, options: LintExecutionOptions): LintMarkdownResult;
 function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: boolean, options: LintExecutionOptions): LintMdResult;
 function executeMarkdown(
   markdown: string,
@@ -182,7 +184,7 @@ const isLintMarkdownOptions = (
  *
  * @public
  */
-export function lintMarkdown(markdown: string, options: LintMarkdownOptions): LintMdLintResult;
+export function lintMarkdown(markdown: string, options: LintMarkdownOptions): LintMarkdownResult;
 /** @deprecated Use `fixMarkdown(markdown, options)` for automatic fixes. */
 export function lintMarkdown(markdown: string): LintMdFixResult;
 /** @deprecated Use the options-based overload for lint-only checks. */

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Performance
+
+- **text-scanner**: avoid unused match locations in `findAllMatches` (#279)
+- **report**: reuse normalized range locations in source-code context (#281)
+- **rules**: share text node classification across space-around-alphabet, space-around-number, no-special-characters, and no-full-width-number (#286)
+- **use-standard-ellipsis**: scan ellipsis candidates once and skip mapping for valid `……` sequences (#288)
+
 ## [2.5.0](https://github.com/lint-md/lint-md/compare/v2.4.0...v2.5.0) - 2026-09-12
 
 ### Features

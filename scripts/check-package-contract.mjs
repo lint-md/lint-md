@@ -144,6 +144,8 @@ try {
       'const result = fixMarkdown("# 标题 ", { rules: {} });',
       'const lintResult: LintMdLintResult = lintMarkdown("# 标题 ", { rules: {} });',
       'console.log(result.lintResult.length);',
+      'console.log(result.initialDiagnostics.length);',
+      'console.log(result.remainingDiagnostics.length);',
       'console.log(lintResult.fixedResult);',
       '',
     ].join('\n'),

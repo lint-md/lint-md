@@ -63,9 +63,10 @@ describe('runFixLoop', () => {
       maxRounds: 3
     });
 
-    expect(runRound).toHaveBeenCalledWith('A', rules, 0);
+    expect(runRound).toHaveBeenCalledWith('A', rules, 0, true);
     expect(runRound).toHaveBeenCalledTimes(1);
     expect(result.lintResult).toBe(firstRound);
+    expect(result.remainingLintResult).toBe(firstRound);
     expect(result.fixedResult).toMatchObject({
       result: 'A',
       convergence: FixConvergence.STABLE,
@@ -79,18 +80,23 @@ describe('runFixLoop', () => {
       makeRound({ fixes: [makeFix('C')] }),
       makeRound()
     ];
-    const inputs: Array<[string, number]> = [];
+    const inputs: Array<[string, number, boolean]> = [];
 
     const result = runFixLoop('A', rules, {
-      runRound: (markdown, _rules, round) => {
-        inputs.push([markdown, round]);
+      runRound: (markdown, _rules, round, computeFixes) => {
+        inputs.push([markdown, round, computeFixes]);
         return rounds[round];
       },
       now: () => 0,
       maxRounds: 5
     });
 
-    expect(inputs).toStrictEqual([['A', 0], ['B', 1], ['C', 2]]);
+    expect(inputs).toStrictEqual([
+      ['A', 0, true],
+      ['B', 1, true],
+      ['C', 2, true]
+    ]);
+    expect(result.remainingLintResult).toBe(rounds[2]);
     expect(result.fixedResult).toMatchObject({
       result: 'C',
       convergence: FixConvergence.STABLE,
@@ -104,12 +110,23 @@ describe('runFixLoop', () => {
       makeRound({ fixes: [makeFix('A')] })
     ];
 
+    const finalRound = makeRound({ reports: [makeReport('final A')] });
+    const inputs: Array<[string, number, boolean]> = [];
     const result = runFixLoop('A', rules, {
-      runRound: (_markdown, _rules, round) => rounds[round],
+      runRound: (markdown, _rules, round, computeFixes) => {
+        inputs.push([markdown, round, computeFixes]);
+        return computeFixes ? rounds[round] : finalRound;
+      },
       now: () => 0,
       maxRounds: 2
     });
 
+    expect(inputs).toStrictEqual([
+      ['A', 0, true],
+      ['B', 1, true],
+      ['A', 2, false]
+    ]);
+    expect(result.remainingLintResult).toBe(finalRound);
     expect(result.fixedResult).toMatchObject({
       result: 'A',
       convergence: FixConvergence.CYCLE_DETECTED,
@@ -130,9 +147,21 @@ describe('runFixLoop', () => {
   });
 
   test('stops at the injected round limit', () => {
-    const runRound = jest.fn((markdown: string) => makeRound({
-      fixes: [makeFix(`${markdown}${markdown}`, [0, markdown.length])]
-    }));
+    const finalError: RuleExecutionError = {
+      ruleName: 'final-check',
+      message: 'final failure',
+      round: 2,
+      phase: 'selector'
+    };
+    const finalRound = makeRound({
+      reports: [makeReport('final output')],
+      executionErrors: [finalError]
+    });
+    const runRound = jest.fn((markdown: string, _rules, _round, computeFixes: boolean) => (
+      computeFixes
+        ? makeRound({ fixes: [makeFix(`${markdown}${markdown}`, [0, markdown.length])] })
+        : finalRound
+    ));
 
     const result = runFixLoop('A', rules, {
       runRound,
@@ -140,7 +169,10 @@ describe('runFixLoop', () => {
       maxRounds: 2
     });
 
-    expect(runRound).toHaveBeenCalledTimes(2);
+    expect(runRound).toHaveBeenCalledTimes(3);
+    expect(runRound).toHaveBeenLastCalledWith('AAAA', rules, 2, false);
+    expect(result.remainingLintResult).toBe(finalRound);
+    expect(result.executionErrors).toStrictEqual([finalError]);
     expect(result.fixedResult).toMatchObject({
       result: 'AAAA',
       convergence: FixConvergence.MAX_ROUNDS,

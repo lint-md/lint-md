@@ -1,4 +1,5 @@
 import {
+  FixConvergence,
   RULE_SEVERITY,
   RuleExecutionFailure,
   fixMarkdown,
@@ -19,7 +20,101 @@ describe('fixMarkdown', () => {
     expect(result.lintResult[0].name).toBe('no-multiple-blank-lines');
     expect(result.diagnostics).toHaveLength(1);
     expect(result.diagnostics[0].ruleId).toBe('no-multiple-blank-lines');
+    expect(result.initialDiagnostics).toBe(result.diagnostics);
+    expect(result.remainingDiagnostics).toHaveLength(0);
+    expect(result.initialSummary).toBe(result.summary);
+    expect(result.remainingSummary.errorCount).toBe(0);
     expect(result.fixableErrorCount).toBe(1);
+  });
+
+  test('reuses diagnostics when stable output needs no fixes', () => {
+    const reportOnlyRule: LintMdRule = {
+      meta: { name: 'report-only' },
+      create: context => ({
+        text: node => context.report({
+          loc: node.position,
+          message: 'report text'
+        })
+      })
+    };
+
+    const result = fixMarkdown('plain', {
+      rules: {
+        'report-only': [reportOnlyRule, RULE_SEVERITY.ERROR, {}]
+      }
+    });
+
+    expect(result.fixedResult.convergence).toBe(FixConvergence.STABLE);
+    expect(result.initialDiagnostics).toBe(result.remainingDiagnostics);
+    expect(result.initialSummary).toBe(result.remainingSummary);
+    expect(result.remainingDiagnostics[0].range).toMatchObject({
+      start: { offset: 0 },
+      end: { offset: result.fixedResult.result.length }
+    });
+  });
+
+  test('verifies diagnostics against cycle output', () => {
+    const cycleRule: LintMdRule = {
+      meta: { name: 'cycle' },
+      create: context => ({
+        text: (node) => {
+          if (node.type !== 'text') {
+            return;
+          }
+          const replacement = node.value === 'A' ? 'BB' : 'A';
+          context.report({
+            loc: node.position,
+            message: `replace ${node.value}`,
+            fix: fixer => fixer.replaceTextRange([
+              node.position.start.offset,
+              node.position.end.offset
+            ], replacement)
+          });
+        }
+      })
+    };
+
+    const result = fixMarkdown('A', {
+      rules: { cycle: [cycleRule, RULE_SEVERITY.ERROR, {}] }
+    });
+
+    expect(result.fixedResult.convergence).toBe(FixConvergence.CYCLE_DETECTED);
+    expect(result.fixedResult.result).toBe('A');
+    expect(result.initialDiagnostics[0].message).toBe('replace A');
+    expect(result.remainingDiagnostics[0].message).toBe('replace A');
+    expect(result.remainingDiagnostics[0].range?.end.offset).toBe(1);
+  });
+
+  test('verifies diagnostics against max-round output', () => {
+    const appendRule: LintMdRule = {
+      meta: { name: 'append' },
+      create: context => ({
+        text: (node) => {
+          if (node.type !== 'text') {
+            return;
+          }
+          context.report({
+            loc: node.position,
+            message: `length ${node.value.length}`,
+            fix: fixer => fixer.replaceTextRange([
+              node.position.start.offset,
+              node.position.end.offset
+            ], `${node.value}a`)
+          });
+        }
+      })
+    };
+
+    const result = fixMarkdown('A', {
+      rules: { append: [appendRule, RULE_SEVERITY.ERROR, {}] }
+    });
+
+    expect(result.fixedResult.convergence).toBe(FixConvergence.MAX_ROUNDS);
+    expect(result.initialDiagnostics[0].range?.end.offset).toBe(1);
+    expect(result.remainingDiagnostics[0].message)
+      .toBe(`length ${result.fixedResult.result.length}`);
+    expect(result.remainingDiagnostics[0].range?.end.offset)
+      .toBe(result.fixedResult.result.length);
   });
 
   test('removes obsolete conflicts after another fix resolves the lint finding', () => {

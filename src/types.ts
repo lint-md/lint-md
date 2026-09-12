@@ -256,11 +256,11 @@ export enum FixConvergence {
 
 /** fix 收敛过程的性能基线（仅记录轮数 / 每轮 wall time，不拆分 parse/规则） */
 export interface FixMetrics {
-  /** 实际 runLint 次数 */
+  /** Number of fix rounds. Final verification is excluded. */
   rounds: number
-  /** 整体 wall time（毫秒） */
+  /** Total wall time in milliseconds. This includes final verification. */
   wallTime: number
-  /** 每一轮的 wall time（毫秒） */
+  /** Wall time for each fix round in milliseconds. */
   perRound: number[]
 }
 
@@ -338,7 +338,7 @@ export interface FixedResult {
   notAppliedFixes: NotAppliedFix[]
   /** 收敛状态，调用方可据此判断质量而非盲用文本（兼容扩展，历史构造方式仍可用） */
   convergence?: FixConvergence
-  /** 实际执行的 runLint 轮数（兼容扩展，历史构造方式仍可用） */
+  /** Number of fix rounds. Final verification is excluded. */
   rounds?: number
   /** 性能基线，可选；用于后续判断是否值得做增量重跑的独立研究 */
   metrics?: FixMetrics
@@ -401,6 +401,14 @@ export interface LintMdLintResult extends LintMdResultBase {
 /** 修复模式（isFixMode=true，默认）：`fixedResult` 为对象 */
 export interface LintMdFixResult extends LintMdResultBase {
   fixedResult: FixedResult
+  /** Diagnostics whose ranges apply to the original Markdown input. */
+  initialDiagnostics: LintDiagnostic[]
+  /** Diagnostics whose ranges apply to `fixedResult.result`. */
+  remainingDiagnostics: LintDiagnostic[]
+  /** Summary derived from `initialDiagnostics`. */
+  initialSummary: LintSummary
+  /** Summary derived from `remainingDiagnostics`. */
+  remainingSummary: LintSummary
 }
 
 /** `lintMarkdown` 的返回类型（按 isFixMode 区分 fixedResult 形状） */

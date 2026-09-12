@@ -134,6 +134,14 @@ export type LintMarkdownOptions = LintExecutionOptions & ({
 export interface LintMdFixResult extends LintMdResultBase {
     // (undocumented)
     fixedResult: FixedResult;
+    // (undocumented)
+    initialDiagnostics: LintDiagnostic[];
+    // (undocumented)
+    initialSummary: LintSummary;
+    // (undocumented)
+    remainingDiagnostics: LintDiagnostic[];
+    // (undocumented)
+    remainingSummary: LintSummary;
 }
 
 // @public (undocumented)

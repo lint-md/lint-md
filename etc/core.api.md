@@ -60,6 +60,8 @@ export interface FixMarkdownOptions extends LintExecutionOptions {
 // @public (undocumented)
 export interface FixMarkdownResult extends LintMdFixResult {
     // (undocumented)
+    complete: boolean;
+    // (undocumented)
     initialDiagnostics: LintDiagnostic[];
     // (undocumented)
     initialSummary: LintSummary;
@@ -117,7 +119,7 @@ export interface LintExecutionOptions {
 }
 
 // @public (undocumented)
-export function lintMarkdown(markdown: string, options: LintMarkdownOptions): LintMdLintResult;
+export function lintMarkdown(markdown: string, options: LintMarkdownOptions): LintMarkdownResult;
 
 // @public (undocumented)
 export function lintMarkdown(markdown: string): LintMdFixResult;
@@ -141,6 +143,12 @@ export type LintMarkdownOptions = LintExecutionOptions & ({
     rules?: LintMdRulesConfig;
     ruleErrorPolicy: RuleErrorPolicy;
 });
+
+// @public (undocumented)
+export interface LintMarkdownResult extends LintMdLintResult {
+    // (undocumented)
+    complete: boolean;
+}
 
 // @public (undocumented)
 export interface LintMdFixResult extends LintMdResultBase {
@@ -167,6 +175,8 @@ export type LintMdResult = LintMdLintResult | LintMdFixResult;
 
 // @public (undocumented)
 export interface LintMdResultBase {
+    // (undocumented)
+    complete?: boolean;
     // (undocumented)
     diagnostics: LintDiagnostic[];
     // (undocumented)

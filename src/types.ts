@@ -391,11 +391,19 @@ export interface LintMdResultBase {
    * 严格模式：首次规则执行失败立即抛出 RuleExecutionFailure，不返回正常结果。
    */
   executionErrors: RuleExecutionError[]
+  /** Runtime results include this field. It stays optional for 2.x compatibility. */
+  complete?: boolean
 }
 
 /** 非修复模式（isFixMode=false）：`fixedResult` 为 null */
 export interface LintMdLintResult extends LintMdResultBase {
   fixedResult: null
+}
+
+/** Precise result from the options-based `lintMarkdown()` API. */
+export interface LintMarkdownResult extends LintMdLintResult {
+  /** True when all configured rules finish without execution errors. */
+  complete: boolean
 }
 
 /** 修复模式（isFixMode=true，默认）：`fixedResult` 为对象 */
@@ -413,6 +421,8 @@ export interface LintMdFixResult extends LintMdResultBase {
 
 /** Precise result from `fixMarkdown()`. */
 export interface FixMarkdownResult extends LintMdFixResult {
+  /** True when all fix rounds and final verification finish without execution errors. */
+  complete: boolean
   /** Diagnostics whose ranges apply to the original Markdown input. */
   initialDiagnostics: LintDiagnostic[]
   /** Diagnostics whose ranges apply to `fixedResult.result`. */

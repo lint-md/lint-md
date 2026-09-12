@@ -139,10 +139,10 @@ try {
   await writeFile(
     path.join(consumerDir, 'check.ts'),
     [
-      'import { fixMarkdown, lintMarkdown, type LintMdFixResult, type LintMdLintResult } from \'@lint-md/core\';',
+      'import { fixMarkdown, lintMarkdown, type LintMarkdownResult, type LintMdFixResult } from \'@lint-md/core\';',
       '',
       'const result = fixMarkdown("# 标题 ", { rules: {} });',
-      'const lintResult: LintMdLintResult = lintMarkdown("# 标题 ", { rules: {} });',
+      'const lintResult: LintMarkdownResult = lintMarkdown("# 标题 ", { rules: {} });',
       'const legacyResult: LintMdFixResult = {',
       '  lintResult: [],',
       '  diagnostics: [],',
@@ -155,6 +155,8 @@ try {
       'console.log(result.lintResult.length);',
       'console.log(result.initialDiagnostics.length);',
       'console.log(result.remainingDiagnostics.length);',
+      'console.log(result.complete);',
+      'console.log(lintResult.complete);',
       'console.log(lintResult.fixedResult);',
       'console.log(legacyResult.fixedResult.result);',
       '',

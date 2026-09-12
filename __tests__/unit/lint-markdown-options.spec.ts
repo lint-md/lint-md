@@ -20,8 +20,30 @@ describe('lintMarkdown options API', () => {
     });
 
     expect(result.fixedResult).toBeNull();
+    expect(result.complete).toBe(true);
     expect(result.diagnostics).toHaveLength(1);
     expect(result.diagnostics[0].ruleId).toBe('no-multiple-blank-lines');
+  });
+
+  test('marks collected selector errors as incomplete', () => {
+    const throwingRule: LintMdRule = {
+      meta: { name: 'throwing-rule' },
+      create: () => ({
+        text: () => {
+          throw new Error('selector failure');
+        }
+      })
+    };
+
+    const result = lintMarkdown('text', {
+      rules: {
+        'throwing-rule': [throwingRule, RULE_SEVERITY.ERROR, {}]
+      },
+      ruleErrorPolicy: 'collect'
+    });
+
+    expect(result.executionErrors).toHaveLength(1);
+    expect(result.complete).toBe(false);
   });
 
   test('keeps legacy fix mode when the second argument is omitted', () => {

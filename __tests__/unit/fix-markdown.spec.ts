@@ -6,6 +6,7 @@ import {
   lintMarkdown
 } from '../../src';
 import type { FixMarkdownResult, LintMdRule } from '../../src';
+import { MAX_LINT_AND_FIX_CALL_TIMES } from '../../src/common/constant';
 
 describe('fixMarkdown', () => {
   test('applies configured fixes and returns diagnostics for the original input', () => {
@@ -25,6 +26,7 @@ describe('fixMarkdown', () => {
     expect(result.initialSummary).toBe(result.summary);
     expect(result.remainingSummary.errorCount).toBe(0);
     expect(result.fixableErrorCount).toBe(1);
+    expect(result.complete).toBe(true);
   });
 
   test('reuses diagnostics when stable output needs no fixes', () => {
@@ -180,6 +182,79 @@ describe('fixMarkdown', () => {
       })
     ]));
     expect(result.fixedResult.result).toBe('text');
+    expect(result.complete).toBe(false);
+  });
+
+  test('marks a fix result incomplete after an intermediate round error', () => {
+    const rule: LintMdRule = {
+      meta: { name: 'intermediate-error' },
+      create: context => ({
+        text: (node) => {
+          if (node.type !== 'text' || node.value === 'C') {
+            return;
+          }
+          context.report({
+            loc: node.position,
+            message: 'advance text',
+            fix: fixer => fixer.replaceTextRange([
+              node.position.start.offset,
+              node.position.end.offset
+            ], node.value === 'A' ? 'B' : 'C')
+          });
+          if (node.value === 'B') {
+            throw new Error('intermediate failure');
+          }
+        }
+      })
+    };
+
+    const result = fixMarkdown('A', {
+      rules: { 'intermediate-error': [rule, RULE_SEVERITY.ERROR, {}] }
+    });
+
+    expect(result.fixedResult.result).toBe('C');
+    expect(result.executionErrors).toEqual([
+      expect.objectContaining({ round: 1, phase: 'selector' })
+    ]);
+    expect(result.complete).toBe(false);
+  });
+
+  test('includes final verification errors in completeness', () => {
+    let createCalls = 0;
+    const rule: LintMdRule = {
+      meta: { name: 'final-verification-error' },
+      create: (context) => {
+        createCalls++;
+        return {
+          text: (node) => {
+            if (node.type !== 'text') {
+              return;
+            }
+            if (createCalls > MAX_LINT_AND_FIX_CALL_TIMES) {
+              throw new Error('final verification failure');
+            }
+            context.report({
+              loc: node.position,
+              message: 'append text',
+              fix: fixer => fixer.insertTextAt(node.position.end.offset, 'a')
+            });
+          }
+        };
+      }
+    };
+
+    const result = fixMarkdown('A', {
+      rules: { 'final-verification-error': [rule, RULE_SEVERITY.ERROR, {}] }
+    });
+
+    expect(result.fixedResult.convergence).toBe(FixConvergence.MAX_ROUNDS);
+    expect(result.executionErrors).toEqual([
+      expect.objectContaining({
+        round: MAX_LINT_AND_FIX_CALL_TIMES,
+        phase: 'selector'
+      })
+    ]);
+    expect(result.complete).toBe(false);
   });
 
   test('matches the legacy fix behavior', () => {

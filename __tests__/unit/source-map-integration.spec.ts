@@ -12,7 +12,7 @@ import type { LintMdRule } from '../../src/types';
 const halfWidthConfig = [{ rule: noHalfWidthPunctuation }];
 
 describe('parser source-map integration', () => {
-  test('does not resolve source ranges for uninspected code points', () => {
+  test('resolves source ranges only after a match', () => {
     const node = {
       type: 'text',
       value: 'abc',
@@ -39,17 +39,12 @@ describe('parser source-map integration', () => {
     expect(getTextRange).not.toHaveBeenCalled();
     expect(getLocation).not.toHaveBeenCalled();
 
-    const positions: Array<{ endOffset: number }> = [];
-    new TextScanner(node as any, sourceCode).forEachChar((_char, _index, pos) => {
-      positions.push(pos);
-    });
-    expect(getTextRange).not.toHaveBeenCalled();
-    expect(getLocation).not.toHaveBeenCalled();
-    expect(positions.map(pos => pos.endOffset)).toEqual([1, 2, 3]);
-    expect(getTextRange).toHaveBeenCalledTimes(3);
-    expect(getLocation).toHaveBeenCalledTimes(3);
+    const match = new TextScanner(node as any, sourceCode).matchAt(1, 1);
+    expect(match.absoluteRange).toEqual([1, 2]);
+    expect(getTextRange).toHaveBeenCalledTimes(1);
+    expect(getLocation).toHaveBeenCalledTimes(1);
     expect(getTextRange.mock.calls.map(([, start, end]) => [start, end]))
-      .toEqual([[0, 1], [1, 2], [2, 3]]);
+      .toEqual([[1, 2]]);
   });
 
   test.each([

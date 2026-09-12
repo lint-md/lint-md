@@ -12,7 +12,7 @@ const spaceAroundNumber: LintMdRule = {
         const scanner = new TextScanner(node, context.sourceCode);
         const { value } = scanner;
 
-        scanner.forEachChar((char, index, pos) => {
+        scanner.forEachChar((char, index) => {
           const nextCodePoint = value.codePointAt(index + char.length);
           const nextCharacter = nextCodePoint === undefined
             ? undefined
@@ -32,11 +32,12 @@ const spaceAroundNumber: LintMdRule = {
             && isNumberCharacter(value[index - 1]);
 
           if (isChineseNumBoundary || isPercentBoundary) {
-            const match = scanner.matchAt(index, char.length + nextCharacter.length);
+            const charMatch = scanner.matchAt(index, char.length);
+            const reportMatch = scanner.matchAt(index, char.length + nextCharacter.length);
             context.report({
-              range: match.absoluteRange,
+              range: reportMatch.absoluteRange,
               message: '中文与数字之间需要增加空格',
-              fix: fixer => fixer.insertTextAt(pos.endOffset, ' ')
+              fix: fixer => fixer.insertTextAt(charMatch.absoluteRange[1], ' ')
             });
           }
         });

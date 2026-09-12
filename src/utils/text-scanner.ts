@@ -16,13 +16,6 @@ export interface TextMatch {
   absoluteRange: TextRange
 }
 
-export interface CharPosition {
-  line: number
-  column: number
-  offset: number
-  endOffset: number
-}
-
 /**
  * Scans normalized text through the document SourceCode service.
  */
@@ -97,23 +90,10 @@ export class TextScanner {
   }
 
   /** Iterates Unicode code points so an atomic two-unit entity is visited once. */
-  forEachChar(callback: (char: string, index: number, pos: CharPosition) => void): void {
+  forEachChar(callback: (char: string, index: number) => void): void {
     for (let index = 0; index < this._value.length;) {
       const char = String.fromCodePoint(this._value.codePointAt(index)!);
-      const charIndex = index;
-      const charLength = char.length;
-      let range: ReturnType<TextScanner['sourceRange']> | undefined;
-      const getRange = () => {
-        range ??= this.sourceRange(charIndex, charIndex + charLength);
-        return range;
-      };
-      const pos = Object.defineProperties({}, {
-        line: { enumerable: true, get: () => getRange().start.line },
-        column: { enumerable: true, get: () => getRange().start.column },
-        offset: { enumerable: true, get: () => getRange().start.offset },
-        endOffset: { enumerable: true, get: () => getRange().end.offset }
-      }) as CharPosition;
-      callback(char, index, pos);
+      callback(char, index);
       index += char.length;
     }
   }

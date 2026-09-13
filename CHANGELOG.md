@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## [2.5.2](https://github.com/lint-md/lint-md/compare/v2.5.1...v2.5.2) - 2026-09-13
+
+### Performance
+
+- **no-multiple-blank-lines**: index protected ranges (#290)
+
+### Refactoring
+
+- **api**: make root exports explicit (#292)
+
 ## [2.5.1](https://github.com/lint-md/lint-md/compare/v2.5.0...v2.5.1) - 2026-09-13
 
 ### Performance

@@ -105,6 +105,64 @@ describe('no-multiple-blank-lines', () => {
     expect(lintResult.reports).toHaveLength(0);
   });
 
+  test('只修改多个受保护块之外的空白行', () => {
+    const markdown = [
+      '第一段',
+      '',
+      '',
+      '第二段',
+      '```text',
+      '代码一',
+      '',
+      '',
+      '代码二',
+      '',
+      '',
+      '代码三',
+      '```',
+      '',
+      '',
+      '第三段',
+      '<pre>',
+      'HTML 一',
+      '',
+      '',
+      'HTML 二',
+      '</pre>',
+      '',
+      '',
+      '第四段'
+    ].join('\n');
+    const expected = [
+      '第一段',
+      '',
+      '第二段',
+      '```text',
+      '代码一',
+      '',
+      '',
+      '代码二',
+      '',
+      '',
+      '代码三',
+      '```',
+      '',
+      '第三段',
+      '<pre>',
+      'HTML 一',
+      '',
+      '',
+      'HTML 二',
+      '</pre>',
+      '',
+      '第四段'
+    ].join('\n');
+    const { fixedResult, lintResult } = fixer(markdown);
+
+    expect(fixedResult?.result).toBe(expected);
+    expect(lintResult.reports).toHaveLength(3);
+  });
+
   test('删除文档开头的空白行', () => {
     const markdown = '\n \t\n# 标题';
     const { fixedResult, lintResult } = fixer(markdown);

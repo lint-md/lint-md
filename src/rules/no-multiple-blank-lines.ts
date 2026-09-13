@@ -20,18 +20,37 @@ const noMultipleBlankLines: LintMdRule = {
     traverseMarkdown(context.ast, {
       enter(node) {
         if (PROTECTED_NODE_TYPES.has(node.type)) {
-          protectedRanges.push([
-            node.position.start.offset,
-            node.position.end.offset
-          ]);
+          // Traversal follows source order. Merge ranges to keep the index linear.
+          const start = node.position.start.offset;
+          const end = node.position.end.offset;
+          const previous = protectedRanges.at(-1);
+
+          if (!previous || start > previous[1]) {
+            protectedRanges.push([start, end]);
+          }
+          else if (end > previous[1]) {
+            previous[1] = end;
+          }
         }
       }
     });
 
     const overlapsProtectedRange = (start: number, end: number): boolean => {
-      return protectedRanges.some(([protectedStart, protectedEnd]) => {
-        return start < protectedEnd && end > protectedStart;
-      });
+      let low = 0;
+      let high = protectedRanges.length;
+
+      while (low < high) {
+        const middle = (low + high) >>> 1;
+        if (protectedRanges[middle][1] <= start) {
+          low = middle + 1;
+        }
+        else {
+          high = middle;
+        }
+      }
+
+      return low < protectedRanges.length
+        && protectedRanges[low][0] < end;
     };
 
     return {
@@ -95,6 +114,19 @@ const noMultipleBlankLines: LintMdRule = {
         const pattern = /(\r\n|\r|\n)(?:[ \t]*(?:\r\n|\r|\n)){2,}/gu;
         pattern.lastIndex = leadingBlankLines?.[0].length ?? 0;
         let match = pattern.exec(source);
+        let protectedRangeIndex = 0;
+
+        const overlapsNextProtectedRange = (start: number, end: number) => {
+          while (
+            protectedRangeIndex < protectedRanges.length
+            && protectedRanges[protectedRangeIndex][1] <= start
+          ) {
+            protectedRangeIndex++;
+          }
+
+          return protectedRangeIndex < protectedRanges.length
+            && protectedRanges[protectedRangeIndex][0] < end;
+        };
 
         while (match) {
           const start = match.index;
@@ -102,7 +134,7 @@ const noMultipleBlankLines: LintMdRule = {
           const replacement = `${match[1]}${match[1]}`;
 
           if (
-            !overlapsProtectedRange(start, end)
+            !overlapsNextProtectedRange(start, end)
             && end <= (trailingBlankLines?.index ?? source.length)
           ) {
             context.report({

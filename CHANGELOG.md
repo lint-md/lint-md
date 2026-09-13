@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [2.5.1](https://github.com/lint-md/lint-md/compare/v2.5.0...v2.5.1) - 2026-09-13
+
 ### Performance
 
 - **text-scanner**: avoid unused match locations in `findAllMatches` (#279)

@@ -59,11 +59,13 @@
     "@attachments/eslint-config": "^0.3.3",
     "lint-md-core-legacy": "npm:@lint-md/core@0.2.2",
     "@microsoft/api-extractor": "^7.58.12",
+    "@typescript-eslint/eslint-plugin": "^8.70.0",
+    "@typescript-eslint/parser": "^8.70.0",
     "@types/benchmark": "^2.1.2",
     "@types/jest": "^29.2.0",
     "@types/node": "^26.1.0",
     "benchmark": "^2.1.4",
-    "eslint": "^8.26.0",
+    "eslint": "^8.57.0",
     "jest": "^29.2.2",
     "npm-run-all2": "^9.0.2",
     "ts-jest": "^29.0.3",
@@ -98,5 +100,9 @@
   "homepage": "https://github.com/lint-md#readme",
   "engines": {
     "node": ">=20"
+  },
+  "overrides": {
+    "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
+    "@typescript-eslint/parser": "$@typescript-eslint/parser"
   }
 }

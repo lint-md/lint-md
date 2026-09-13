@@ -1,11 +1,43 @@
 import { lintMarkdown } from '../../../src';
 import noMultipleBlankLines from '../../../src/rules/no-multiple-blank-lines';
-import { RULE_SEVERITY } from '../../../src/types';
+import {
+  type LintMdRuleContext,
+  RULE_SEVERITY,
+  type RuleReportInput
+} from '../../../src/types';
 import { createFixer } from '../../utils/test-utils';
 
 const fixer = createFixer([{
   rule: noMultipleBlankLines
 }]);
+
+const reportsForProtectedRange = (protectedRange: [number, number]) => {
+  const source = '正文\n\n\n正文';
+  const point = (offset: number) => ({ line: 1, column: offset + 1, offset });
+  const ast = {
+    type: 'root',
+    children: [{
+      type: 'code',
+      value: '',
+      position: {
+        start: point(protectedRange[0]),
+        end: point(protectedRange[1])
+      }
+    }],
+    position: { start: point(0), end: point(source.length) }
+  } as unknown as LintMdRuleContext['ast'];
+  const reports: RuleReportInput[] = [];
+  const selectors = noMultipleBlankLines.create({
+    ast,
+    markdown: source,
+    options: {},
+    report: report => reports.push(report),
+    sourceCode: { text: source, ast } as LintMdRuleContext['sourceCode']
+  });
+
+  selectors.root(ast);
+  return reports;
+};
 
 describe('no-multiple-blank-lines', () => {
   test('块之间只保留一个空白行', () => {
@@ -103,6 +135,72 @@ describe('no-multiple-blank-lines', () => {
 
     expect(fixedResult?.result).toBe(markdown);
     expect(lintResult.reports).toHaveLength(0);
+  });
+
+  test('只修改多个受保护块之外的空白行', () => {
+    const markdown = [
+      '第一段',
+      '',
+      '',
+      '第二段',
+      '```text',
+      '代码一',
+      '',
+      '',
+      '代码二',
+      '',
+      '',
+      '代码三',
+      '```',
+      '',
+      '',
+      '第三段',
+      '<pre>',
+      'HTML 一',
+      '',
+      '',
+      'HTML 二',
+      '</pre>',
+      '',
+      '',
+      '第四段'
+    ].join('\n');
+    const expected = [
+      '第一段',
+      '',
+      '第二段',
+      '```text',
+      '代码一',
+      '',
+      '',
+      '代码二',
+      '',
+      '',
+      '代码三',
+      '```',
+      '',
+      '第三段',
+      '<pre>',
+      'HTML 一',
+      '',
+      '',
+      'HTML 二',
+      '</pre>',
+      '',
+      '第四段'
+    ].join('\n');
+    const { fixedResult, lintResult } = fixer(markdown);
+
+    expect(fixedResult?.result).toBe(expected);
+    expect(lintResult.reports).toHaveLength(3);
+  });
+
+  test.each([
+    ['候选区间结束于受保护区间起点', [5, 6], 1],
+    ['候选区间开始于受保护区间终点', [0, 2], 1],
+    ['候选区间跨入受保护区间', [4, 6], 0]
+  ] as const)('%s', (_name, protectedRange, reportCount) => {
+    expect(reportsForProtectedRange([...protectedRange])).toHaveLength(reportCount);
   });
 
   test('删除文档开头的空白行', () => {

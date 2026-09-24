@@ -1,5 +1,83 @@
 import type { LintMdRule, PositionedCodeNode } from '../types.js';
 
+interface Fence {
+  marker: number
+  size: number
+}
+
+const WHITESPACE_CHARACTER = /\s/u;
+
+const findLineEnd = (
+  markdown: string,
+  lineStart: number,
+  blockEnd: number
+): number => {
+  const lineBreak = markdown.indexOf('\n', lineStart);
+  return lineBreak === -1 || lineBreak >= blockEnd ? blockEnd : lineBreak;
+};
+
+const getContentEnd = (
+  markdown: string,
+  lineStart: number,
+  lineEnd: number
+): number =>
+  lineEnd > lineStart && markdown.charCodeAt(lineEnd - 1) === 0x0D
+    ? lineEnd - 1
+    : lineEnd;
+
+const getOpeningFence = (
+  markdown: string,
+  lineStart: number,
+  lineEnd: number
+): Fence | undefined => {
+  let cursor = lineStart;
+  let spaces = 0;
+  while (spaces < 3 && cursor < lineEnd && markdown.charCodeAt(cursor) === 0x20) {
+    cursor++;
+    spaces++;
+  }
+
+  const marker = markdown.charCodeAt(cursor);
+  if (marker !== 0x60 && marker !== 0x7E) {
+    return undefined;
+  }
+
+  const markerStart = cursor;
+  while (cursor < lineEnd && markdown.charCodeAt(cursor) === marker) {
+    cursor++;
+  }
+
+  const size = cursor - markerStart;
+  return size >= 3 ? { marker, size } : undefined;
+};
+
+const isClosingFence = (
+  markdown: string,
+  lineStart: number,
+  lineEnd: number,
+  fence: Fence
+): boolean => {
+  let cursor = lineStart;
+  let spaces = 0;
+  while (spaces < 3 && cursor < lineEnd && markdown.charCodeAt(cursor) === 0x20) {
+    cursor++;
+    spaces++;
+  }
+
+  const markerStart = cursor;
+  while (cursor < lineEnd && markdown.charCodeAt(cursor) === fence.marker) {
+    cursor++;
+  }
+  if (cursor - markerStart < fence.size) {
+    return false;
+  }
+
+  while (cursor < lineEnd && WHITESPACE_CHARACTER.test(markdown[cursor])) {
+    cursor++;
+  }
+  return cursor === lineEnd;
+};
+
 const noLongCode: LintMdRule = {
   meta: {
     name: 'no-long-code'
@@ -13,78 +91,67 @@ const noLongCode: LintMdRule = {
           return;
         }
 
-        // 计算真实偏移：直接对原始文档中代码块区间（含围栏与真实换行符）按 \n 切分，
-        // 这样偏移始终落在 raw-md 坐标系（与 node.position.offset、rule-manager 切片一致），
-        // 同时兼容 CRLF——rawLine 包含行尾 \r，cursor 推进时 +1 仅计入 \n，行间隔即 \r\n。
-        // 注意：parser 会把 node.value 归一化为 LF，但 position.offset 仍是原始坐标，
-        // 因此不能基于 node.value 推算偏移，必须以原始文档切片为准。
         const md = context.markdown;
         const blockStart = node.position.start.offset;
         const blockEnd = node.position.end.offset;
-        const rawLines = md.slice(blockStart, blockEnd).split('\n');
+        const firstLineEnd = findLineEnd(md, blockStart, blockEnd);
+        const firstContentEnd = getContentEnd(md, blockStart, firstLineEnd);
+        const fence = getOpeningFence(md, blockStart, firstContentEnd);
 
-        // 先判断首行是否真的是围栏（fenced），再据此决定跳过哪些行，
-        // 避免把缩进代码块（无围栏）或 EOF 未闭合围栏的最后一行误判为围栏而漏报。
-        const firstLine = rawLines[0]?.replace(/\r$/, '') ?? '';
-        const fenceMatch = /^( {0,3})(`{3,}|~{3,})/.exec(firstLine);
-
-        let startIndex = 0;
-        let endIndex = rawLines.length;
+        let lineStart = blockStart;
+        let scanEnd = blockEnd;
         let indentWidth = 0;
+        let line = node.position.start.line;
 
-        if (fenceMatch) {
-          // fenced：跳过开头围栏
-          startIndex = 1;
-          const marker = fenceMatch[2][0];
-          const size = fenceMatch[2].length;
-          const closeRe = new RegExp(`^ {0,3}\\${marker}{${size},}\\s*$`);
-          const lastLine = rawLines[rawLines.length - 1]?.replace(/\r$/, '') ?? '';
-          if (closeRe.test(lastLine)) {
-            // 仅当存在闭合围栏时才跳过结尾；EOF 未闭合则保留最后一行代码
-            endIndex = rawLines.length - 1;
+        if (fence) {
+          lineStart = firstLineEnd < blockEnd ? firstLineEnd + 1 : blockEnd;
+          line++;
+
+          const lastLineBreak = blockEnd > blockStart
+            ? md.lastIndexOf('\n', blockEnd - 1)
+            : -1;
+          const lastLineStart = lastLineBreak < blockStart
+            ? blockStart
+            : lastLineBreak + 1;
+          const lastContentEnd = getContentEnd(md, lastLineStart, blockEnd);
+
+          if (isClosingFence(md, lastLineStart, lastContentEnd, fence)) {
+            scanEnd = lastLineStart;
           }
         }
         else {
-          // indented code：parser 会剥离首行缩进，需手动补偿偏移，使 offset 落在实际内容上
-          indentWidth = firstLine.length - firstLine.replace(/^[ \t]+/, '').length;
+          while (
+            blockStart + indentWidth < firstContentEnd
+            && (
+              md.charCodeAt(blockStart + indentWidth) === 0x20
+              || md.charCodeAt(blockStart + indentWidth) === 0x09
+            )
+          ) {
+            indentWidth++;
+          }
         }
 
-        let cursor = blockStart;
-        for (let k = 0; k < endIndex; k++) {
-          const rawLine = rawLines[k];
-          // 仅扫描 [startIndex, endIndex) 之间的代码行；被跳过的围栏行也需推进 cursor
-          if (k >= startIndex) {
-            // 去除行尾可能的 \r，并跳过缩进代码块的起始空白
-            const content = rawLine.replace(/\r$/, '').slice(indentWidth);
-            const lineLength = content.length;
-            if (lineLength > maxLength) {
-              // 第 k 行超出限制（围栏在第 start.line 行，代码第 k 行位于 start.line + k 行）
-              const line = node.position.start.line + k;
+        while (lineStart < scanEnd) {
+          const lineEnd = findLineEnd(md, lineStart, scanEnd);
+          const contentEnd = getContentEnd(md, lineStart, lineEnd);
+          const contentStart = Math.min(contentEnd, lineStart + indentWidth);
+          const lineLength = contentEnd - contentStart;
 
-              // 列从第一列开始，结束处为同一行的末尾
-              const start = {
-                line,
-                column: 1,
-                offset: cursor + indentWidth
-              };
-              const end = {
-                line,
-                column: lineLength,
-                offset: cursor + indentWidth + lineLength
-              };
-
-              context.report({
-                loc: {
-                  start,
-                  end
-                },
-                message: '代码块不能有过长的代码'
-              });
-            }
+          if (lineLength > maxLength) {
+            context.report({
+              loc: {
+                start: { line, column: 1, offset: contentStart },
+                end: { line, column: lineLength, offset: contentEnd }
+              },
+              message: '代码块不能有过长的代码'
+            });
           }
 
-          // 移动到下一行：当前行长度（含 \r）+ 行末的换行符（\n）
-          cursor += rawLine.length + 1;
+          if (lineEnd >= scanEnd) {
+            break;
+          }
+          lineStart = lineEnd + 1;
+          line++;
         }
       }
     };

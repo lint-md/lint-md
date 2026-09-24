@@ -179,6 +179,22 @@ describe('test no-long-code', () => {
     expect(report.loc.end.offset).toBe(md.indexOf(longCode) + longCode.length);
   });
 
+  test.each([
+    ['tilde fence', '~~~js', '~~~~' + ' '.repeat(60)],
+    ['indented fence', '   ```js', '   ```' + ' '.repeat(60)],
+    ['longer closing fence', '````js', '`````' + ' '.repeat(60)]
+  ])('test %s', (_name, opening, closing) => {
+    const longCode = 'x'.repeat(120);
+    const md = [opening, longCode, closing].join('\n');
+
+    const { lintResult } = fixer(md);
+
+    expect(lintResult.reports).toHaveLength(1);
+    expect(lintResult.reports[0].loc.start.offset).toBe(md.indexOf(longCode));
+    expect(lintResult.reports[0].loc.end.offset)
+      .toBe(md.indexOf(longCode) + longCode.length);
+  });
+
   test('test multi-line indented code block', () => {
     const longCode = 'x'.repeat(120);
     const md = [

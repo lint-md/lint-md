@@ -27,12 +27,13 @@ const REQUIRED_FIELDS = [
 
 const VALID_CASES = new Set([
   'noop', 'input-only', 'parser-only', 'parse-traverse',
-  'single-rule', 'text-scanner-rules', 'all-rules', 'fix-mode',
+  'single-rule', 'no-long-code-rule', 'text-scanner-rules', 'all-rules', 'fix-mode',
 ]);
 
 const VALID_SHAPES = new Set([
   'long-paragraph', 'many-paragraphs', 'mixed-markdown',
   'high-match-density', 'low-match-density', 'overlapping-fixes',
+  'large-code-block',
 ]);
 
 function runBenchmark(args) {

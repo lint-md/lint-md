@@ -15,8 +15,10 @@
  *   --bytes <n>       Input size in bytes per case (default: 65536)
  *   --shape <name>    Input shape: long-paragraph | many-paragraphs | mixed-markdown |
  *                     high-match-density | low-match-density | overlapping-fixes |
- *                     entity-dense | escape-dense
+ *                     entity-dense | escape-dense | large-code-block
  *                     (default: long-paragraph)
+ *   --case <name>     Run one measurement case
+ *   --rule <name>     Run one rule with the single-rule case
  *   --runs <n>        Measured runs per case (default: 5)
  *   --warmup <n>      Warmup runs before measurement (default: 2)
  *   --all             Run all shape+size combinations (incl. text-scanner-rules)
@@ -61,7 +63,36 @@ if (process.env.BENCHMARK_CHILD === '1') {
     'no-space-in-inline-code': () => core.noSpaceInInlineCode,
     'no-space-in-link': () => core.noSpaceInLink,
     'correct-title-trailing-punctuation': () => core.correctTitleTrailingPunctuation,
+    'no-long-code': () => core.noLongCode,
   };
+
+  let noLongCodeNode;
+  let noLongCodeSelector;
+  let noLongCodeReportCount = 0;
+
+  if (caseName === 'no-long-code-rule') {
+    const { ast } = parseMdWithSourceMap(input);
+    const pending = [ast];
+    while (pending.length > 0) {
+      const node = pending.pop();
+      if (node.type === 'code') {
+        noLongCodeNode = node;
+        break;
+      }
+      if ('children' in node && Array.isArray(node.children)) {
+        pending.push(...node.children);
+      }
+    }
+    if (!noLongCodeNode) {
+      throw new Error('The benchmark input must contain a code node.');
+    }
+    noLongCodeSelector = core.noLongCode.create({
+      ast,
+      markdown: input,
+      options: { length: 80, exclude: [] },
+      report: () => noLongCodeReportCount++,
+    }).code;
+  }
 
   function runNoop() {
     return { reportCount: 0, fixCount: 0, runLintCalls: 0 };
@@ -104,10 +135,27 @@ if (process.env.BENCHMARK_CHILD === '1') {
     const ruleFactory = TEXT_RULE_IMPORTS[ruleName];
     if (!ruleFactory)
       throw new Error(`Unknown rule: ${ruleName}`);
-    const result = runLint(input, [{ rule: ruleFactory() }], { computeFixes: true });
+    const options = ruleName === 'no-long-code'
+      ? { length: 80, exclude: [] }
+      : undefined;
+    const result = runLint(
+      input,
+      [{ rule: ruleFactory(), options }],
+      { computeFixes: true }
+    );
     const reports = result.reports;
     const fixes = result.fixes;
     return { reportCount: reports.length, fixCount: fixes.length, runLintCalls: 1 };
+  }
+
+  function runNoLongCodeRule() {
+    noLongCodeReportCount = 0;
+    noLongCodeSelector(noLongCodeNode);
+    return {
+      reportCount: noLongCodeReportCount,
+      fixCount: 0,
+      runLintCalls: 0,
+    };
   }
 
   function runAllRules() {
@@ -141,6 +189,7 @@ if (process.env.BENCHMARK_CHILD === '1') {
     'parser-only': runParserOnly,
     'parse-traverse': runParseTraverse,
     'single-rule': runSingleRule,
+    'no-long-code-rule': runNoLongCodeRule,
     'text-scanner-rules': runTextScannerRules,
     'all-rules': runAllRules,
     'fix-mode': runFixMode,
@@ -157,6 +206,9 @@ if (process.env.BENCHMARK_CHILD === '1') {
     if (typeof global.gc === 'function')
       global.gc();
   }
+
+  if (typeof global.gc === 'function')
+    global.gc();
 
   // Measure
   const rssBefore = process.memoryUsage.rss();
@@ -213,7 +265,10 @@ Options:
   --bytes <n>       Input size in bytes (default: 65536)
   --shape <name>    Input shape (default: long-paragraph)
                     Shapes: long-paragraph | many-paragraphs | mixed-markdown |
-                            high-match-density | low-match-density | overlapping-fixes
+                            high-match-density | low-match-density | overlapping-fixes |
+                            large-code-block
+  --case <name>     Run one measurement case
+  --rule <name>     Run one rule with the single-rule case
   --runs <n>        Measured runs per case (default: 5)
   --warmup <n>      Warmup runs per child process (default: 2)
   --all             Run all shape+size combinations (incl. text-scanner-rules)
@@ -221,6 +276,8 @@ Options:
 
 Examples:
   node scripts/benchmark-memory.mjs --bytes 1048576 --shape long-paragraph --runs 5
+  node scripts/benchmark-memory.mjs --bytes 10485760 --shape large-code-block \
+    --case no-long-code-rule --runs 5
   node scripts/benchmark-memory.mjs --all --runs 3
 
 Environment:
@@ -230,7 +287,15 @@ Environment:
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const opts = { bytes: 65536, shape: 'long-paragraph', runs: 5, warmup: 2, all: false };
+  const opts = {
+    bytes: 65536,
+    shape: 'long-paragraph',
+    runs: 5,
+    warmup: 2,
+    all: false,
+    caseName: null,
+    ruleName: null,
+  };
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
       case '-h':
@@ -240,6 +305,8 @@ function parseArgs() {
         return opts;
       case '--bytes': opts.bytes = parseInt(args[++i], 10); break;
       case '--shape': opts.shape = args[++i]; break;
+      case '--case': opts.caseName = args[++i]; break;
+      case '--rule': opts.ruleName = args[++i]; break;
       case '--runs': opts.runs = parseInt(args[++i], 10); break;
       case '--warmup': opts.warmup = parseInt(args[++i], 10); break;
       case '--all': opts.all = true; break;
@@ -291,6 +358,7 @@ const ALL_SHAPES = [
   'long-paragraph', 'many-paragraphs', 'mixed-markdown',
   'high-match-density', 'low-match-density', 'overlapping-fixes',
   'entity-dense', 'escape-dense',
+  'large-code-block',
 ];
 const ALL_SIZES = [64 * 1024, 256 * 1024, 1024 * 1024];
 
@@ -300,6 +368,7 @@ const TEXT_RULES = [
   'space-around-number',
   'no-full-width-number',
   'no-half-width-punctuation',
+  'no-long-code',
 ];
 
 // Measurement scenarios in order
@@ -313,6 +382,7 @@ const CASES = [
   'all-rules',
   'fix-mode',
 ];
+const FOCUSED_CASES = ['no-long-code-rule'];
 
 // ---------------------------------------------------------------------------
 // Input generators
@@ -401,6 +471,14 @@ function generateEscapeDense(targetBytes) {
   return repeatToSize('中文\\(文本\\)中文', targetBytes);
 }
 
+function generateLargeCodeBlock(targetBytes) {
+  const opening = '```text\n';
+  const closing = '\n```';
+  const bodySize = Math.max(0, targetBytes - opening.length - closing.length);
+  const body = repeatToSize(`${'x'.repeat(79)}\n`, bodySize);
+  return `${opening}${body}${closing}`;
+}
+
 function generateInput(shape, bytes) {
   const generators = {
     'long-paragraph': generateLongParagraph,
@@ -411,6 +489,7 @@ function generateInput(shape, bytes) {
     'overlapping-fixes': generateOverlappingFixes,
     'entity-dense': generateEntityDense,
     'escape-dense': generateEscapeDense,
+    'large-code-block': generateLargeCodeBlock,
   };
   const gen = generators[shape];
   if (!gen)
@@ -425,15 +504,30 @@ function generateInput(shape, bytes) {
 async function main() {
   const opts = parseArgs();
 
+  if (
+    opts.caseName
+    && !CASES.includes(opts.caseName)
+    && !FOCUSED_CASES.includes(opts.caseName)
+  ) {
+    throw new Error(`Unknown case: ${opts.caseName}`);
+  }
+  if (opts.ruleName && !TEXT_RULES.includes(opts.ruleName)) {
+    throw new Error(`Unknown rule: ${opts.ruleName}`);
+  }
+  if (opts.ruleName && opts.caseName !== 'single-rule') {
+    throw new Error('--rule requires --case single-rule.');
+  }
+
   const shapes = opts.all ? ALL_SHAPES : [opts.shape];
   const sizes = opts.all ? ALL_SIZES : [opts.bytes];
+  const cases = opts.caseName ? [opts.caseName] : CASES;
 
   for (const shape of shapes) {
     for (const bytes of sizes) {
-      for (const caseName of CASES) {
+      for (const caseName of cases) {
         if (caseName === 'single-rule') {
-          // Single-rule cases: run each text rule separately
-          for (const ruleName of TEXT_RULES) {
+          const rules = opts.ruleName ? [opts.ruleName] : TEXT_RULES;
+          for (const ruleName of rules) {
             for (let run = 0; run < opts.runs; run++) {
               const result = await runChildCase({
                 shape, bytes, caseName, ruleName, warmup: opts.warmup,

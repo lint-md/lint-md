@@ -46,7 +46,9 @@ export const createLintSourceCode = ({
   ast,
   sourceMap
 }: SourceCodeOptions): ReportSourceCode => {
-  const lineStarts = buildLineStarts(text);
+  let lineStarts: number[] | undefined;
+  const getLineStarts = (): number[] =>
+    lineStarts ??= buildLineStarts(text);
 
   const getPosition = (offset: number): MarkdownPosition => {
     if (!Number.isInteger(offset) || offset < 0 || offset > text.length) {
@@ -54,7 +56,7 @@ export const createLintSourceCode = ({
         `getPosition: offset must be an integer in [0, ${text.length}], got ${offset}`
       );
     }
-    return offsetToPosition(lineStarts, offset);
+    return offsetToPosition(getLineStarts(), offset);
   };
 
   const getLocation = (range: TextRange): { start: MarkdownPosition; end: MarkdownPosition } => {
@@ -65,9 +67,10 @@ export const createLintSourceCode = ({
         `getLocation: range must satisfy 0 <= start <= end <= ${text.length}, got [${start}, ${end}]`
       );
     }
+    const starts = getLineStarts();
     return {
-      start: offsetToPosition(lineStarts, start),
-      end: offsetToPosition(lineStarts, end)
+      start: offsetToPosition(starts, start),
+      end: offsetToPosition(starts, end)
     };
   };
 
@@ -76,12 +79,13 @@ export const createLintSourceCode = ({
       return position.offset;
     }
 
+    const starts = getLineStarts();
     let lineStart = 0;
-    if (position.line > lineStarts.length) {
+    if (position.line > starts.length) {
       lineStart = text.length;
     }
     else if (position.line > 1) {
-      lineStart = lineStarts[Math.ceil(position.line) - 1] ?? text.length;
+      lineStart = starts[Math.ceil(position.line) - 1] ?? text.length;
     }
 
     return Math.min(

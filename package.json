@@ -36,6 +36,7 @@
     "clean": "rm -rf lib esm",
     "package-contract": "node scripts/check-package-contract.mjs",
     "benchmark": "node scripts/benchmark-memory.mjs",
+    "benchmark:space-around-link": "node scripts/benchmark-space-around-link.mjs",
     "smoke-test": "node scripts/benchmark-memory-smoke.mjs",
     "api:report": "npm run build && api-extractor run --local",
     "api:check": "api-extractor run",

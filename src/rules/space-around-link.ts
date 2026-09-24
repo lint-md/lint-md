@@ -40,11 +40,34 @@ const spaceAroundLink: LintMdRule = {
       PositionedMarkdownNode,
       PositionedMarkdownNode | null
     >();
+    const previousSiblings = new WeakMap<
+      PositionedMarkdownNode,
+      PositionedMarkdownNode
+    >();
+    const nextSiblings = new WeakMap<
+      PositionedMarkdownNode,
+      PositionedMarkdownNode
+    >();
     const reportedOffsets = new Set<number>();
 
     traverseMarkdown(context.ast, {
       enter(node, parent) {
         parents.set(node, parent);
+
+        const children = getChildren(node);
+        for (let index = 0; index < children.length; index++) {
+          const child = children[index];
+          const previousSibling = children[index - 1];
+          const nextSibling = children[index + 1];
+
+          if (previousSibling) {
+            previousSiblings.set(child, previousSibling);
+          }
+          if (nextSibling) {
+            nextSiblings.set(child, nextSibling);
+          }
+        }
+
         if (node.type === 'link' || node.type === 'linkReference') {
           links.push(node);
         }
@@ -111,15 +134,9 @@ const spaceAroundLink: LintMdRule = {
       side: 'start' | 'end'
     ): PositionedMarkdownNode | undefined => {
       const boundary = getBoundaryNode(link, side);
-      const parent = parents.get(boundary);
-
-      if (!parent) {
-        return undefined;
-      }
-
-      const siblings = getChildren(parent);
-      const index = siblings.indexOf(boundary);
-      return side === 'start' ? siblings[index - 1] : siblings[index + 1];
+      return side === 'start'
+        ? previousSiblings.get(boundary)
+        : nextSiblings.get(boundary);
     };
 
     const getVisibleTextCharacter = (

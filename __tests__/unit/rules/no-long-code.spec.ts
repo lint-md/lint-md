@@ -179,10 +179,12 @@ describe('test no-long-code', () => {
     expect(report.loc.end.offset).toBe(md.indexOf(longCode) + longCode.length);
   });
 
+  const trailingFenceSpaces = ' '.repeat(60);
+
   test.each([
-    ['tilde fence', '~~~js', '~~~~' + ' '.repeat(60)],
-    ['indented fence', '   ```js', '   ```' + ' '.repeat(60)],
-    ['longer closing fence', '````js', '`````' + ' '.repeat(60)]
+    ['tilde fence', '~~~js', `~~~~${trailingFenceSpaces}`],
+    ['indented fence', '   ```js', `   \`\`\`${trailingFenceSpaces}`],
+    ['longer closing fence', '````js', `\`\`\`\`\`${trailingFenceSpaces}`]
   ])('test %s', (_name, opening, closing) => {
     const longCode = 'x'.repeat(120);
     const md = [opening, longCode, closing].join('\n');

@@ -42,28 +42,34 @@ export const createRuleManager = (
 
   const getReportData = (): ExecutionReport[] => allReportedData;
 
-  const getAllFixes = (): RuleFixConfig[] =>
-    allReportedData.flatMap((item) => {
-      if (typeof item.fix === 'function') {
-        try {
-          const fix = item.fix(fixer);
-          return [{ ...fix, targetRule: item.name }];
-        }
-        catch (e) {
-          // Source-map errors are infrastructure failures.
-          if (isSourceMapError(e)) {
-            throw e;
-          }
-          if (collector) {
-            // 严格模式会在 collect 内抛 RuleExecutionFailure，向上传递。
-            collector.collect(item.name, 'fix', e);
-            return [];
-          }
+  const getAllFixes = (): RuleFixConfig[] => {
+    const fixes: RuleFixConfig[] = [];
+
+    for (const item of allReportedData) {
+      if (typeof item.fix !== 'function') {
+        continue;
+      }
+
+      try {
+        const fix = item.fix(fixer);
+        fixes.push({ ...fix, targetRule: item.name });
+      }
+      catch (e) {
+        // Source-map errors are infrastructure failures.
+        if (isSourceMapError(e)) {
           throw e;
         }
+        if (collector) {
+          // 严格模式会在 collect 内抛 RuleExecutionFailure，向上传递。
+          collector.collect(item.name, 'fix', e);
+          continue;
+        }
+        throw e;
       }
-      return [];
-    });
+    }
+
+    return fixes;
+  };
 
   // 初始化一个 rule context
   const createRuleContext = (

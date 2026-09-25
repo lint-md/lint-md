@@ -12,9 +12,7 @@ import type {
   LintMdRuleWithOptions,
   LintMdRulesConfig,
   LintReportItem,
-  LintSummary,
-  ReportOption,
-  SourceRange
+  LintSummary
 } from '../types.js';
 import * as internalRuleConfig from '../rules/index.js';
 import { DEFAULT_RULE_SEVERITIES } from '../rules/default-rule-severities.js';
@@ -71,39 +69,16 @@ const resolveConfiguredRules = (rules: LintMdRulesConfig) => {
     .filter(value => value.severity !== RULE_SEVERITY.OFF);
 };
 
-interface InternalLintDiagnostic extends LintDiagnostic {
-  range: SourceRange
-  fixable: boolean
-  /** Original rule location for the 2.x `lintResult` projection. */
-  legacyLoc: ReportOption['loc']
-  /** Source excerpt for the 2.x `lintResult` projection. */
-  legacyContent: string
-}
-
-const buildInternalDiagnostics = (
+const buildDiagnostics = (
   reports: readonly ExecutionReport[]
-): InternalLintDiagnostic[] => reports.map(report => ({
+): LintDiagnostic[] => reports.map(report => ({
   line: report.range.start.line,
   column: report.range.start.column,
   range: report.range,
   ruleId: report.name,
   message: report.message,
   severity: report.severity,
-  fixable: typeof report.fix === 'function',
-  legacyLoc: report.loc,
-  legacyContent: report.content
-}));
-
-const buildDiagnostics = (
-  internalDiagnostics: readonly InternalLintDiagnostic[]
-): LintDiagnostic[] => internalDiagnostics.map(item => ({
-  line: item.line,
-  column: item.column,
-  range: item.range,
-  ruleId: item.ruleId,
-  message: item.message,
-  severity: item.severity,
-  fixable: item.fixable
+  fixable: typeof report.fix === 'function'
 }));
 
 const buildLintResult = (
@@ -115,19 +90,31 @@ const buildLintResult = (
     remainingLintResult,
     executionErrors
   } = executionResult;
-  const internalDiagnostics = buildInternalDiagnostics(lintResult.reports);
-  const reportDataWithSeverity: LintReportItem[] = internalDiagnostics.map((item) => {
-    const severity = item.severity as RULE_SEVERITY;
-    return {
-      loc: item.legacyLoc,
-      message: item.message,
-      name: item.ruleId,
-      content: item.legacyContent,
+  const reports = lintResult.reports;
+  const reportDataWithSeverity = new Array<LintReportItem>(reports.length);
+  const diagnostics = new Array<LintDiagnostic>(reports.length);
+
+  for (let index = 0; index < reports.length; index++) {
+    const report = reports[index];
+    const severity = report.severity as RULE_SEVERITY;
+    reportDataWithSeverity[index] = {
+      loc: report.loc,
+      message: report.message,
+      name: report.name,
+      content: report.content,
       severity
     };
-  });
+    diagnostics[index] = {
+      line: report.range.start.line,
+      column: report.range.start.column,
+      range: report.range,
+      ruleId: report.name,
+      message: report.message,
+      severity: report.severity,
+      fixable: typeof report.fix === 'function'
+    };
+  }
 
-  const diagnostics = buildDiagnostics(internalDiagnostics);
   const summary = summarizeDiagnostics(diagnostics);
 
   const baseResult = {
@@ -147,7 +134,7 @@ const buildLintResult = (
   const finalLintResult = remainingLintResult!;
   const remainingDiagnostics = finalLintResult === lintResult
     ? diagnostics
-    : buildDiagnostics(buildInternalDiagnostics(finalLintResult.reports));
+    : buildDiagnostics(finalLintResult.reports);
   const remainingSummary: LintSummary = remainingDiagnostics === diagnostics
     ? summary
     : summarizeDiagnostics(remainingDiagnostics);

@@ -1,8 +1,8 @@
 import type {
   MarkdownInlineCodeNode,
   MarkdownSourceMap,
-  MarkdownTextNode as ParserMarkdownTextNode,
-  MarkdownValueSourceIndex
+  MarkdownValueSourceIndex,
+  MarkdownTextNode as ParserMarkdownTextNode
 } from '@lint-md/parser';
 import { SourceMapUnavailableError } from '@lint-md/parser';
 import type { LintSourceCode, MarkdownPosition, PositionedInlineCodeNode, PositionedMarkdownNode, PositionedMarkdownRoot, PositionedTextNode, ReportOption, ReportPosition, SourceRange, TextRange } from '../types.js';

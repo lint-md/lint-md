@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## [2.5.3](https://github.com/lint-md/lint-md/compare/v2.5.2...v2.5.3) - 2026-09-26
+
+### Performance
+
+- **space-around-link**: index adjacent sibling lookups (#296)
+- **source-code**: build the line-start index on first use (#298)
+- **no-long-code**: scan source without line copies (#300)
+- **result**: avoid intermediate diagnostic projections (#302)
+- **fix**: avoid temporary arrays in `getAllFixes()` (#304)
+
+### Chores
+
+- **parser**: update `@lint-md/parser` to 0.3.1
+
 ## [2.5.2](https://github.com/lint-md/lint-md/compare/v2.5.1...v2.5.2) - 2026-09-13
 
 ### Performance

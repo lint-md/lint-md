@@ -14,7 +14,8 @@
  * CLI params (parent mode):
  *   --bytes <n>       Input size in bytes per case (default: 65536)
  *   --shape <name>    Input shape: long-paragraph | many-paragraphs | mixed-markdown |
- *                     high-match-density | low-match-density | overlapping-fixes |
+ *                     high-match-density | multiline-high-match-density |
+ *                     low-match-density | overlapping-fixes |
  *                     entity-dense | escape-dense | large-code-block
  *                     (default: long-paragraph)
  *   --case <name>     Run one measurement case
@@ -60,6 +61,7 @@ if (process.env.BENCHMARK_CHILD === '1') {
     'no-half-width-punctuation': () => core.noHalfWidthPunctuation,
     'use-standard-ellipsis': () => core.useStandardEllipsis,
     'no-special-characters': () => core.noSpecialCharacters,
+    'require-trailing-spaces': () => core.requireTrailingSpaces,
     'no-space-in-inline-code': () => core.noSpaceInInlineCode,
     'no-space-in-link': () => core.noSpaceInLink,
     'correct-title-trailing-punctuation': () => core.correctTitleTrailingPunctuation,
@@ -265,8 +267,9 @@ Options:
   --bytes <n>       Input size in bytes (default: 65536)
   --shape <name>    Input shape (default: long-paragraph)
                     Shapes: long-paragraph | many-paragraphs | mixed-markdown |
-                            high-match-density | low-match-density | overlapping-fixes |
-                            large-code-block
+                            high-match-density | multiline-high-match-density |
+                            low-match-density | overlapping-fixes |
+                            entity-dense | escape-dense | large-code-block
   --case <name>     Run one measurement case
   --rule <name>     Run one rule with the single-rule case
   --runs <n>        Measured runs per case (default: 5)
@@ -356,7 +359,8 @@ function runChildCase(opts) {
 // Shapes and sizes for all-combinations mode
 const ALL_SHAPES = [
   'long-paragraph', 'many-paragraphs', 'mixed-markdown',
-  'high-match-density', 'low-match-density', 'overlapping-fixes',
+  'high-match-density', 'multiline-high-match-density',
+  'low-match-density', 'overlapping-fixes',
   'entity-dense', 'escape-dense',
   'large-code-block',
 ];
@@ -368,6 +372,7 @@ const TEXT_RULES = [
   'space-around-number',
   'no-full-width-number',
   'no-half-width-punctuation',
+  'require-trailing-spaces',
   'no-long-code',
 ];
 
@@ -450,6 +455,11 @@ function generateHighMatchDensity(targetBytes) {
   return repeatToSize(base, targetBytes);
 }
 
+function generateMultilineHighMatchDensity(targetBytes) {
+  const base = '中文a中文1\n';
+  return repeatToSize(base, targetBytes);
+}
+
 function generateLowMatchDensity(targetBytes) {
   const base = '中文中文中文中文中文';
   return repeatToSize(base, targetBytes);
@@ -485,6 +495,7 @@ function generateInput(shape, bytes) {
     'many-paragraphs': generateManyParagraphs,
     'mixed-markdown': generateMixedMarkdown,
     'high-match-density': generateHighMatchDensity,
+    'multiline-high-match-density': generateMultilineHighMatchDensity,
     'low-match-density': generateLowMatchDensity,
     'overlapping-fixes': generateOverlappingFixes,
     'entity-dense': generateEntityDense,

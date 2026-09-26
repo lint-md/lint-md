@@ -269,7 +269,7 @@ Options:
                     Shapes: long-paragraph | many-paragraphs | mixed-markdown |
                             high-match-density | multiline-high-match-density |
                             low-match-density | overlapping-fixes |
-                            large-code-block
+                            entity-dense | escape-dense | large-code-block
   --case <name>     Run one measurement case
   --rule <name>     Run one rule with the single-rule case
   --runs <n>        Measured runs per case (default: 5)

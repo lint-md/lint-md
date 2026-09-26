@@ -32,7 +32,9 @@ const VALID_CASES = new Set([
 
 const VALID_SHAPES = new Set([
   'long-paragraph', 'many-paragraphs', 'mixed-markdown',
-  'high-match-density', 'low-match-density', 'overlapping-fixes',
+  'high-match-density', 'multiline-high-match-density',
+  'low-match-density', 'overlapping-fixes',
+  'entity-dense', 'escape-dense',
   'large-code-block',
 ]);
 

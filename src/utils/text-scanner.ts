@@ -12,6 +12,11 @@ export interface TextMatch {
   absoluteRange: TextRange
 }
 
+type TextRangeResolver = (valueStart: number, valueEnd: number) => TextRange;
+type ResolverSourceCode = LintSourceCode & {
+  createTextRangeResolver?: (node: MarkdownTextNode) => TextRangeResolver
+};
+
 /**
  * Scans normalized text through the document SourceCode service.
  */
@@ -19,6 +24,7 @@ export class TextScanner {
   private readonly _value: string;
   private readonly _node: MarkdownTextNode;
   private readonly _sourceCode: LintSourceCode;
+  private _resolveRange?: TextRangeResolver;
 
   constructor(node: MarkdownTextNode, sourceCode: LintSourceCode) {
     this._node = node;
@@ -35,11 +41,23 @@ export class TextScanner {
   }
 
   matchAt(index: number, length: number): TextMatch {
-    const absoluteRange = this._sourceCode.getTextRange(
-      this._node as MarkdownTextNode as PositionedTextNode | PositionedInlineCodeNode,
-      index,
-      index + length
-    );
+    if (this._node.position.start.line === this._node.position.end.line) {
+      const absoluteRange = this._sourceCode.getTextRange(
+        this._node as MarkdownTextNode as PositionedTextNode | PositionedInlineCodeNode,
+        index,
+        index + length
+      );
+      return { index, length, absoluteRange };
+    }
+
+    const sourceCode = this._sourceCode as ResolverSourceCode;
+    this._resolveRange ??= sourceCode.createTextRangeResolver?.(this._node)
+      ?? ((valueStart, valueEnd) => this._sourceCode.getTextRange(
+        this._node as MarkdownTextNode as PositionedTextNode | PositionedInlineCodeNode,
+        valueStart,
+        valueEnd
+      ));
+    const absoluteRange = this._resolveRange(index, index + length);
     return {
       index,
       length,

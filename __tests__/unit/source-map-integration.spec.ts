@@ -32,6 +32,7 @@ describe('parser source-map integration', () => {
       text: 'abc',
       ast: { type: 'root', children: [] } as any,
       getRaw: () => '',
+      getCodeSourceInfo: () => ({ kind: 'indented' as const }),
       getTextRange,
       getPosition: () => ({ line: 1, column: 1, offset: 0 }),
       getLocation
@@ -66,6 +67,7 @@ describe('parser source-map integration', () => {
       text: value,
       ast: { type: 'root', children: [] } as any,
       getRaw: () => value,
+      getCodeSourceInfo: () => ({ kind: 'indented' as const }),
       getTextRange,
       getPosition: () => ({ line: 1, column: 1, offset: 0 }),
       getLocation: (range: [number, number]) => ({

@@ -27,6 +27,7 @@ export {
   RULE_SEVERITY
 } from './types.js';
 export type {
+  CodeSourceInfo,
   FixConfig,
   FixedResult,
   FixMarkdownOptions,

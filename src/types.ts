@@ -1,5 +1,6 @@
 import type {
   ParsedPoint,
+  CodeSourceInfo as ParserCodeSourceInfo,
   PositionedMarkdownNode as ParserPositionedMarkdownNode,
   PositionedMarkdownRoot as ParserPositionedMarkdownRoot
 } from '@lint-md/parser';
@@ -7,6 +8,7 @@ import type { createFixer } from './utils/fixer.js';
 
 export type PositionedMarkdownNode = ParserPositionedMarkdownNode;
 export type PositionedMarkdownRoot = ParserPositionedMarkdownRoot;
+export type CodeSourceInfo = ParserCodeSourceInfo;
 
 /** 节点单个位置点（line / column / offset 全部必填 number） */
 export type MarkdownPosition = ParsedPoint;
@@ -123,6 +125,8 @@ export interface LintSourceCode {
     valueStart: number,
     valueEnd: number
   ): TextRange
+  /** Return the source structure for a fenced or indented code block. */
+  getCodeSourceInfo(node: PositionedCodeNode): CodeSourceInfo
   /**
    * Convert an absolute source offset to a position.
    * Throws RangeError if offset is not a finite integer in [0, text.length].

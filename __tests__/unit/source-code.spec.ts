@@ -3,7 +3,7 @@ import {
   SourceMapUnavailableError,
   parseMdWithSourceMap
 } from '@lint-md/parser';
-import type { LintMdRule, LintMdRuleContext, LintSourceCode } from '../../src/types';
+import type { LintMdRule, LintMdRuleContext, LintSourceCode, PositionedCodeNode } from '../../src/types';
 import { lintMarkdownInternal } from '../../src/core/lint-markdown';
 import { runLint } from '../../src/core/run-lint';
 import { createLintSourceCode, isValidOffset } from '../../src/utils/source-code';
@@ -79,6 +79,18 @@ describe('LintSourceCode', () => {
     const sourceCode = capturedContext!.sourceCode;
     const raw = sourceCode.getRaw(sourceCode.ast);
     expect(raw).toBe('**bold**');
+  });
+
+  test.each([
+    ['fenced', '```\ncode\n```', 'fenced'],
+    ['indented', '    code', 'indented']
+  ] as const)('getCodeSourceInfo identifies %s code', (_name, markdown, kind) => {
+    const { ast, sourceMap } = parseMdWithSourceMap(markdown);
+    const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
+    const node = ast.children[0];
+
+    expect(node.type).toBe('code');
+    expect(sourceCode.getCodeSourceInfo(node as PositionedCodeNode).kind).toBe(kind);
   });
 
   test('getTextRange maps entity to complete source range', () => {

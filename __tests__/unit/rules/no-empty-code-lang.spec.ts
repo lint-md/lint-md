@@ -61,6 +61,16 @@ describe('test no-empty-code-lang', () => {
     expect(lintResult.reports.length).toStrictEqual(1);
   });
 
+  test.each([
+    ['blockquote', '> ```\n> const value = 1;\n> ```', '> ```plain\n> const value = 1;\n> ```'],
+    ['list', '- item\n    ```\n    const value = 1;\n    ```', '- item\n    ```plain\n    const value = 1;\n    ```']
+  ])('fixes a fenced code block in a %s', (_name, md, expected) => {
+    const { fixedResult, lintResult } = fixer(md);
+
+    expect(fixedResult?.result).toBe(expected);
+    expect(lintResult.reports.length).toStrictEqual(1);
+  });
+
   // 回归：旧实现改坏 opening 行后，文档里会多出一个空代码块。
   // no-empty-code 会删掉这个空块，闭合围栏随之丢失。
   test('test the fix does not let no-empty-code drop the closing fence', () => {

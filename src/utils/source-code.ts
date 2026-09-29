@@ -145,7 +145,7 @@ export const createLintSourceCode = ({
     },
 
     getCodeSourceInfo(node: PositionedCodeNode) {
-      return sourceMap.getCodeSourceInfo(node as unknown as MarkdownCodeNode);
+      return sourceMap.getCodeSourceInfo(node);
     },
 
     getTextRange(

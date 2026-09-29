@@ -8,6 +8,7 @@ import type { createFixer } from './utils/fixer.js';
 
 export type PositionedMarkdownNode = ParserPositionedMarkdownNode;
 export type PositionedMarkdownRoot = ParserPositionedMarkdownRoot;
+/** Source structure information for a fenced or indented code block. */
 export type CodeSourceInfo = ParserCodeSourceInfo;
 
 /** 节点单个位置点（line / column / offset 全部必填 number） */

@@ -114,11 +114,12 @@ export interface LintSourceCode {
   /** Return the complete raw Markdown represented by a node */
   getRaw(node: PositionedMarkdownNode): string
   /**
-   * Convert a range in normalized text-node value to an absolute
-   * range in the original Markdown as `[start, end)`.
+   * Convert a range in a normalized value (`text` / `inlineCode` / block
+   * `code` node) to an absolute range in the original Markdown as
+   * `[start, end)`.
    */
   getTextRange(
-    node: PositionedTextNode | PositionedInlineCodeNode,
+    node: PositionedTextNode | PositionedInlineCodeNode | PositionedCodeNode,
     valueStart: number,
     valueEnd: number
   ): TextRange

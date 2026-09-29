@@ -1,10 +1,11 @@
 import type {
+  MarkdownCodeNode,
   MarkdownInlineCodeNode,
   MarkdownSourceMap,
   MarkdownTextNode as ParserMarkdownTextNode
 } from '@lint-md/parser';
 import { SourceMapUnavailableError } from '@lint-md/parser';
-import type { LintSourceCode, MarkdownPosition, PositionedInlineCodeNode, PositionedMarkdownNode, PositionedMarkdownRoot, PositionedTextNode, ReportOption, ReportPosition, SourceRange, TextRange } from '../types.js';
+import type { LintSourceCode, MarkdownPosition, PositionedCodeNode, PositionedInlineCodeNode, PositionedMarkdownNode, PositionedMarkdownRoot, PositionedTextNode, ReportOption, ReportPosition, SourceRange, TextRange } from '../types.js';
 import { InvalidRuleRangeError, isSourceMapError } from './source-code-errors.js';
 
 interface SourceCodeOptions {
@@ -144,7 +145,7 @@ export const createLintSourceCode = ({
     },
 
     getTextRange(
-      node: PositionedTextNode | PositionedInlineCodeNode,
+      node: PositionedTextNode | PositionedInlineCodeNode | PositionedCodeNode,
       valueStart: number,
       valueEnd: number
     ): TextRange {
@@ -156,7 +157,7 @@ export const createLintSourceCode = ({
 
       try {
         const range = sourceMap.getSourceRange(
-          node as unknown as ParserMarkdownTextNode | MarkdownInlineCodeNode,
+          node as unknown as ParserMarkdownTextNode | MarkdownInlineCodeNode | MarkdownCodeNode,
           valueStart,
           valueEnd
         );

@@ -4,12 +4,16 @@
 
 ```ts
 
+import type { CodeSourceInfo as CodeSourceInfo_2 } from '@lint-md/parser';
 import type { ParsedPoint } from '@lint-md/parser';
 import type { PositionedMarkdownNode as PositionedMarkdownNode_2 } from '@lint-md/parser';
 import type { PositionedMarkdownRoot as PositionedMarkdownRoot_2 } from '@lint-md/parser';
 import { SourceMapConsistencyError } from '@lint-md/parser';
 import { SourceMapError } from '@lint-md/parser';
 import { SourceMapUnavailableError } from '@lint-md/parser';
+
+// @public (undocumented)
+export type CodeSourceInfo = CodeSourceInfo_2;
 
 // @public (undocumented)
 export const correctTitleTrailingPunctuation: LintMdRule;
@@ -247,6 +251,8 @@ export interface LintReportItem {
 export interface LintSourceCode {
     // (undocumented)
     readonly ast: PositionedMarkdownRoot;
+    // (undocumented)
+    getCodeSourceInfo(node: PositionedCodeNode): CodeSourceInfo;
     // (undocumented)
     getLocation(range: TextRange): {
         start: MarkdownPosition;

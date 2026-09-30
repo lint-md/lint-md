@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### Features
+
+- **source-code**: expose code block source structure through `LintSourceCode.getCodeSourceInfo()` (#312)
+
+### Refactoring
+
+- **no-empty-code-lang**: use parser-recorded code block structure instead of scanning Markdown fence syntax (#312)
+
+### Chores
+
+- **parser**: update `@lint-md/parser` to 0.4.0 (#312)
+
 ## [2.5.3](https://github.com/lint-md/lint-md/compare/v2.5.2...v2.5.3) - 2026-09-26
 
 ### Performance

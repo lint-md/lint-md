@@ -55,6 +55,42 @@ describe('fixMarkdown', () => {
     }]);
   });
 
+  test('keeps an invalid fix after a valid fix makes a later round stable', () => {
+    const rule: LintMdRule = {
+      meta: { name: 'mixed-fixes' },
+      create: context => ({
+        text: (node) => {
+          if (node.type !== 'text' || node.value !== 'A') {
+            return;
+          }
+          context.report({
+            loc: node.position,
+            message: 'valid fix',
+            fix: fixer => fixer.replaceTextRange([0, 1], 'B')
+          });
+          context.report({
+            loc: node.position,
+            message: 'invalid fix',
+            fix: fixer => fixer.replaceTextRange([0, 99], 'X')
+          });
+        }
+      })
+    };
+
+    const result = fixMarkdown('A', {
+      rules: { 'mixed-fixes': [rule, RULE_SEVERITY.ERROR, {}] }
+    });
+
+    expect(result.fixedResult.result).toBe('B');
+    expect(result.fixedResult.rounds).toBe(2);
+    expect(result.fixedResult.notAppliedFixes).toEqual([{
+      range: [0, 99],
+      text: 'X',
+      targetRule: 'mixed-fixes',
+      reason: FixNotAppliedReason.INVALID_RANGE
+    }]);
+  });
+
   test('reuses diagnostics when stable output needs no fixes', () => {
     const reportOnlyRule: LintMdRule = {
       meta: { name: 'report-only' },

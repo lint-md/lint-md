@@ -338,7 +338,7 @@ export interface FixedResult {
   /** 修复后的完整 Markdown 文本 */
   result: string
   /**
-   * Fixes with invalid ranges or conflicts when the fix loop stops.
+   * Invalid ranges from every round and conflicts from the final round.
    * Each range uses the input coordinates from that round.
    * A range is not guaranteed to apply directly to result.
    */

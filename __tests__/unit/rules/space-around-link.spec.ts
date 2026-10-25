@@ -47,11 +47,23 @@ describe('space-around-link', () => {
       '补充平面 Unicode 标点',
       '𐄀[文档](url)',
       '𐄀[文档](url)'
+    ],
+    [
+      '右侧补充平面 Unicode 标点',
+      '[文档](url)𐄀',
+      '[文档](url)𐄀'
     ]
   ])('%s', (_name, markdown, expected) => {
     const { fixedResult } = fixer(markdown);
 
     expect(fixedResult?.result).toBe(expected);
+  });
+
+  test('emoji 代理对两侧仍按可见字符处理', () => {
+    const { fixedResult, lintResult } = fixer('😀[文档](url)😀');
+
+    expect(fixedResult?.result).toBe('😀 [文档](url) 😀');
+    expect(lintResult.reports).toHaveLength(2);
   });
 
   test('独立图片不属于链接空格规则', () => {

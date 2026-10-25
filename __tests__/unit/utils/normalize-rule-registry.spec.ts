@@ -38,6 +38,12 @@ describe('normalizeRuleRegistry', () => {
     expect(result.get('rule-a')?.options).toEqual({});
   });
 
+  it.each([3, -1, 1.5, NaN, Infinity])('should reject invalid numeric severity %s', (severity) => {
+    expect(() => normalizeRuleRegistry(defaultRules, {
+      'rule-a': severity
+    })).toThrow(/规则 rule-a 的级别必须为 0、1 或 2/);
+  });
+
   it('should use configured default severities', () => {
     const result = normalizeRuleRegistry(
       defaultRules,
@@ -67,6 +73,12 @@ describe('normalizeRuleRegistry', () => {
     expect(result.get('rule-a')?.options).toEqual({ foo: 'bar' });
   });
 
+  it.each([3, -1, 1.5, '2', null])('should reject invalid tuple severity %s', (severity) => {
+    expect(() => normalizeRuleRegistry(defaultRules, {
+      'rule-a': [severity, {}] as any
+    })).toThrow(/规则 rule-a 的级别必须为 0、1 或 2/);
+  });
+
   it('should throw error for invalid tuple config (length !== 2)', () => {
     expect(() => {
       normalizeRuleRegistry(defaultRules, {
@@ -87,6 +99,13 @@ describe('normalizeRuleRegistry', () => {
       severity: RULE_SEVERITY.WARN,
       options: { custom: true }
     });
+  });
+
+  it.each([3, -1, 1.5, '2', null])('should reject invalid third-party severity %s', (severity) => {
+    const customRule = createMockRule('custom-rule');
+    expect(() => normalizeRuleRegistry(defaultRules, {
+      'custom-alias': [customRule, severity, {}] as any
+    })).toThrow(/规则 custom-alias 的级别必须为 0、1 或 2/);
   });
 
   it('should throw error for invalid third-party rule config (length !== 3)', () => {

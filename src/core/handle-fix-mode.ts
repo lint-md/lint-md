@@ -4,7 +4,7 @@ import type {
   NotAppliedFix,
   RuleExecutionError
 } from '../types.js';
-import { FixConvergence } from '../types.js';
+import { FixConvergence, FixNotAppliedReason } from '../types.js';
 import { MAX_LINT_AND_FIX_CALL_TIMES } from '../common/constant.js';
 import { applyFix } from '../utils/apply-fix.js';
 import { now } from '../utils/time.js';
@@ -47,6 +47,7 @@ export const runFixLoop = (
   const executionErrors: RuleExecutionError[] = [];
   let current = markdown;
   let lastNotAppliedFixes: NotAppliedFix[] = [];
+  const invalidRangeFixes: NotAppliedFix[] = [];
   const seenTexts = new Set<string>();
   let convergence: FixConvergence | undefined;
   const perRound: number[] = [];
@@ -73,7 +74,12 @@ export const runFixLoop = (
     }
     else {
       const nextFixedResult = applyFix(current, [...lintResult.fixes]);
-      lastNotAppliedFixes = nextFixedResult.notAppliedFixes;
+      invalidRangeFixes.push(...nextFixedResult.notAppliedFixes.filter(
+        fix => fix.reason === FixNotAppliedReason.INVALID_RANGE
+      ));
+      lastNotAppliedFixes = nextFixedResult.notAppliedFixes.filter(
+        fix => fix.reason !== FixNotAppliedReason.INVALID_RANGE
+      );
 
       if (nextFixedResult.result === current) {
         convergence = FixConvergence.STABLE;
@@ -104,7 +110,7 @@ export const runFixLoop = (
 
   const fixedResult: FixedResult = {
     result: current,
-    notAppliedFixes: lastNotAppliedFixes,
+    notAppliedFixes: [...invalidRangeFixes, ...lastNotAppliedFixes],
     convergence: convergence ?? FixConvergence.MAX_ROUNDS,
     rounds,
     metrics: {

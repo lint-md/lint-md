@@ -13,8 +13,20 @@ const addReason = <T extends FixConfig>(
  * @date 2021-12-14 15:48:27
  */
 export const applyFix = <T extends FixConfig>(content: string, fixes: T[]) => {
+  // Invalid ranges must not affect the order of valid fixes.
+  const notAppliedFixes: Array<T & { reason: FixNotAppliedReason }> = [];
+  const validFixes = fixes.filter((fix) => {
+    const [start, end] = fix.range;
+    if (!Number.isInteger(start) || !Number.isInteger(end)
+      || start < 0 || start > end || end > content.length) {
+      notAppliedFixes.push(addReason(fix, FixNotAppliedReason.INVALID_RANGE));
+      return false;
+    }
+    return true;
+  });
+
   // 对所有的 fix 进行排序
-  fixes.sort((a, b) => {
+  validFixes.sort((a, b) => {
     return a.range[0] - b.range[0] || a.range[1] - b.range[1];
   });
 
@@ -23,16 +35,8 @@ export const applyFix = <T extends FixConfig>(content: string, fixes: T[]) => {
   let currentIndex = Number.NEGATIVE_INFINITY;
   let lastAppliedWasInsertion = false;
 
-  // 未被处理的 fix
-  const notAppliedFixes: Array<T & { reason: FixNotAppliedReason }> = [];
-
   const tryApplyOneFix = (fix: T) => {
     const [start, end] = fix.range;
-
-    // 不合法 range
-    if (start > end) {
-      return;
-    }
 
     // A fix overlaps when it starts before the last applied range ends.
     // An insertion owns its offset. This rule keeps same-offset fixes deterministic.
@@ -55,7 +59,7 @@ export const applyFix = <T extends FixConfig>(content: string, fixes: T[]) => {
     lastAppliedWasInsertion = start === end;
   };
 
-  for (const fix of fixes) {
+  for (const fix of validFixes) {
     tryApplyOneFix(fix);
   }
 

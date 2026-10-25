@@ -88,6 +88,8 @@ export interface FixMetrics {
 // @public (undocumented)
 export enum FixNotAppliedReason {
     // (undocumented)
+    INVALID_RANGE = "invalid-range",
+    // (undocumented)
     OVERLAP = "overlap",
     // (undocumented)
     SAME_OFFSET = "same-offset"

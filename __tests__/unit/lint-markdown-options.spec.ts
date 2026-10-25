@@ -1,6 +1,7 @@
 import {
   RULE_SEVERITY,
   RuleExecutionFailure,
+  fixMarkdown,
   lintMarkdown
 } from '../../src';
 import type {
@@ -23,6 +24,15 @@ describe('lintMarkdown options API', () => {
     expect(result.complete).toBe(true);
     expect(result.diagnostics).toHaveLength(1);
     expect(result.diagnostics[0].ruleId).toBe('no-multiple-blank-lines');
+  });
+
+  test('rejects invalid severity before lint and fix return a result', () => {
+    const rules = { 'no-multiple-blank-lines': 3 };
+
+    expect(() => lintMarkdown('first\n\n\nsecond', { rules }))
+      .toThrow(/规则 no-multiple-blank-lines 的级别必须为 0、1 或 2/);
+    expect(() => fixMarkdown('first\n\n\nsecond', { rules }))
+      .toThrow(/规则 no-multiple-blank-lines 的级别必须为 0、1 或 2/);
   });
 
   test('marks collected selector errors as incomplete', () => {

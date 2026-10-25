@@ -25,6 +25,14 @@ const getDefaultSeverity = (
   return configuredSeverity ?? RULE_SEVERITY.ERROR;
 };
 
+const assertValidSeverity = (severity: number, configKey: string): void => {
+  if (severity !== RULE_SEVERITY.OFF
+    && severity !== RULE_SEVERITY.WARN
+    && severity !== RULE_SEVERITY.ERROR) {
+    throw new TypeError(`[lint-md] 规则 ${configKey} 的级别必须为 0、1 或 2，当前值：${String(severity)}`);
+  }
+};
+
 /** Normalize configured rules into one record for each rule ID. */
 export const normalizeRuleRegistry = (
   defaultRules: Record<string, LintMdRule>,
@@ -53,10 +61,12 @@ export const normalizeRuleRegistry = (
       const current = registry.get(configKey)!;
 
       if (typeof configValue === 'number') {
+        assertValidSeverity(configValue, configKey);
         registry.set(configKey, { ...current, severity: configValue });
       }
       else if (configValue.length === 2) {
         const [severity, options] = configValue;
+        assertValidSeverity(severity, configKey);
         registry.set(configKey, { ...current, severity, options });
       }
       else {
@@ -73,6 +83,7 @@ export const normalizeRuleRegistry = (
     }
 
     const [rule, severity, options] = configValue;
+    assertValidSeverity(severity, configKey);
     const id = rule.meta.name;
     const existing = registry.get(id);
     if (existing) {

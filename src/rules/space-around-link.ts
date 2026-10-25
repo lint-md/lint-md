@@ -188,8 +188,24 @@ const spaceAroundLink: LintMdRule = {
         }
       }
 
-      const characters = Array.from(value);
-      return side === 'start' ? characters.at(-1) : characters[0];
+      if (value.length === 0) {
+        return undefined;
+      }
+
+      if (side === 'end') {
+        return String.fromCodePoint(value.codePointAt(0)!);
+      }
+
+      let index = value.length - 1;
+      const last = value.charCodeAt(index);
+      if (index > 0 && last >= 0xDC00 && last <= 0xDFFF) {
+        const previous = value.charCodeAt(index - 1);
+        if (previous >= 0xD800 && previous <= 0xDBFF) {
+          index--;
+        }
+      }
+
+      return String.fromCodePoint(value.codePointAt(index)!);
     };
 
     const getRawBoundaryCharacter = (

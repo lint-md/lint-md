@@ -68,7 +68,8 @@ export interface FixConfig {
 /** Stable reason code for an unapplied fix. */
 export enum FixNotAppliedReason {
   OVERLAP = 'overlap',
-  SAME_OFFSET = 'same-offset'
+  SAME_OFFSET = 'same-offset',
+  INVALID_RANGE = 'invalid-range'
 }
 
 /** A fix with its source rule ID. */
@@ -77,7 +78,7 @@ export interface RuleFixConfig extends FixConfig {
 }
 
 /**
- * A fix that the engine skipped because it conflicts with another fix.
+ * A fix that the engine skipped because its range is invalid or conflicts with another fix.
  * `targetRule` and `reason` are JSON-compatible strings.
  * The inherited `data` field remains rule-defined and might not support JSON serialization.
  */
@@ -337,7 +338,7 @@ export interface FixedResult {
   /** 修复后的完整 Markdown 文本 */
   result: string
   /**
-   * Fixes that still conflict when the fix loop stops.
+   * Fixes with invalid ranges or conflicts when the fix loop stops.
    * Each range uses the input coordinates from that round.
    * A range is not guaranteed to apply directly to result.
    */

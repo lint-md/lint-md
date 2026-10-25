@@ -1,4 +1,4 @@
-import type { FixConfig } from '../../src/types';
+import { type FixConfig, FixNotAppliedReason } from '../../src/types';
 import { applyFix } from '../../src/utils/apply-fix';
 
 describe('test apply fix', () => {
@@ -231,15 +231,41 @@ describe('test apply fix', () => {
     expect(applyFix(content, fixes).result).toStrictEqual('TIP: hello world!      Do you like TypeScript?');
   });
 
-  test('test illegal fix range', () => {
-    const content = 'hello world! Do you like JavaScript?';
-    const fixes: FixConfig[] = [
-      {
-        text: 'TypeScript',
-        range: [222, 10]
-      }
-    ];
-    expect(applyFix(content, fixes).result).toStrictEqual(content);
-    expect(applyFix(content, fixes).notAppliedFixes.length).toStrictEqual(0);
+  test.each([
+    { range: [-1, 1] },
+    { range: [1, 99] },
+    { range: [4, 4] },
+    { range: [2, 1] },
+    { range: [NaN, 1] },
+    { range: [0, NaN] },
+    { range: [Infinity, Infinity] },
+    { range: [0, 1.5] }
+  ])('records invalid fix range $range', ({ range }) => {
+    const fix: FixConfig = { range: range as [number, number], text: 'X' };
+
+    expect(applyFix('abc', [fix])).toStrictEqual({
+      result: 'abc',
+      notAppliedFixes: [{ ...fix, reason: FixNotAppliedReason.INVALID_RANGE }]
+    });
+  });
+
+  test('invalid ranges do not change the order of valid fixes', () => {
+    const invalid: FixConfig = { range: [NaN, 1], text: 'X' };
+
+    expect(applyFix('abc', [
+      { range: [2, 3], text: 'C' },
+      invalid,
+      { range: [0, 1], text: 'A' }
+    ])).toStrictEqual({
+      result: 'AbC',
+      notAppliedFixes: [{ ...invalid, reason: FixNotAppliedReason.INVALID_RANGE }]
+    });
+  });
+
+  test('accepts an insertion at the end of the content', () => {
+    expect(applyFix('abc', [{ range: [3, 3], text: '!' }])).toStrictEqual({
+      result: 'abc!',
+      notAppliedFixes: []
+    });
   });
 });

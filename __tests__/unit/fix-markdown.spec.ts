@@ -1,5 +1,6 @@
 import {
   FixConvergence,
+  FixNotAppliedReason,
   RULE_SEVERITY,
   RuleExecutionFailure,
   fixMarkdown,
@@ -27,6 +28,31 @@ describe('fixMarkdown', () => {
     expect(result.remainingSummary.errorCount).toBe(0);
     expect(result.fixableErrorCount).toBe(1);
     expect(result.complete).toBe(true);
+  });
+
+  test('reports an out-of-bounds custom fix without changing the content', () => {
+    const rule: LintMdRule = {
+      meta: { name: 'bad-range' },
+      create: context => ({
+        text: node => context.report({
+          loc: node.position,
+          message: 'bad fix range',
+          fix: fixer => fixer.replaceTextRange([1, 99], 'X')
+        })
+      })
+    };
+
+    const result = fixMarkdown('abc', {
+      rules: { 'bad-range': [rule, RULE_SEVERITY.ERROR, {}] }
+    });
+
+    expect(result.fixedResult.result).toBe('abc');
+    expect(result.fixedResult.notAppliedFixes).toEqual([{
+      range: [1, 99],
+      text: 'X',
+      targetRule: 'bad-range',
+      reason: FixNotAppliedReason.INVALID_RANGE
+    }]);
   });
 
   test('reuses diagnostics when stable output needs no fixes', () => {

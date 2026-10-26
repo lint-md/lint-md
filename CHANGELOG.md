@@ -2,9 +2,21 @@
 
 ## Unreleased
 
+## [2.6.0](https://github.com/lint-md/lint-md/compare/v2.5.3...v2.6.0) - 2026-10-26
+
 ### Features
 
+- **core**: add opt-in MDX lint and fix APIs (#320)
 - **source-code**: expose code block source structure through `LintSourceCode.getCodeSourceInfo()` (#312)
+
+### Bug Fixes
+
+- **no-multiple-blank-lines**: preserve MDX code and JSX source (#322)
+- **no-multiple-blank-lines**: preserve one blank line in CRLF documents
+
+### Tests
+
+- **mdx**: verify source ranges, fix convergence, compilation, and package entries
 
 ### Refactoring
 
@@ -13,6 +25,7 @@
 ### Chores
 
 - **parser**: update `@lint-md/parser` to 0.4.0 (#312)
+- **parser**: update `@lint-md/parser` to 0.5.0 (#320)
 
 ## [2.5.3](https://github.com/lint-md/lint-md/compare/v2.5.2...v2.5.3) - 2026-09-26
 

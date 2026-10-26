@@ -43,6 +43,9 @@ jobs:
           npm run package-contract
           npm pack --dry-run
 
+      - name: MDX release smoke test
+        run: npm run test:mdx-release
+
   build:
     runs-on: ubuntu-latest
     strategy:

@@ -68,6 +68,14 @@ describe('no-multiple-blank-lines', () => {
     expect(lintResult.reports).toHaveLength(1);
   });
 
+  test('保留 CRLF 文档中的单个空白行', () => {
+    const markdown = '第一段\r\n\r\n第二段';
+    const { fixedResult, lintResult } = fixer(markdown);
+
+    expect(fixedResult?.result).toBe(markdown);
+    expect(lintResult.reports).toHaveLength(0);
+  });
+
   test('不修改围栏代码块内部的空白行', () => {
     const markdown = '```text\n第一行\n\n\n第二行\n```';
     const { fixedResult, lintResult } = fixer(markdown);

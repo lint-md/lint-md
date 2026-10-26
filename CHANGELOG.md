@@ -13,6 +13,13 @@
 
 - **no-multiple-blank-lines**: preserve MDX code and JSX source (#322)
 - **no-multiple-blank-lines**: preserve one blank line in CRLF documents
+- **core**: reject fix ranges outside the source (#316)
+- **core**: reject invalid rule severity values (#314)
+- **no-empty-code-lang**: fix only fenced code blocks at the end of the opening line (#310)
+
+### Performance
+
+- **space-around-link**: read adjacent text boundaries directly (#318)
 
 ### Tests
 
@@ -20,6 +27,7 @@
 
 ### Refactoring
 
+- **no-long-code**: map code lines through the parser source map (#309)
 - **no-empty-code-lang**: use parser-recorded code block structure instead of scanning Markdown fence syntax (#312)
 
 ### Chores

@@ -131,10 +131,14 @@ const fixedSource = fixMdx(source, options).fixedResult.result;
 `lintMdx()` 只检查，不修改输入。`fixMdx()` 执行多轮修复，并返回最终文本。
 两者使用与 Markdown API 相同的规则配置和结果类型。
 正文规则可处理 JSX 元素内的 Markdown 文本。
-Source Map 不映射 JSX 属性、ESM 声明或 JavaScript 表达式。
+Source Map 仅对支持的 Markdown 字段提供精确的值到源码映射。
+ESM、JavaScript 表达式及 JSX 属性不支持字段级映射。
+部分 MDX 节点仍可通过 Parser 的 `sourceMap.getRaw()` 获取原始源码。
 `no-multiple-blank-lines` 会保护整个 JSX 元素及这些代码区域。
 因此该规则不会修改 JSX 元素内部的空行。
 Core 不会根据文件扩展名自动选择解析器。处理 `.mdx` 文件时，请显式调用 MDX API。
+CLI 尚未接入 MDX 专用入口。不要对 `.mdx` 文件运行 CLI 的 `--fix`。
+请使用 Core 的 `fixMdx()` 修复 `.mdx` 文件。
 
 ### Unapplied fix contract
 

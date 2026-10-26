@@ -58,6 +58,13 @@ if (typeof cjs.fixMarkdown !== 'function') {
 if (typeof cjs.RuleExecutionFailure !== 'function') {
   throw new TypeError('CJS entry does not export RuleExecutionFailure');
 }
+if (require.cache[require.resolve('@lint-md/parser/mdx')]) {
+  throw new Error('CJS Markdown entry loads the MDX parser');
+}
+const cjsMdx = require(path.join(root, 'lib', 'mdx.js'));
+if (typeof cjsMdx.lintMdx !== 'function' || typeof cjsMdx.fixMdx !== 'function') {
+  throw new TypeError('CJS MDX entry is incomplete');
+}
 
 async function listJsFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -94,6 +101,10 @@ for (const name of ['fixMarkdown', 'lintMarkdown', 'RuleExecutionFailure']) {
     throw new TypeError(`ESM entry does not export ${name}`);
   }
 }
+const esmMdx = await import(pathToFileURL(path.join(esmDir, 'mdx.js')));
+if (typeof esmMdx.lintMdx !== 'function' || typeof esmMdx.fixMdx !== 'function') {
+  throw new TypeError('ESM MDX entry is incomplete');
+}
 
 console.log('[1/2] workspace checks OK');
 
@@ -121,6 +132,12 @@ try {
       + 'if (typeof m.fixMarkdown !== \'function\' || typeof m.RuleExecutionFailure !== \'function\') {'
       + 'throw new TypeError(\'CJS entry incomplete\');}',
   ], { cwd: consumerDir });
+  run(process.execPath, [
+    '-e',
+    'const m = require(\'@lint-md/core/mdx\');'
+      + 'if (typeof m.lintMdx !== \'function\' || typeof m.fixMdx !== \'function\') {'
+      + 'throw new TypeError(\'CJS MDX entry incomplete\');}',
+  ], { cwd: consumerDir });
 
   run(process.execPath, [
     '--input-type=module',
@@ -128,6 +145,13 @@ try {
     'const m = await import(\'@lint-md/core\');'
       + 'if (typeof m.fixMarkdown !== \'function\' || typeof m.RuleExecutionFailure !== \'function\') {'
       + 'throw new TypeError(\'ESM entry incomplete\');}',
+  ], { cwd: consumerDir });
+  run(process.execPath, [
+    '--input-type=module',
+    '-e',
+    'const m = await import(\'@lint-md/core/mdx\');'
+      + 'if (typeof m.lintMdx !== \'function\' || typeof m.fixMdx !== \'function\') {'
+      + 'throw new TypeError(\'ESM MDX entry incomplete\');}',
   ], { cwd: consumerDir });
 
   // Mirrors getTotalRuleNames() from lint-md/eslint-plugin src/utils.ts.
@@ -146,6 +170,7 @@ try {
     path.join(consumerDir, 'check.ts'),
     [
       'import { fixMarkdown, lintMarkdown, type LintMarkdownResult, type LintMdFixResult } from \'@lint-md/core\';',
+      'import { fixMdx, lintMdx } from \'@lint-md/core/mdx\';',
       '',
       'const result = fixMarkdown("# 标题 ", { rules: {} });',
       'const lintResult: LintMarkdownResult = lintMarkdown("# 标题 ", { rules: {} });',
@@ -165,6 +190,8 @@ try {
       'console.log(lintResult.complete);',
       'console.log(lintResult.fixedResult);',
       'console.log(legacyResult.fixedResult.result);',
+      'console.log(fixMdx("<Card>中文ABC中文</Card>", { rules: { "space-around-alphabet": 2 } }).fixedResult.result);',
+      'console.log(lintMdx("<Card>中文ABC中文</Card>", { rules: { "space-around-alphabet": 2 } }).diagnostics.length);',
       '',
     ].join('\n'),
   );

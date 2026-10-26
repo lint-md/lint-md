@@ -113,6 +113,23 @@ In fix mode, `lintResult`, `diagnostics`, and both fixable counts describe the o
 `fixedResult.convergence`, `rounds`, and `metrics` describe the complete fix process.
 Do not apply original diagnostic positions to `fixedResult.result`.
 
+### MDX
+
+Use the MDX entry for files with JSX, JavaScript expressions, or ESM declarations.
+The MDX entry loads the MDX parser when you import it.
+
+```ts
+import { lintMdx, fixMdx } from '@lint-md/core/mdx';
+
+const options = { rules: { 'space-around-alphabet': 2 } };
+const diagnostics = lintMdx(source, options).diagnostics;
+const fixed = fixMdx(source, options).fixedResult.result;
+```
+
+Both functions use the same options and results as `lintMarkdown` and `fixMarkdown`.
+Rules can change Markdown text inside JSX elements.
+The source map does not map JSX attributes or JavaScript expressions.
+
 ### Unapplied fix contract
 
 Each `notAppliedFixes` item contains these fields:

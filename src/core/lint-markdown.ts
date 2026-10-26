@@ -19,14 +19,15 @@ import { DEFAULT_RULE_SEVERITIES } from '../rules/default-rule-severities.js';
 import { normalizeRuleRegistry } from '../utils/normalize-rule-registry.js';
 import { summarizeDiagnostics } from '../utils/lint-summary.js';
 import { RULE_SEVERITY } from '../types.js';
-import { type ExecutionReport, runLint } from './run-lint.js';
+import { type ExecutionReport, type ParseDocument, runLint } from './run-lint.js';
 import { handleFixMode } from './handle-fix-mode.js';
 
 export const lintMarkdownInternal = (
   markdown: string,
   rules: LintMdRuleWithOptions[],
   isFixMode: boolean,
-  policy: 'collect' | 'strict' = 'collect'
+  policy: 'collect' | 'strict' = 'collect',
+  parse?: ParseDocument
 ): {
   lintResult: ReturnType<typeof runLint>
   remainingLintResult: ReturnType<typeof runLint> | null
@@ -34,7 +35,7 @@ export const lintMarkdownInternal = (
   executionErrors: ReturnType<typeof runLint>['executionErrors']
 } => {
   if (!isFixMode) {
-    const lintResult = runLint(markdown, rules, { ruleErrorPolicy: policy });
+    const lintResult = runLint(markdown, rules, { ruleErrorPolicy: policy, parse });
     return {
       lintResult,
       remainingLintResult: null,
@@ -48,7 +49,7 @@ export const lintMarkdownInternal = (
       remainingLintResult,
       fixedResult,
       executionErrors
-    } = handleFixMode(markdown, rules, policy);
+    } = handleFixMode(markdown, rules, policy, parse);
     return {
       lintResult,
       remainingLintResult,
@@ -149,14 +150,15 @@ const buildLintResult = (
   };
 };
 
-function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: true, options: LintExecutionOptions): FixMarkdownResult;
-function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: false, options: LintExecutionOptions): LintMarkdownResult;
-function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: boolean, options: LintExecutionOptions): LintMdResult;
-function executeMarkdown(
+export function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: true, options: LintExecutionOptions, parse?: ParseDocument): FixMarkdownResult;
+export function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: false, options: LintExecutionOptions, parse?: ParseDocument): LintMarkdownResult;
+export function executeMarkdown(markdown: string, rules: LintMdRulesConfig, isFixMode: boolean, options: LintExecutionOptions, parse?: ParseDocument): LintMdResult;
+export function executeMarkdown(
   markdown: string,
   rules: LintMdRulesConfig,
   isFixMode: boolean,
-  options: LintExecutionOptions
+  options: LintExecutionOptions,
+  parse?: ParseDocument
 ): LintMdResult {
   const executableRules = resolveConfiguredRules(rules);
   const policy = options.ruleErrorPolicy ?? 'collect';
@@ -164,7 +166,8 @@ function executeMarkdown(
     markdown,
     executableRules,
     isFixMode,
-    policy
+    policy,
+    parse
   );
 
   return buildLintResult(executionResult);

@@ -7,7 +7,13 @@ const PROTECTED_NODE_TYPES = new Set([
   'yaml',
   'html',
   'math',
-  'inlineMath'
+  'inlineMath',
+  // The root scan must not change JavaScript values or JSX source.
+  'mdxjsEsm',
+  'mdxTextExpression',
+  'mdxFlowExpression',
+  'mdxJsxFlowElement',
+  'mdxJsxTextElement'
 ]);
 
 const noMultipleBlankLines: LintMdRule = {

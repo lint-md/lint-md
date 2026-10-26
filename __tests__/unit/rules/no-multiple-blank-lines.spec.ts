@@ -11,13 +11,16 @@ const fixer = createFixer([{
   rule: noMultipleBlankLines
 }]);
 
-const reportsForProtectedRange = (protectedRange: [number, number]) => {
+const reportsForProtectedRange = (
+  protectedRange: [number, number],
+  nodeType = 'code'
+) => {
   const source = '正文\n\n\n正文';
   const point = (offset: number) => ({ line: 1, column: offset + 1, offset });
   const ast = {
     type: 'root',
     children: [{
-      type: 'code',
+      type: nodeType,
       value: '',
       position: {
         start: point(protectedRange[0]),
@@ -202,6 +205,11 @@ describe('no-multiple-blank-lines', () => {
   ] as const)('%s', (_name, protectedRange, reportCount) => {
     expect(reportsForProtectedRange([...protectedRange])).toHaveLength(reportCount);
   });
+
+  test.each(['mdxTextExpression', 'mdxJsxTextElement'])(
+    'protects blank lines in %s nodes',
+    nodeType => expect(reportsForProtectedRange([0, 7], nodeType)).toHaveLength(0)
+  );
 
   test('删除文档开头的空白行', () => {
     const markdown = '\n \t\n# 标题';

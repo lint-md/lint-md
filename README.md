@@ -115,20 +115,26 @@ Do not apply original diagnostic positions to `fixedResult.result`.
 
 ### MDX
 
-Use the MDX entry for files with JSX, JavaScript expressions, or ESM declarations.
-The MDX entry loads the MDX parser when you import it.
+MDX 文件使用独立入口。该入口按需加载 MDX 解析器。
+普通 Markdown 文件继续使用 `@lint-md/core`。
 
 ```ts
 import { lintMdx, fixMdx } from '@lint-md/core/mdx';
 
+const source = '# 中文English\n\n<Card label="保留  两个空格">中文English</Card>';
 const options = { rules: { 'space-around-alphabet': 2 } };
+
 const diagnostics = lintMdx(source, options).diagnostics;
-const fixed = fixMdx(source, options).fixedResult.result;
+const fixedSource = fixMdx(source, options).fixedResult.result;
 ```
 
-Both functions use the same options and results as `lintMarkdown` and `fixMarkdown`.
-Rules can change Markdown text inside JSX elements.
-The source map does not map JSX attributes or JavaScript expressions.
+`lintMdx()` 只检查，不修改输入。`fixMdx()` 执行多轮修复，并返回最终文本。
+两者使用与 Markdown API 相同的规则配置和结果类型。
+正文规则可处理 JSX 元素内的 Markdown 文本。
+Source Map 不映射 JSX 属性、ESM 声明或 JavaScript 表达式。
+`no-multiple-blank-lines` 会保护整个 JSX 元素及这些代码区域。
+因此该规则不会修改 JSX 元素内部的空行。
+Core 不会根据文件扩展名自动选择解析器。处理 `.mdx` 文件时，请显式调用 MDX API。
 
 ### Unapplied fix contract
 

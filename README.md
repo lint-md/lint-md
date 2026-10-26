@@ -316,9 +316,14 @@ npm run typecheck
 
 # 构建
 npm run build
+
+# 检查 MDX 修复和发布入口
+npm run test:mdx-release
 ```
 
 `npm run lint` checks TypeScript and MJS files in `src/`, `__tests__/`, and `scripts/`.
+`npm run test:mdx-release` checks the built CJS and ESM entries.
+It compares Markdown results with Core 2.5.3 and compiles fixed MDX.
 
 ### 维护公共 API
 

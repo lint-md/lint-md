@@ -117,7 +117,7 @@ const noMultipleBlankLines: LintMdRule = {
           });
         }
 
-        const pattern = /(\r\n|\r|\n)(?:[ \t]*(?:\r\n|\r|\n)){2,}/gu;
+        const pattern = /(\r\n|\r(?!\n)|(?<!\r)\n)(?:[ \t]*(?:\r\n|\r(?!\n)|(?<!\r)\n)){2,}/gu;
         pattern.lastIndex = leadingBlankLines?.[0].length ?? 0;
         let match = pattern.exec(source);
         let protectedRangeIndex = 0;

@@ -12,6 +12,12 @@
       "require": "./lib/index.js",
       "default": "./lib/index.js"
     },
+    "./mdx": {
+      "types": "./lib/mdx.d.ts",
+      "import": "./esm/mdx.js",
+      "require": "./lib/mdx.js",
+      "default": "./lib/mdx.js"
+    },
     "./lib/rules/index": {
       "types": "./lib/rules/index.d.ts",
       "require": "./lib/rules/index.js",
@@ -55,7 +61,7 @@
     "chinese"
   ],
   "dependencies": {
-    "@lint-md/parser": "~0.4.0"
+    "@lint-md/parser": "~0.5.0"
   },
   "devDependencies": {
     "@attachments/eslint-config": "^0.3.3",
@@ -64,6 +70,7 @@
     "@types/benchmark": "^2.1.2",
     "@types/jest": "^29.2.0",
     "@types/node": "^26.1.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
     "benchmark": "^2.1.4",
     "eslint": "^8.26.0",
     "jest": "^29.2.2",

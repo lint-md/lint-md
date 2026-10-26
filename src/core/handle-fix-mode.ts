@@ -8,7 +8,7 @@ import { FixConvergence, FixNotAppliedReason } from '../types.js';
 import { MAX_LINT_AND_FIX_CALL_TIMES } from '../common/constant.js';
 import { applyFix } from '../utils/apply-fix.js';
 import { now } from '../utils/time.js';
-import type { RunLintResult } from './run-lint.js';
+import type { ParseDocument, RunLintResult } from './run-lint.js';
 import { runLint } from './run-lint.js';
 
 interface RunFixLoopOptions {
@@ -131,12 +131,14 @@ export const runFixLoop = (
 export const handleFixMode = (
   markdown: string,
   rules: LintMdRuleWithOptions[],
-  policy: 'collect' | 'strict' = 'collect'
+  policy: 'collect' | 'strict' = 'collect',
+  parse?: ParseDocument
 ): FixLoopResult => runFixLoop(markdown, rules, {
   runRound: (current, currentRules, round, computeFixes) => runLint(current, currentRules, {
     ruleErrorPolicy: policy,
     round,
-    computeFixes
+    computeFixes,
+    parse
   }),
   now,
   maxRounds: MAX_LINT_AND_FIX_CALL_TIMES

@@ -15,9 +15,13 @@ import { createRuleErrorCollector } from '../utils/rule-execution-errors.js';
 import { createLintSourceCode } from '../utils/source-code.js';
 import { isSourceMapError } from '../utils/source-code-errors.js';
 
+export type ParseDocument = typeof parseMdWithSourceMap;
+
 interface RunLintRoundOptions extends RunLintOptions {
   /** Run reported fix callbacks before this function returns. */
   computeFixes?: boolean
+  /** Parse the current document with the selected syntax. */
+  parse?: ParseDocument
 }
 
 interface RuleExecutionConfig extends LintMdRuleWithOptions {
@@ -65,7 +69,7 @@ export const runLint = (
 
   // Parser owns normalized-text -> original-Markdown mapping.
   // Expose it to rules through the per-document SourceCode service.
-  const { ast, sourceMap } = parseMdWithSourceMap(markdown);
+  const { ast, sourceMap } = (options.parse ?? parseMdWithSourceMap)(markdown);
 
   const sourceCode = createLintSourceCode({ text: markdown, ast, sourceMap });
 

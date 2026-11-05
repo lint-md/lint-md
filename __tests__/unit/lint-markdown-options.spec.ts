@@ -63,11 +63,14 @@ describe('lintMarkdown options API', () => {
     expect(result.fixedResult.result).toBe(markdown);
   });
 
-  test('keeps legacy fix mode for an empty rules object', () => {
+  test('keeps distinct behavior for two-argument calls with empty rules', () => {
     const markdown = 'first\n\n\nsecond';
-    const result = lintMarkdown(markdown, {});
+    const legacyResult = lintMarkdown(markdown, {});
+    const optionsResult = lintMarkdown(markdown, { rules: {} });
 
-    expect(result.fixedResult.result).toBe(markdown);
+    expect(legacyResult.fixedResult.result).toBe(markdown);
+    expect(optionsResult.fixedResult).toBeNull();
+    expect(optionsResult.complete).toBe(true);
   });
 
   test('forwards the strict rule error policy', () => {

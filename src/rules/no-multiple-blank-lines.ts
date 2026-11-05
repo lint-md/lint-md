@@ -16,6 +16,44 @@ const PROTECTED_NODE_TYPES = new Set([
   'mdxJsxTextElement'
 ]);
 
+const findTrailingBlankLines = (source: string) => {
+  let cursor = source.length;
+
+  while (cursor > 0 && (source[cursor - 1] === ' ' || source[cursor - 1] === '\t')) {
+    cursor--;
+  }
+
+  let start = cursor;
+  let lineEnding = '';
+
+  while (cursor > 0) {
+    const end = cursor;
+    const last = source[cursor - 1];
+
+    if (last === '\n') {
+      cursor--;
+      if (cursor > 0 && source[cursor - 1] === '\r') {
+        cursor--;
+      }
+    }
+    else if (last === '\r') {
+      cursor--;
+    }
+    else {
+      break;
+    }
+
+    start = cursor;
+    lineEnding = source.slice(cursor, end);
+
+    while (cursor > 0 && (source[cursor - 1] === ' ' || source[cursor - 1] === '\t')) {
+      cursor--;
+    }
+  }
+
+  return lineEnding ? { index: start, lineEnding } : null;
+};
+
 const noMultipleBlankLines: LintMdRule = {
   meta: {
     name: 'no-multiple-blank-lines'
@@ -96,11 +134,11 @@ const noMultipleBlankLines: LintMdRule = {
 
         const trailingBlankLines = leadingBlankLines?.[0].length === source.length
           ? null
-          : /(\r\n|\r|\n)(?:[ \t]*(?:\r\n|\r|\n))*[ \t]*$/.exec(source);
+          : findTrailingBlankLines(source);
 
         if (
           trailingBlankLines
-          && trailingBlankLines[0] !== trailingBlankLines[1]
+          && source.length - trailingBlankLines.index !== trailingBlankLines.lineEnding.length
           && !overlapsProtectedRange(
             trailingBlankLines.index,
             source.length
@@ -108,7 +146,7 @@ const noMultipleBlankLines: LintMdRule = {
         ) {
           const start = trailingBlankLines.index;
           const end = source.length;
-          const replacement = trailingBlankLines[1];
+          const replacement = trailingBlankLines.lineEnding;
 
           context.report({
             range: [start, end],

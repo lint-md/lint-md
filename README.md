@@ -75,9 +75,23 @@ fixMarkdown(
 `rules` 配置本次修复使用的规则。
 `ruleErrorPolicy` 配置规则执行失败策略。
 
-`fixMarkdown()` 返回 `LintMdFixResult`。
+`fixMarkdown()` 返回 `FixMarkdownResult`。
 其中 `lintResult` 描述原始输入。
 `fixedResult.result` 包含最终修复文本。
+
+以下调用形式长期保持兼容。3.0 仍保留旧签名、默认行为和返回类型。
+新项目优先使用明确的选项接口。
+
+| API | 定位 |
+| --- | --- |
+| `lintMarkdown(markdown, rules)` | 兼容旧版的修复调用。省略 `rules` 时也默认修复。 |
+| `lintMarkdown(markdown, rules, isFixMode)` | 兼容旧版的显式模式调用。 |
+| `lintMarkdown(markdown, { rules })` | 推荐的只检查调用。 |
+| `fixMarkdown(markdown, { rules })` | 推荐的修复调用。 |
+
+`lintMarkdown(markdown, {})` 使用旧形式，默认修复。
+`lintMarkdown(markdown, { rules: {} })` 只执行检查。
+Core 只返回结果，不写入文件。
 
 现有 `lintMarkdown` API 保持兼容：
 
@@ -276,7 +290,8 @@ console.log(result.fixedResult.result);
 
 `RULE_SEVERITY.ERROR` 等同于规则级别 `2`。
 `fixMarkdown()` 始终执行自动修复。
-只检查时，继续使用 `lintMarkdown(markdown, rules, false)`。
+只检查时，优先使用 `lintMarkdown(markdown, { rules })`。
+旧调用 `lintMarkdown(markdown, rules, false)` 继续可用。
 
 `space-around-link` 处理普通链接、自动链接和引用链接。它不处理独立图片。
 全角标点、其他 Unicode 标点、已有空白和块边界不需要空格。连续链接之间只添加一个空格。

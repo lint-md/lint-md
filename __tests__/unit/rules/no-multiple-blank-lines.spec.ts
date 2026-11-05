@@ -284,6 +284,15 @@ describe('no-multiple-blank-lines', () => {
     expect(reports[0].message).toBe('连续空白行最多保留一行');
   });
 
+  test('大量文末空白行只保留一个换行', () => {
+    const source = `x${'\n '.repeat(25000)}`;
+    const { fixedResult, lintResult } = fixer(source);
+
+    expect(fixedResult?.result).toBe('x\n');
+    expect(lintResult.reports).toHaveLength(1);
+    expect(lintResult.reports[0].message).toBe('文档末尾最多保留一个换行');
+  });
+
   test.each([
     ['CRLF 到 LF 到 CR', '正文\r\n \n\t\r ', '正文\r\n'],
     ['CR 到 CRLF 到 LF', '正文\r \r\n\t\n', '正文\r'],

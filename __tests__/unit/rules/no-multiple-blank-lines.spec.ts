@@ -259,6 +259,42 @@ describe('no-multiple-blank-lines', () => {
     expect(lintResult.reports).toHaveLength(1);
   });
 
+  test('大量空白行后有正文时快速完成扫描', () => {
+    const source = `x${'\n '.repeat(25000)}x`;
+    const point = (offset: number) => ({ line: 1, column: offset + 1, offset });
+    const ast = {
+      type: 'root',
+      children: [],
+      position: { start: point(0), end: point(source.length) }
+    } as unknown as LintMdRuleContext['ast'];
+    const reports: RuleReportInput[] = [];
+    const selectors = noMultipleBlankLines.create({
+      ast,
+      markdown: source,
+      options: {},
+      report: report => reports.push(report),
+      sourceCode: { text: source, ast } as LintMdRuleContext['sourceCode']
+    });
+
+    const start = performance.now();
+    selectors.root(ast);
+
+    expect(performance.now() - start).toBeLessThan(1000);
+    expect(reports).toHaveLength(1);
+    expect(reports[0].message).toBe('连续空白行最多保留一行');
+  });
+
+  test.each([
+    ['CRLF 到 LF 到 CR', '正文\r\n \n\t\r ', '正文\r\n'],
+    ['CR 到 CRLF 到 LF', '正文\r \r\n\t\n', '正文\r'],
+    ['LF 到 CR 到 CRLF', '正文\n \r\t\r\n', '正文\n']
+  ])('文末混合换行保留首个换行：%s', (_name, markdown, expected) => {
+    const { fixedResult, lintResult } = fixer(markdown);
+
+    expect(fixedResult?.result).toBe(expected);
+    expect(lintResult.reports).toHaveLength(1);
+  });
+
   test('可以通过 Core 配置启用', () => {
     const result = lintMarkdown(
       '第一段\n\n\n第二段',

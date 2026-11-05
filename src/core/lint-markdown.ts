@@ -197,15 +197,10 @@ const isLintMarkdownOptions = (
  * @public
  */
 export function lintMarkdown(markdown: string, options: LintMarkdownOptions): LintMarkdownResult;
-/** @deprecated Use `fixMarkdown(markdown, options)` for automatic fixes. */
 export function lintMarkdown(markdown: string): LintMdFixResult;
-/** @deprecated Use the options-based overload for lint-only checks. */
 export function lintMarkdown(markdown: string, rules: LintMdRulesConfig): LintMdFixResult;
-/** @deprecated Use `fixMarkdown(markdown, options)`. */
 export function lintMarkdown(markdown: string, rules: LintMdRulesConfig | undefined, isFixMode: true, options?: LintExecutionOptions): LintMdFixResult;
-/** @deprecated Use the options-based overload for lint-only checks. */
 export function lintMarkdown(markdown: string, rules: LintMdRulesConfig | undefined, isFixMode: false, options?: LintExecutionOptions): LintMdLintResult;
-/** @deprecated Use `lintMarkdown(markdown, options)` or `fixMarkdown(markdown, options)`. */
 export function lintMarkdown(markdown: string, rules: LintMdRulesConfig | undefined, isFixMode: boolean, options?: LintExecutionOptions): LintMdResult;
 export function lintMarkdown(
   markdown: string,

@@ -5,7 +5,10 @@ import {
   lintMarkdown
 } from '../../src';
 import type {
+  FixMarkdownResult,
+  LintMarkdownResult,
   LintMdFixResult,
+  LintMdLintResult,
   LintMdRule,
   LintMdRulesConfig
 } from '../../src';
@@ -16,7 +19,7 @@ const blankLineRules = {
 
 describe('lintMarkdown options API', () => {
   test('runs lint-only with rules from options', () => {
-    const result = lintMarkdown('first\n\n\nsecond', {
+    const result: LintMarkdownResult = lintMarkdown('first\n\n\nsecond', {
       rules: blankLineRules
     });
 
@@ -58,15 +61,15 @@ describe('lintMarkdown options API', () => {
 
   test('keeps legacy fix mode when the second argument is omitted', () => {
     const markdown = 'first\n\n\nsecond';
-    const result = lintMarkdown(markdown);
+    const result: LintMdFixResult = lintMarkdown(markdown);
 
     expect(result.fixedResult.result).toBe(markdown);
   });
 
   test('keeps distinct behavior for two-argument calls with empty rules', () => {
     const markdown = 'first\n\n\nsecond';
-    const legacyResult = lintMarkdown(markdown, {});
-    const optionsResult = lintMarkdown(markdown, { rules: {} });
+    const legacyResult: LintMdFixResult = lintMarkdown(markdown, {});
+    const optionsResult: LintMarkdownResult = lintMarkdown(markdown, { rules: {} });
 
     expect(legacyResult.fixedResult.result).toBe(markdown);
     expect(optionsResult.fixedResult).toBeNull();
@@ -93,11 +96,17 @@ describe('lintMarkdown options API', () => {
 
   test('keeps explicit legacy lint and fix modes', () => {
     const markdown = 'first\n\n\nsecond';
-    const lintResult = lintMarkdown(markdown, blankLineRules, false);
-    const fixResult = lintMarkdown(markdown, blankLineRules, true);
+    const defaultFixResult: LintMdFixResult = lintMarkdown(markdown, blankLineRules);
+    const lintResult: LintMdLintResult = lintMarkdown(markdown, blankLineRules, false);
+    const fixResult: LintMdFixResult = lintMarkdown(markdown, blankLineRules, true);
+    const optionsFixResult: FixMarkdownResult = fixMarkdown(markdown, {
+      rules: blankLineRules
+    });
 
+    expect(defaultFixResult.fixedResult.result).toBe('first\n\nsecond');
     expect(lintResult.fixedResult).toBeNull();
     expect(fixResult.fixedResult.result).toBe('first\n\nsecond');
+    expect(optionsFixResult.fixedResult.result).toBe('first\n\nsecond');
   });
 
   test.each(['rules', 'ruleErrorPolicy'])('keeps a legacy rule named %s', (ruleName) => {

@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## [2.6.1](https://github.com/lint-md/lint-md/compare/v2.6.0...v2.6.1) - 2026-11-18
+
+### Bug Fixes
+
+- **no-multiple-blank-lines**: scan trailing blank lines in linear time (#326)
+- **core**: preserve the legacy `lintMarkdown` API declarations (#328)
+
+### Tests
+
+- **core**: distinguish legacy and options-based `lintMarkdown` calls (#327)
+
 ## [2.6.0](https://github.com/lint-md/lint-md/compare/v2.5.3...v2.6.0) - 2026-10-26
 
 ### Features
